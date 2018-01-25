@@ -6,6 +6,7 @@ class System
 {
 public:
     System();
+
 };
 
 #endif // SYSTEM_H
