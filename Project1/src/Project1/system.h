@@ -5,19 +5,35 @@
 #include "trialfunction.h"
 #include "Vec3/vec3.h"
 #include <iostream>
-#include <list>
+#include <vector>
+#include <random>
+#include <stdlib.h>
+#include <time.h>
+
+using namespace std;
 
 class System
 {
 public:
     //System();
     ~System();
-    virtual void grid_setup(int,double){};
 
-    std::list<Particle> particles;
-    std::list<double> phi_values;
+    void update_alpha(double);
+
+    virtual void grid_setup(int,double){};
+    virtual void propose_step(){};
+    virtual double check_acceptance_and_return_energy(){};
+
+    std::vector<Particle> particles;
+    std::vector<double> phi_values;
     TrialFunction trial_function;
     int dimension = 3;
+    double alpha;
+    int size;
+
+    //srand(time(NULL));
+
+
 };
 
 #endif // SYSTEM_H
