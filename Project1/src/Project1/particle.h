@@ -7,10 +7,9 @@
 class Particle
 {
 public:
-    Particle(vec3 m_r,double m_alpha,double m_beta,double m_phi(vec3,double,double));
+    Particle(vec3 m_r,double m_alpha,double m_beta);
 
     void accept_step();
-    double (*phi)(vec3,double,double);
     void update_alpha(double);
 
     vec3 r;
@@ -20,8 +19,6 @@ public:
     vec3 next_r;
 
     double mass = 1;
-
-    double phi_value;
 
     double alpha;
     double beta;

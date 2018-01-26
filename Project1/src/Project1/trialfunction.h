@@ -14,7 +14,7 @@ public:
     void calculate_probability();
     void calculate_local_energy(int,int);
 
-    double phi(vec3,double,double);
+    static double phi(vec3,double,double);
 
     double get_probability(Particle *p,int,double,double);
     double get_local_energy(int,int);

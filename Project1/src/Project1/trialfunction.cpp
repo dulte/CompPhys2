@@ -10,7 +10,7 @@ void TrialFunction::calculate_trial(Particle *p,int size,double alpha,double bet
     double val = 0;
 
     for(int i = 0; i<size;i++){
-        r = p[i].r;
+        vec3 r = p[i].r;
         val *= phi(r,alpha,beta);
     }
 

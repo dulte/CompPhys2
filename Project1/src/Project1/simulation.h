@@ -17,8 +17,8 @@ public:
 private:
     int m_MCsteps;
     double* alphas;
-    Particle* particles;
-    TrialFunction trial_function;
+
+
 };
 
 #endif // SIMULATION_H
