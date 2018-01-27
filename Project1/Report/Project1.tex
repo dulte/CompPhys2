@@ -1,0 +1,123 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{a4wide}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvips]{epsfig}
+\usepackage[toc,page]{appendix}
+\usepackage[T1]{fontenc}
+\usepackage{cite} % [2,3,4] --> [2--4]
+\usepackage{shadow}
+\usepackage{hyperref}
+\usepackage{titling}
+\usepackage{marvosym }
+\usepackage{subcaption}
+\usepackage[noabbrev]{cleveref}
+\usepackage{wasysym}
+
+
+\renewcommand{\topfraction}{.85}
+\renewcommand{\bottomfraction}{.7}
+\renewcommand{\textfraction}{.15}
+\renewcommand{\floatpagefraction}{.66}
+\renewcommand{\dbltopfraction}{.66}
+\renewcommand{\dblfloatpagefraction}{.66}
+\setcounter{topnumber}{9}
+\setcounter{bottomnumber}{9}
+\setcounter{totalnumber}{20}
+\setcounter{dbltopnumber}{9}
+
+
+\setlength{\droptitle}{-10em}   % This is your set screw
+
+\setcounter{tocdepth}{2}
+
+\lstset{language=c++}
+\lstset{alsolanguage=[90]Fortran}
+\lstset{basicstyle=\small}
+\lstset{backgroundcolor=\color{white}}
+\lstset{frame=single}
+\lstset{stringstyle=\ttfamily}
+\lstset{keywordstyle=\color{red}\bfseries}
+\lstset{commentstyle=\itshape\color{blue}}
+\lstset{showspaces=false}
+\lstset{showstringspaces=false}
+\lstset{showtabs=false}
+\lstset{breaklines}
+\title{FYS4411 - Project 1\\
+Variational Monte Carlo}
+\author{Daniel Heinesen, Gunnar Lange}
+\begin{document}
+\maketitle
+\begin{abstract}
+Abstract awesomeness
+\end{abstract}
+\tableofcontents
+\section{Introduction}
+\section{Theoretical model}
+\section{Methods}\label{Method_section}
+\section{Results and discussion}
+\section{Conclusion}
+\subsection{Conclusion}
+
+\subsection{Outlook}
+
+\begin{appendices}
+\section{Finding the analytic expression for the local energy}
+We wish to find:
+\begin{equation}
+E_L=\frac{1}{\Psi_T}\nabla^2 \Psi_T
+\end{equation}
+Where $\Psi_T$ is given by:
+\begin{equation}
+\exp\left[ -\alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]\prod_{i<j}f(a, |\mathbf{r}_i-\mathbf{r}_j|)
+\end{equation}
+Look first at $a=0$. In this case, this reduces to the harmonic oscillator potential. The local energy is then:
+\begin{equation}
+\exp\left[ \alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]\left(-\frac{\hbar^2}{2m_i}\nabla_i^2+V\right)\exp\left[ -\alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]
+\end{equation}
+In the simple harmonic oscillator case, this gives:
+\begin{equation}
+E_L(\mathbf{r},\alpha)=-\frac{\hbar^2}{2m}\sum_{i=1}^n 2\alpha \left(2\alpha(x_i^2+y_i^2+z_i^2)-3\right)+\frac{1}{2}m\omega_{ho}^2\sum_{i=1}^n(x_i^2+y_i^2+z_i^2)
+\end{equation}
+\textbf{FIX FOR ONE/N PARTICLES AND LOWER DIMENSION}
+Similarly for the drift force:
+\begin{equation}
+F=\frac{2\nabla \Psi_T}{\Psi_T}
+\end{equation}
+\begin{equation}
+F=-2\alpha\sum_{i=1}^n(x_i+y_i+z_i)
+\end{equation}
+Now for the ugly part:\\
+For one particle, $\nabla_k$:
+\begin{equation}
+\nabla_k\Psi_T(\mathbf{r})=\nabla_k \prod_{i=1}^n\phi(\mathbf{r}_i)\exp\left(\sum_{i<j} u(r_{ij})\right)
+\end{equation}
+Now apply the product rule. For the first term, all terms are unchanged except where $i=k$, giving the first term as:
+\begin{equation}
+\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
+\end{equation}
+The second term is trickier. We can rewrite it as follows:
+\begin{equation}
+\left(\prod_l \phi(\mathbf{r_l})\right)\nabla_k \exp \left(\sum_{i=1}^n \sum_{i<j} u(r_{ij})\right)=\left(\prod_l \phi(\mathbf{r_l})\right) \exp \left(\sum_{i=1}^n \sum_{i<j} u(r_{ij})\right)\nabla_k\left(\sum_{i=1}^n \sum_{i<j} u(r_{ij})\right)
+\end{equation} 
+To get anything non-zero in the last term, we must have either $i=k$ or $j=k$. If $i=k$, then the term may be rewritten as:
+\begin{equation}
+\sum_{k<j}\nabla_k u(r_{kj})
+\end{equation}
+If $j=k$ then all terms such that $i>k$ will vanish, leaving us with:
+\begin{equation}
+\sum_{i>k} \nabla_k u(r_{ik})
+\end{equation}
+Putting this all together gives:
+\begin{equation}
+\nabla_k \left(\sum_{i=1}^n \sum_{i<j} u(r_{ij})\right)=\sum_{j\neq k} \nabla_k u(r_{ij})
+\end{equation}
+Finally, to get the second derivative:
+
+\end{appendices}
+\end{document}
