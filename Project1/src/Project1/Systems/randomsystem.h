@@ -7,14 +7,14 @@ class RandomSystem : public System
 {
 public:
     RandomSystem();
+
     void grid_setup(int,double);
-
-    double beta = 1;
-
     void propose_step();
     double check_acceptance_and_return_energy();
-    double step_size = 0.5;
 
+private:
+    double step_size = 0.5;
+    double beta = 1;
 };
 
 #endif // RANDOMSYSTEM_H

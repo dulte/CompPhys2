@@ -1,13 +1,14 @@
 #include "trialfunction.h"
+#include <iostream>
 
 TrialFunction::TrialFunction()
 {
-
+    potential = SimpleHarmonicOscillator(1);
 }
 
 void TrialFunction::calculate_trial(std::vector<Particle> p, int size, double alpha, double beta)
 {
-    double val = 0;
+    double val = 1;
     vec3 r;
 
     for(int i = 0; i<size;i++){
@@ -24,7 +25,7 @@ void TrialFunction::calculate_probability(){
 }
 
 void TrialFunction::calculate_local_energy(int n,int dim){
-    local_energy = dim/2.0*n;
+    local_energy = dim/2.0*n; // And external!!!
 }
 
 double TrialFunction::phi(vec3 r, double alpha, double beta)
@@ -40,7 +41,7 @@ double TrialFunction::get_probability(std::vector<Particle> p,int size,double al
 }
 
 double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int move, double alpha, double beta){
-    double val = 0;
+    double val = 1;
     vec3 r;
 
     for(int i = 0; i<size;i++){
@@ -52,9 +53,10 @@ double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int
         }
 
         val *= phi(r,alpha,beta);
+
     }
 
-
+    std::cout << function_probability << val << std::endl;
     return val/function_probability;
 }
 

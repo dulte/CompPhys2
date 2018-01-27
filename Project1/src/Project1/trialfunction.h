@@ -5,6 +5,8 @@
 #include <math.h>
 #include <vector>
 #include "particle.h"
+#include "potential.h"
+#include "Potentials/simpleharmonicoscillator.h"
 
 
 class TrialFunction
@@ -27,6 +29,8 @@ private:
     double function_probability;
     double function_probability_next_step;
     double local_energy;
+
+    Potential potential;
 };
 
 #endif // TRIALFUNCTION_H

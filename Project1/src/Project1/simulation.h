@@ -3,20 +3,26 @@
 
 #include "particle.h"
 #include "trialfunction.h"
+#include "system.h"
+#include "Systems/randomsystem.h"
 #include <iostream>
+#include <vector>
 
 
 class Simulation
 {
 public:
-    Simulation(int,int,int,int,int);
-    Particle setup_grid(int,int,double,double m_phi(vec3,double,double));
-    void initiate();
-    void run();
+    Simulation();
+    void initiate(int,int,int,int);
+    void run(int);
 
 private:
-    int m_MCsteps;
-    double* alphas;
+    int MCsteps;
+    double alpha_min;
+    double alpha_max;
+    double alpha_step;
+    int size;
+    RandomSystem system;
 
 
 };
