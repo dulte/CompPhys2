@@ -1,9 +1,9 @@
 #include "trialfunction.h"
 #include <iostream>
 
-TrialFunction::TrialFunction()
+TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
 {
-    potential = SimpleHarmonicOscillator(1);
+    potential = m_potential;
 }
 
 void TrialFunction::calculate_trial(std::vector<Particle> p, int size, double alpha, double beta)

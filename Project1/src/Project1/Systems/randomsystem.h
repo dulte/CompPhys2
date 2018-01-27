@@ -1,16 +1,18 @@
 #ifndef RANDOMSYSTEM_H
 #define RANDOMSYSTEM_H
 
-#include "../system.h"
+#include "system.h"
+#include <memory>
 
 class RandomSystem : public System
 {
 public:
-    RandomSystem();
+    RandomSystem(std::shared_ptr<TrialFunction> m_trial);
 
-    void grid_setup(int,double);
-    void propose_step();
-    double check_acceptance_and_return_energy();
+    void update_alpha(double) override;
+    void grid_setup(int,double) override;
+    void propose_step() override;
+    double check_acceptance_and_return_energy() override;
 
 private:
     double step_size = 0.5;

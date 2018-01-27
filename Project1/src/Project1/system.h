@@ -9,6 +9,7 @@
 #include <random>
 #include <stdlib.h>
 #include <time.h>
+#include <memory>
 
 using namespace std;
 
@@ -16,17 +17,17 @@ class System
 {
 public:
     //System();
-    ~System();
 
-    void update_alpha(double);
 
-    virtual void grid_setup(int,double){}
-    virtual void propose_step(){}
-    virtual double check_acceptance_and_return_energy(){return 0;}
+    virtual void update_alpha(double){};
+
+    virtual void grid_setup(int,double){cout << "Nei!" << endl;};
+    virtual void propose_step(){};
+    virtual double check_acceptance_and_return_energy(){};
 
     std::vector<Particle> particles;
     std::vector<double> phi_values;
-    TrialFunction trial_function;
+    std::shared_ptr<TrialFunction> trial_function;
     int dimension = 3;
     double alpha;
     int size;

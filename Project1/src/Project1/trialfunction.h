@@ -7,12 +7,13 @@
 #include "particle.h"
 #include "potential.h"
 #include "Potentials/simpleharmonicoscillator.h"
+#include <memory>
 
 
 class TrialFunction
 {
 public:
-    TrialFunction();
+    TrialFunction(std::shared_ptr<Potential>);
     void calculate_trial(std::vector<Particle> p,int,double,double);
     void calculate_probability();
     void calculate_local_energy(int,int);
@@ -23,6 +24,8 @@ public:
     double get_probability_ratio(std::vector<Particle> p, int, int move, double alpha, double beta);
     double get_local_energy(int,int);
 
+    std::shared_ptr<Potential> potential;
+
 private:
     double function_value;
     double function_value_next_step;
@@ -30,7 +33,7 @@ private:
     double function_probability_next_step;
     double local_energy;
 
-    Potential potential;
+
 };
 
 #endif // TRIALFUNCTION_H

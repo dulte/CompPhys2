@@ -1,10 +1,15 @@
 #include "randomsystem.h"
 #include <iostream>
 
-RandomSystem::RandomSystem()
+RandomSystem::RandomSystem(std::shared_ptr<TrialFunction> m_trial)
 {
     dimension = 1;
-    trial_function = TrialFunction();
+    trial_function = m_trial;//TrialFunction();
+}
+
+void RandomSystem::update_alpha(double m_alpha)
+{
+    alpha = m_alpha;
 }
 
 void RandomSystem::grid_setup(int m_size, double start_alpha)
@@ -16,7 +21,7 @@ void RandomSystem::grid_setup(int m_size, double start_alpha)
 
 
     for(int i = 0; i<size; i++){
-        phi_values.push_back(trial_function.phi(r,start_alpha,beta));
+        phi_values.push_back(trial_function->phi(r,start_alpha,beta));
         particles.push_back(Particle(r,start_alpha,1));
     }
 
@@ -39,15 +44,15 @@ double RandomSystem::check_acceptance_and_return_energy(){
 
     std::cout << "hei" << std::endl;
 
-    trial_function.get_probability(particles,size,alpha,beta);
+    trial_function->get_probability(particles,size,alpha,beta);
 
     for(int i = 0; i< size; i++){
         r = (float)rand()/RAND_MAX;
-        acceptance_probability = trial_function.get_probability_ratio(particles,size,i,alpha,beta);
-
+        acceptance_probability = trial_function->get_probability_ratio(particles,size,i,alpha,beta);
+        particles[i].r.print();
         if(acceptance_probability >= r){
             particles[i].accept_step();
-            trial_function.get_probability(particles,size,alpha,beta); //Not sure if should be here
+            trial_function->get_probability(particles,size,alpha,beta); //Not sure if should be here
         }
     }
 }

@@ -4,15 +4,17 @@
 #include "particle.h"
 #include "trialfunction.h"
 #include "system.h"
+#include "potential.h"
 #include "Systems/randomsystem.h"
 #include <iostream>
 #include <vector>
+#include <memory>
 
 
 class Simulation
 {
 public:
-    Simulation();
+    Simulation(std::shared_ptr<System> m_system);
     void initiate(int,int,int,int);
     void run(int);
 
@@ -22,9 +24,9 @@ private:
     double alpha_max;
     double alpha_step;
     int size;
-    RandomSystem system;
-
-
+    std::shared_ptr<System> system;
+    std::shared_ptr<Potential> potential;
+    std::shared_ptr<TrialFunction> trial_function;
 };
 
 #endif // SIMULATION_H
