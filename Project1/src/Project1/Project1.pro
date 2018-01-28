@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     system.cpp \
     Vec3/vec3.cpp \
     Potentials/simpleharmonicoscillator.cpp \
-    Systems/randomsystem.cpp
+    Systems/randomsystem.cpp \
+    Parameters/parameters.cpp
 
 HEADERS += \
     simulation.h \
@@ -21,4 +22,5 @@ HEADERS += \
     system.h \
     Vec3/vec3.h \
     Potentials/simpleharmonicoscillator.h \
-    Systems/randomsystem.h
+    Systems/randomsystem.h \
+    Parameters/parameters.h

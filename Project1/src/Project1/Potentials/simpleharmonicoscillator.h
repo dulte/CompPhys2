@@ -2,6 +2,7 @@
 #define SIMPLEHARMONICOSCILLATOR_H
 
 #include "../potential.h"
+#include "../Parameters/parameters.h"
 
 class SimpleHarmonicOscillator : public Potential
 {

@@ -5,6 +5,8 @@ RandomSystem::RandomSystem(std::shared_ptr<TrialFunction> m_trial)
 {
     dimension = 1;
     trial_function = m_trial;//TrialFunction();
+
+    std::cout << "MC_cylces: " << Parameters::MC_cycles << std::endl;
 }
 
 void RandomSystem::update_alpha(double m_alpha)

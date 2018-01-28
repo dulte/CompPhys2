@@ -6,12 +6,17 @@
 #include "trialfunction.h"
 #include "potential.h"
 #include "Potentials/simpleharmonicoscillator.h"
+#include "Parameters/parameters.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
     cout << "Hello World!" << endl;
+
+    //Read Parameters
+    Parameters::read_parameters("../input/parameters.txt");
+    cout << Parameters::text << endl;
 
     //Place all systems, potentials and trialfunctions here
     SimpleHarmonicOscillator potential = SimpleHarmonicOscillator(1);
@@ -21,9 +26,9 @@ int main(int argc, char *argv[])
 
 
     Simulation simulation = Simulation(pSystem);
-    simulation.initiate(10,0,1,10);
+    simulation.initiate(1,0,1,1);
 
-    simulation.run(10);
+    simulation.run(1);
 
     cout << "Done!" << endl;
 

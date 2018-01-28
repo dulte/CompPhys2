@@ -3,6 +3,7 @@
 
 #include "system.h"
 #include <memory>
+#include "Parameters/parameters.h"
 
 class RandomSystem : public System
 {
