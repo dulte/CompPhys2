@@ -1,7 +1,7 @@
 #include "parameters.h"
 
-
-
+//Parameters* Parameters::m_instance = nullptr;
+/*
 int text;
 int MC_cycles;
 double alpha_max;
@@ -11,6 +11,7 @@ int alpha_num;
 double beta;
 
 double omega;
+*/
 
 void Parameters::read_parameters(std::string location){
     std::ifstream infile;
@@ -59,10 +60,16 @@ void Parameters::read_parameters(std::string location){
         else{
             std::cout << "Unknonw Variable found: " << name << std::endl;
         }
-
     }
 
 }
 
+int Parameters::text = 0;
+int Parameters::MC_cycles = 0;
+double Parameters::alpha_min = 0;
+double Parameters::alpha_max = 0;
+int Parameters::alpha_num = 0;
+double Parameters::beta = 0;
+double Parameters::omega = 0;
 
 

@@ -56,6 +56,7 @@ double RandomSystem::check_acceptance_and_return_energy(){
             particles[i].accept_step();
             trial_function->get_probability(particles,size,alpha,beta); //Not sure if should be here
         }
+        //Remember to update delta_E
     }
 }
 

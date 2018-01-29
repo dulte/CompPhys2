@@ -6,21 +6,23 @@
 #include <sstream>
 #include <iostream>
 
-namespace Parameters
+class Parameters
 {
+public:
+    static Parameters* m_instance;
 
-    void read_parameters(std::string location);
-    extern int text;
-    extern int MC_cycles;
+    static void read_parameters(std::string location);
+    static int text;
+    static int MC_cycles;
 
 
-    extern double alpha_max;
-    extern double alpha_min;
-    extern int alpha_num;
+    static double alpha_max;
+    static double alpha_min;
+    static int alpha_num;
 
-    extern double beta;
+    static double beta;
 
-    extern double omega;
-}
+    static double omega;
+};
 
 #endif // PARAMETERS_H

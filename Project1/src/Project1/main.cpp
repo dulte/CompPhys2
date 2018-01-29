@@ -15,8 +15,9 @@ int main(int argc, char *argv[])
     cout << "Hello World!" << endl;
 
     //Read Parameters
+    //Parameters params = Parameters::instance();
     Parameters::read_parameters("../input/parameters.txt");
-    cout << Parameters::text << endl;
+    cout << Parameters::beta << endl;
 
     //Place all systems, potentials and trialfunctions here
     SimpleHarmonicOscillator potential = SimpleHarmonicOscillator(1);

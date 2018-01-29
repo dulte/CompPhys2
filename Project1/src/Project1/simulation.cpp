@@ -4,7 +4,6 @@
 
 Simulation::Simulation(std::shared_ptr<System> m_system)
 {
-    m_system->update_alpha(0);
     system = m_system;
 }
 

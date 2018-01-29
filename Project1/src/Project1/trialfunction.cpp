@@ -21,7 +21,7 @@ void TrialFunction::calculate_trial(std::vector<Particle> p, int size, double al
 
 void TrialFunction::calculate_probability(){
     function_probability = function_value*function_value;
-    function_probability_next_step = function_value_next_step*function_value_next_step;
+    //function_probability_next_step = function_value_next_step*function_value_next_step;
 }
 
 void TrialFunction::calculate_local_energy(int n,int dim){
@@ -52,12 +52,12 @@ double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int
             r = p[i].r;
         }
 
-        val *= phi(r,alpha,beta);
+        val *= phi(r,alpha,beta); //Can be optimized since this is a product of exp
 
     }
 
     std::cout << function_probability << val << std::endl;
-    return val/function_probability;
+    return val*val/function_probability;
 }
 
 
