@@ -16,7 +16,7 @@ public:
     double check_acceptance_and_return_energy() override;
 
 private:
-    double step_size = 0.5;
+    double step_size = 0.1;
     double beta = 1;
 };
 
