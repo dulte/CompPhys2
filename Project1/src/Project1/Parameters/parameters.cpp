@@ -20,10 +20,11 @@ void Parameters::read_parameters(std::string location){
         double variable;
 
         ss >> name >> variable;
-        std::cout << name << std::endl;
+        //std::cout << "Ting: " << name[0] << std::endl;
 
-        if (&name[0] == "#")
+        if (name.front() == '#'){
             continue;
+        }
         else if(name == "text"){
             text = variable;
         }
@@ -59,6 +60,8 @@ void Parameters::read_parameters(std::string location){
             exit(EXIT_FAILURE);
         }
     }
+
+
     if(!alpha_max_set){
         std::cout << "Max alpha not set!" << std::endl;
         exit(EXIT_FAILURE);
