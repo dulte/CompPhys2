@@ -9,6 +9,7 @@ class Potential
 public:
     //Potential();
     virtual double get_external_potential(double){};
+    virtual double get_external_potential(std::vector<double>){};
     virtual double get_inter_potential(std::vector<double>,std::vector<double>){};
 
 };
