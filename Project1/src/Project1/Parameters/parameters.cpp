@@ -1,17 +1,5 @@
 #include "parameters.h"
 
-//Parameters* Parameters::m_instance = nullptr;
-/*
-int text;
-int MC_cycles;
-double alpha_max;
-double alpha_min;
-int alpha_num;
-
-double beta;
-
-double omega;
-*/
 
 void Parameters::read_parameters(std::string location){
     std::ifstream infile;

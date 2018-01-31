@@ -3,6 +3,7 @@
 
 #include "system.h"
 #include <memory>
+#include <vector>
 #include "Parameters/parameters.h"
 
 class RandomSystem : public System
@@ -18,6 +19,7 @@ public:
 private:
     double step_size = 0.1;
     double beta = 1;
+
 };
 
 #endif // RANDOMSYSTEM_H

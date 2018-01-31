@@ -2,13 +2,14 @@
 #define POTENTIAL_H
 
 #include "Vec3/vec3.h"
+#include <vector>
 
 class Potential
 {
 public:
     //Potential();
-    virtual double get_external_potential(vec3){};
-    virtual double get_inter_potential(vec3,vec3){};
+    virtual double get_external_potential(double){};
+    virtual double get_inter_potential(std::vector<double>,std::vector<double>){};
 
 };
 

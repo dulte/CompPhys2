@@ -18,7 +18,7 @@ public:
     void calculate_probability();
     void calculate_local_energy(int,int);
 
-    static double phi(vec3,double,double);
+    static double phi(std::vector<double>,double,double);
 
     double get_probability(std::vector<Particle> p,int,double,double);
     double get_probability_ratio(std::vector<Particle> p, int, int move, double alpha, double beta);

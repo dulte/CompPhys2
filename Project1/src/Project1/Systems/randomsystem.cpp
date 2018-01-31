@@ -19,8 +19,8 @@ void RandomSystem::grid_setup(int m_size, double start_alpha)
 {
     alpha = start_alpha;
     size = m_size;
-    vec3 r;
-    r = vec3(1,0,0);
+    std::vector<double> r;
+    r.push_back(0.5);
 
 
     for(int i = 0; i<size; i++){
@@ -31,11 +31,12 @@ void RandomSystem::grid_setup(int m_size, double start_alpha)
 }
 
 void RandomSystem::propose_step(){
-    vec3 step;
+
 
     for(int i = 0; i< size; i++){
-        step = vec3(2*(float)rand()/RAND_MAX - 1,2*(float)rand()/RAND_MAX - 1,2*(float)rand()/RAND_MAX - 1);
-        particles[i].next_r = particles[i].r + step_size*step;
+        for(int j = 0; j<dimension; j++){
+            particles[i].next_r[j] = particles[i].r[j] + step_size*(2*(float)rand()/RAND_MAX - 1);
+        }
     }
 }
 
@@ -50,11 +51,10 @@ double RandomSystem::check_acceptance_and_return_energy(){
 
     for(int i = 0; i< size; i++){
         r = (float)rand()/RAND_MAX;
-        acceptance_probability = trial_function->get_probability_ratio(particles,size,i,alpha,beta);
-        std::cout << "Prob: " << acceptance_probability << std::endl;
-        particles[i].r.print();
+        acceptance_probability = trial_function->get_probability_ratio(particles,size,i,alpha,beta); 
         if(acceptance_probability >= r){
             particles[i].accept_step();
+            std::cout << "Pos: " << particles[i].r[0] << std::endl;
             trial_function->get_probability(particles,size,alpha,beta); //Not sure if should be here
         }
         //Remember to update delta_E

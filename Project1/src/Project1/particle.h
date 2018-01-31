@@ -2,21 +2,27 @@
 #define PARTICLE_H
 
 #include "Vec3/vec3.h"
+#include <vector>
+#include <math.h>
 
 
 class Particle
 {
 public:
-    Particle(vec3 m_r,double m_alpha,double m_beta);
+    Particle(std::vector<double>& m_r,double m_alpha,double m_beta);
 
     void accept_step();
     void update_alpha(double);
+    double get_length();
 
-    vec3 r;
+    //vec3 r;
+    std::vector<double> r;
+
     double r_norm;
     double r_squared;
 
-    vec3 next_r;
+    //vec3 next_r;
+    std::vector<double> next_r;
 
     double mass = 1;
 

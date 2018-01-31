@@ -9,7 +9,7 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
 void TrialFunction::calculate_trial(std::vector<Particle> p, int size, double alpha, double beta)
 {
     double val = 1;
-    vec3 r;
+    std::vector<double> r;
 
     for(int i = 0; i<size;i++){
         r = p[i].r;
@@ -28,9 +28,20 @@ void TrialFunction::calculate_local_energy(int n,int dim){
     local_energy = dim/2.0*n; // And external!!!
 }
 
-double TrialFunction::phi(vec3 r, double alpha, double beta)
+double TrialFunction::phi(std::vector<double> r, double alpha, double beta)
 {
-    return exp(-alpha*(r[0]*r[0] + r[1]*r[1] + beta*r[2]*r[2]));
+    int size = r.size();
+    double val = 0;
+    for(int i = 0;i<size;i++){
+        if(i == 2){
+            val += beta*r[i]*r[i];
+        }
+        else{
+            val += r[i]*r[i];
+        }
+    }
+
+    return exp(-alpha*val);
 }
 
 
@@ -42,7 +53,7 @@ double TrialFunction::get_probability(std::vector<Particle> p,int size,double al
 
 double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int move, double alpha, double beta){
     double val = 1;
-    vec3 r;
+    std::vector<double> r;
 
     for(int i = 0; i<size;i++){
         if(i == move){
@@ -55,8 +66,6 @@ double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int
         val *= phi(r,alpha,beta); //Can be optimized since this is a product of exp
 
     }
-
-    std::cout << function_probability << val << std::endl;
     return val*val/function_probability;
 }
 
