@@ -3,4 +3,5 @@ beta 1
 alpha_min 0
 alpha_max 50
 alpha_num 300
-#omega 0
+omega 0
+omega_z 0

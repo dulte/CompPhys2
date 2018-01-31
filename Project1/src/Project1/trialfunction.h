@@ -6,7 +6,7 @@
 #include <vector>
 #include "particle.h"
 #include "potential.h"
-#include "Potentials/simpleharmonicoscillator.h"
+#include "Potentials/harmonicoscillator.h"
 #include <memory>
 
 

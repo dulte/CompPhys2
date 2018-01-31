@@ -10,10 +10,10 @@ SOURCES += main.cpp \
     trialfunction.cpp \
     system.cpp \
     Vec3/vec3.cpp \
-    Potentials/simpleharmonicoscillator.cpp \
     Systems/randomsystem.cpp \
     Parameters/parameters.cpp \
-    DataDump/datadump.cpp
+    DataDump/datadump.cpp \
+    Potentials/harmonicoscillator.cpp
 
 HEADERS += \
     simulation.h \
@@ -22,7 +22,7 @@ HEADERS += \
     trialfunction.h \
     system.h \
     Vec3/vec3.h \
-    Potentials/simpleharmonicoscillator.h \
     Systems/randomsystem.h \
     Parameters/parameters.h \
-    DataDump/datadump.h
+    DataDump/datadump.h \
+    Potentials/harmonicoscillator.h

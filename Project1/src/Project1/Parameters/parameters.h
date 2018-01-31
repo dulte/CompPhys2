@@ -30,6 +30,8 @@ public:
 
     static double omega;
     static bool omega_set;
+    static double omega_z;
+    static bool omega_z_set;
 
 };
 
