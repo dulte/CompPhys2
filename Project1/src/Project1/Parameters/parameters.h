@@ -19,6 +19,10 @@ public:
     static bool dimension_set;
 
 
+    static int N;
+    static bool N_set;
+
+
     static double alpha_max;
     static bool alpha_max_set;
     static double alpha_min;

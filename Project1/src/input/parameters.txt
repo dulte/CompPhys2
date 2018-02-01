@@ -8,3 +8,4 @@ omega_z 0
 a 0
 dx 0.001
 dimensions 1
+N 1

@@ -31,12 +31,20 @@ void Parameters::read_parameters(std::string location){
                 MC_cycles_set=true;
             }
         }
+        else if(name == "N"){
+            N = variable;
+            if(N>0){
+                N_set=true;
+            }
+        }
+
         else if(name == "dimensions"){
             dimension = variable;
             if(dimension>0 && dimension<4){
                 dimension_set=true;
             }
         }
+
         else if(name == "alpha_min"){
             alpha_min = variable;
             alpha_min_set=true;
@@ -85,11 +93,15 @@ void Parameters::read_parameters(std::string location){
         exit(EXIT_FAILURE);
     }
 
-    else if(!dimension){
+    else if(!dimension_set){
         std::cout << "Dimensions not set or invalid!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
+    else if(!N_set){
+        std::cout << "Number of particles not set or invalid!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
     else if(!alpha_max_set){
         std::cout << "Max alpha not set!" << std::endl;
         exit(EXIT_FAILURE);
@@ -134,6 +146,7 @@ void Parameters::read_parameters(std::string location){
 }
 bool Parameters::MC_cycles_set=false;
 bool Parameters::dimension_set=false;
+bool Parameters::N_set=false;
 bool Parameters::alpha_max_set=false;
 bool Parameters::alpha_min_set=false;
 bool Parameters::alpha_num_set=false;
@@ -145,6 +158,7 @@ bool Parameters::dx_set=false;
 
 int Parameters::MC_cycles = 0;
 int Parameters::dimension=0;
+int Parameters::N=0;
 double Parameters::alpha_min = 0;
 double Parameters::alpha_max = 0;
 int Parameters::alpha_num = 0;
