@@ -20,7 +20,7 @@ void Simulation::initiate(int m_size, int m_alpha_min,int m_alpha_max,int m_alph
 void Simulation::run(int m_MCsteps){
 
     DataDump<double> dump("..//output//data.txt");
-    dump.dump_metadata("..//output//metadata.txt");
+    DataDump<std::vector<double>> position_dump("..//output//positiondata.txt");
 
     double energy = 0;
     double energy_squared = 0;
@@ -40,10 +40,12 @@ void Simulation::run(int m_MCsteps){
             energy_squared = energy_squared + delta_energy*delta_energy;
             std::cout << "Energy " << delta_energy << std::endl;
             dump.push_back(energy);
+            position_dump.push_back(system->get_postions());
 
         }
     }
     dump.dump_all();
+    position_dump.dump_all();
 
 }
 

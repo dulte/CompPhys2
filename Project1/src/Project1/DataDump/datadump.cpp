@@ -23,9 +23,24 @@ void DataDump<T>::dump(T data_point){
     outfile << data_point;
 }
 
+template<>
+void DataDump<std::vector<double>>::dump(std::vector<double> data_point){
+    dump_vector(data_point);
+}
+
 template<class T>
 void DataDump<T>::dump(T data_point,double stamp){
     dump(data_point);
+    if(include_stamp){
+        stampfile << stamp;
+    }
+
+}
+
+
+template<>
+void DataDump<std::vector<double>>::dump(std::vector<double> data_point,double stamp){
+    dump_vector(data_point);
     if(include_stamp){
         stampfile << stamp;
     }
@@ -45,6 +60,22 @@ void DataDump<T>::dump_all(){
         }
     }
 }
+
+template<>
+void DataDump<std::vector<double>>::dump_all(){
+    int data_size = data.size();
+    for(int i = 0; i<data_size;i++){
+        dump_vector(data[i]);
+    }
+    if(include_stamp){
+        int stamp_size = data_stamp.size();
+        for(int i = 0; i<   stamp_size;i++){
+            stampfile << data_stamp[i];
+        }
+    }
+}
+
+
 
 template<class T>
 void DataDump<T>::dump_vector(std::vector<double> data){
@@ -75,7 +106,7 @@ template class DataDump<double>;
 template class DataDump<int>;
 template class DataDump<std::string>;
 //template class DataDump<std::vector<int>>;
-//template class DataDump<std::vector<double>>;
+template class DataDump<std::vector<double>>;
 
 
 

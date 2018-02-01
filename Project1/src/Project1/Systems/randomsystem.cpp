@@ -18,7 +18,7 @@ void RandomSystem::update_alpha(double m_alpha)
 void RandomSystem::grid_setup(int m_size, double start_alpha)
 {
     alpha = start_alpha;
-    size = m_size;
+    size = Parameters::N;
     std::vector<double> r;
     r.push_back(0.5);
 

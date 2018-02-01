@@ -16,7 +16,7 @@ using namespace std;
 class System
 {
 public:
-    //System();
+    System();
 
 
     virtual void update_alpha(double){};
@@ -31,6 +31,9 @@ public:
     int dimension = Parameters::dimension;
     double alpha;
     int size;
+
+    std::vector<double> rs;
+    std::vector<double> get_postions();
 };
 
 #endif // SYSTEM_H
