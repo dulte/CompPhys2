@@ -33,6 +33,9 @@ public:
     static double omega_z;
     static bool omega_z_set;
 
+    static double a;
+    static bool a_set;
+
 };
 
 #endif // PARAMETERS_H

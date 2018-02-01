@@ -14,17 +14,21 @@ class TrialFunction
 {
 public:
     TrialFunction(std::shared_ptr<Potential>);
-    void calculate_trial(std::vector<Particle> p,int,double,double);
+    void calculate_trial(std::vector<Particle> p,int,double);
     void calculate_probability();
     void calculate_local_energy(int,int);
 
-    static double phi(std::vector<double>,double,double);
+    double phi(std::vector<double>, double);
 
-    double get_probability(std::vector<Particle> p,int,double,double);
-    double get_probability_ratio(std::vector<Particle> p, int, int move, double alpha, double beta);
+
+    double get_probability(std::vector<Particle> p,int,double);
+    double get_probability_ratio(std::vector<Particle> p, int, int move, double alpha);
     double get_local_energy(int,int);
 
     std::shared_ptr<Potential> potential;
+
+    double f(std::vector<Particle> p);
+    double f_id(std::vector<Particle> p);
 
 private:
     double function_value;
@@ -32,6 +36,9 @@ private:
     double function_probability;
     double function_probability_next_step;
     double local_energy;
+    double (TrialFunction::*f_func)(std::vector<Particle>);
+    double beta;
+    double a;
 
 
 };

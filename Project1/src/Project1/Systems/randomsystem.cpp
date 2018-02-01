@@ -24,7 +24,7 @@ void RandomSystem::grid_setup(int m_size, double start_alpha)
 
 
     for(int i = 0; i<size; i++){
-        phi_values.push_back(trial_function->phi(r,start_alpha,beta));
+        phi_values.push_back(trial_function->phi(r,start_alpha));
         particles.push_back(Particle(r,start_alpha,1));
     }
 
@@ -47,15 +47,15 @@ double RandomSystem::check_acceptance_and_return_energy(){
     double acceptance_probability = 0;
 
 
-    trial_function->get_probability(particles,size,alpha,beta);
+    trial_function->get_probability(particles,size,alpha);
 
     for(int i = 0; i< size; i++){
         r = (float)rand()/RAND_MAX;
-        acceptance_probability = trial_function->get_probability_ratio(particles,size,i,alpha,beta); 
+        acceptance_probability = trial_function->get_probability_ratio(particles,size,i,alpha);
         if(acceptance_probability >= r){
             particles[i].accept_step();
             std::cout << "Pos: " << particles[i].r[0] << std::endl;
-            trial_function->get_probability(particles,size,alpha,beta); //Not sure if should be here
+            trial_function->get_probability(particles,size,alpha); //Not sure if should be here
         }
 
         delta_energi = delta_energi + trial_function->get_local_energy(1,1);
