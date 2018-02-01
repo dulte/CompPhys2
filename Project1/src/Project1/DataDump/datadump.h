@@ -5,7 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "particle.h"
+#include "../particle.h"
+#include "../Parameters/parameters.h"
 
 template<class T>
 class DataDump
@@ -32,7 +33,11 @@ public:
     void dump(T);
     void dump(T,double);
 
+    void dump_vector(std::vector<double>);
+
     void dump_all();
+
+    void dump_metadata(std::string m_location);
 
 
     std::vector<T> data;

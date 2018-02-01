@@ -35,7 +35,7 @@ void RandomSystem::propose_step(){
 
     for(int i = 0; i< size; i++){
         for(int j = 0; j<dimension; j++){
-            particles[i].next_r[j] = particles[i].r[j] + step_size*(2*(float)rand()/RAND_MAX - 1);
+            particles[i].next_r[j] = particles[i].r[j] + step_size*((float)rand()/RAND_MAX - 0.5);
         }
     }
 }
@@ -57,7 +57,6 @@ double RandomSystem::check_acceptance_and_return_energy(){
             std::cout << "Pos: " << particles[i].r[0] << std::endl;
             trial_function->get_probability(particles,size,alpha,beta); //Not sure if should be here
         }
-        //Remember to update delta_E
 
         delta_energi = delta_energi + trial_function->get_local_energy(1,1);
     }

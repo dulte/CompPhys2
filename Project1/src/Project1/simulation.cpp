@@ -20,6 +20,7 @@ void Simulation::initiate(int m_size, int m_alpha_min,int m_alpha_max,int m_alph
 void Simulation::run(int m_MCsteps){
 
     DataDump<double> dump("..//output//data.txt");
+    dump.dump_metadata("..//output//metadata.txt");
 
     double energy = 0;
     double energy_squared = 0;

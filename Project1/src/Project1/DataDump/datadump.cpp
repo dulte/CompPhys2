@@ -46,6 +46,31 @@ void DataDump<T>::dump_all(){
     }
 }
 
+template<class T>
+void DataDump<T>::dump_vector(std::vector<double> data){
+    int size = data.size();
+    for(int i = 0; i < size; i++){
+        outfile << data[i] << "\n";
+    }
+}
+
+template<class T>
+void DataDump<T>::dump_metadata(std::string m_location){
+    std::fstream metafile(m_location,std::fstream::out);
+    metafile << "MC_cycle " << Parameters::MC_cycles << "\n";
+
+    metafile << "Alpha_min " << Parameters::alpha_min << "\n";
+    metafile << "Alpha_max " << Parameters::alpha_max << "\n";
+    metafile << "Alpha_num " << Parameters::alpha_max << "\n";
+
+    metafile << "Beta " << Parameters::beta << "\n";
+    metafile << "Omega " << Parameters::omega << "\n";
+    metafile << "Omega_z " << Parameters::omega_z << "\n";
+
+    metafile.close();
+
+}
+
 template class DataDump<double>;
 template class DataDump<int>;
 template class DataDump<std::string>;

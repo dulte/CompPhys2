@@ -1,10 +1,10 @@
 #ifndef RANDOMSYSTEM_H
 #define RANDOMSYSTEM_H
 
-#include "system.h"
+#include "../system.h"
 #include <memory>
 #include <vector>
-#include "Parameters/parameters.h"
+#include "../Parameters/parameters.h"
 
 class RandomSystem : public System
 {
