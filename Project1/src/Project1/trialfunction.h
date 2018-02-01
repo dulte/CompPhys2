@@ -30,6 +30,7 @@ public:
     double f(std::vector<Particle> p);
     double f_id(std::vector<Particle> p);
 
+
 private:
     double function_value;
     double function_value_next_step;
@@ -38,8 +39,8 @@ private:
     double local_energy;
     double (TrialFunction::*f_func)(std::vector<Particle>);
     double beta;
+    double dx;
     double a;
-
 
 };
 

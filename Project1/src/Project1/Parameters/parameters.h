@@ -36,6 +36,10 @@ public:
     static double a;
     static bool a_set;
 
+    static double dx;
+    static bool dx_set;
+
+
 };
 
 #endif // PARAMETERS_H

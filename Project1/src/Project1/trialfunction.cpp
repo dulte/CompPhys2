@@ -6,7 +6,7 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
     potential = m_potential;
     beta=Parameters::beta;
     a=Parameters::a;
-    //double (TrialFunction::*f_func)(std::vector<Particle>)=NULL;
+    dx=Parameters::dx;
     if(Parameters::a != 0){
         TrialFunction::f_func = &TrialFunction::f;
     }
@@ -85,6 +85,7 @@ double TrialFunction::get_probability(std::vector<Particle> p,int size,double al
     calculate_probability();
     return function_probability;
 }
+
 
 double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int move, double alpha){
     double val = 1;

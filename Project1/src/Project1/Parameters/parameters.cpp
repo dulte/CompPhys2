@@ -66,6 +66,11 @@ void Parameters::read_parameters(std::string location){
             a_set=true;
         }
 
+        else if(name == "dx"){
+            dx=variable;
+            dx_set=true;
+        }
+
         else{
             std::cout << "Unknonw Variable found: " << name << std::endl;
             exit(EXIT_FAILURE);
@@ -108,6 +113,11 @@ void Parameters::read_parameters(std::string location){
         exit(EXIT_FAILURE);
     }
 
+    else if(!dx_set){
+        std::cout << "dx not set!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
 
 }
 bool Parameters::MC_cycles_set=false;
@@ -118,6 +128,7 @@ bool Parameters::beta_set=false;
 bool Parameters::omega_set=false;
 bool Parameters::omega_z_set=false;
 bool Parameters::a_set=false;
+bool Parameters::dx_set=false;
 
 int Parameters::text = 0;
 int Parameters::MC_cycles = 0;
@@ -128,6 +139,7 @@ double Parameters::beta = 0;
 double Parameters::omega = 0;
 double Parameters::omega_z = 0;
 double Parameters::a = 0;
+double Parameters::dx=0;
 
 
 
