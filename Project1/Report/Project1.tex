@@ -15,6 +15,7 @@
 \usepackage{hyperref}
 \usepackage{titling}
 \usepackage{marvosym }
+\usepackage{physics}
 \usepackage{subcaption}
 \usepackage[noabbrev]{cleveref}
 \usepackage{wasysym}
@@ -95,29 +96,165 @@ F=-2\alpha\sum_{i=1}^n(x_i+y_i+z_i)
 Now for the ugly part:\\
 For one particle, $\nabla_k$:
 \begin{equation}
-\nabla_k\Psi_T(\mathbf{r})=\nabla_k \prod_{i=1}^n\phi(\mathbf{r}_i)\exp\left(\sum_{i<j} u(r_{ij})\right)
+\nabla_k\Psi_{T} = \nabla_k\left(\Psi_T(\mathbf{r})=\nabla_k \prod_{i=1}^n\phi(\mathbf{r}_i)\exp\left(\sum_{i<j} u(r_{ij})\right)\right)
 \end{equation}
 Now apply the product rule. For the first term, all terms are unchanged except where $i=k$, giving the first term as:
 \begin{equation}
 \nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
 \end{equation}
 The second term is trickier. We can rewrite it as follows:
-\begin{equation}
-\left(\prod_l \phi(\mathbf{r_l})\right)\nabla_k \exp \left(\sum_{i=1}^n \sum_{i<j} u(r_{ij})\right)=\left(\prod_l \phi(\mathbf{r_l})\right) \exp \left(\sum_{i=1}^n \sum_{i<j} u(r_{ij})\right)\nabla_k\left(\sum_{i=1}^n \sum_{i<j} u(r_{ij})\right)
-\end{equation} 
-To get anything non-zero in the last term, we must have either $i=k$ or $j=k$. If $i=k$, then the term may be rewritten as:
-\begin{equation}
-\sum_{k<j}\nabla_k u(r_{kj})
-\end{equation}
-If $j=k$ then all terms such that $i>k$ will vanish, leaving us with:
-\begin{equation}
-\sum_{i>k} \nabla_k u(r_{ik})
-\end{equation}
-Putting this all together gives:
-\begin{equation}
-\nabla_k \left(\sum_{i=1}^n \sum_{i<j} u(r_{ij})\right)=\sum_{j\neq k} \nabla_k u(r_{ij})
-\end{equation}
-Finally, to get the second derivative:
-
+\begin{align}
+  \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{i < j}u(r_{ij})\right)\right]
+  = \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
+  \label{second term in first derivative}
+\end{align}
+This is calculated by using the chain-rule. To evaluate the innerfunction, we must look
+at \\$1 \le j \le k$, $j = k$ and $j \ge k$. Begining with $1\le  j \le k$,
+the first sum is from $1$ up the kth particle, meaning all terms differentiated before $k$ vanishes
+and we are left with $u(r_{ik})$, thus leaving with us with:
+\begin{align}
+  \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{k}\sum_{i = 1}^{k-1}u(r_{ij})\right)\right]
+  =
+  \prod_{i}\phi(\bold{r}_{i})\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+  \left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]
+\end{align}
+For $j = k$, we see that the first sum goes from and end up at kth particle, meaning
+this sum vanishes, secondly, the second sum is evaluated at $1 \le i \le k-1$, leaving with
+constants up to $k-1$, thus this term becomes $0$.
+\begin{align}
+\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
+= 0
+\end{align}
+For $j > k$,the first sum goes from $k+1\le j \le n$ and the second $1 \le i \le k$.  The second sum vanishes, because all constants are differentiated away
+except the last term $i = k$. This leaves us with:
+\begin{align}
+  \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = k+1}^{n}\sum_{i = 1}^{k}u(r_{ij})\right)\right]
+  = \prod_{i}\phi(\bold{r}_{i})
+  \exp{\left(\sum_{i<j}u(r_{ij})\right)}
+  \left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj})\right]
+\end{align}
+We can now write the second term as \ref{second term in first derivative}):
+\begin{align}
+\prod_{i}\phi(\bold{r}_{i})
+  \exp{\left(\sum_{i<j}u(r_{ij})\right)}
+  \left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj}) +
+  \left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]
+  \label{combined sum}
+\end{align}
+This can be rewritten to:
+  \begin{align}
+  \prod_{i}\phi(\bold{r}_{i})
+    \exp{\left(\sum_{i<j}u(r_{ij})\right)}
+    \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
+  \end{align}
+  FORKLAR denne delen litt. Thus the first derivative of the trial wavefunction
+  can be written as:
+  \begin{align}
+    \nabla_{k}\Psi_{T} =
+    \nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
+    + \prod_{i}\phi(\bold{r}_{i})
+      \exp{\left(\sum_{i<j}u(r_{ij})\right)}
+      \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
+  \end{align}
 \end{appendices}
+Lastly we will calculate the second derivative of the trial function, where we
+use the product rule and the chain rule. We will then obtain the following:
+\begin{align*}
+  \begin{split}
+  \nabla_{k}^2\Psi_{T} =
+  \underbrace{\nabla_k^2 \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)}_{\mathrm{I}} +\\
+   \underbrace{2\left(\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]
+  \exp{\left(\sum_{i<j}u(r_{ij})\right)}
+  \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]\right)}_{\mathrm{II}} +
+  \\
+   \underbrace{\prod_{i}\phi(\bold{r}_{i})
+    \exp{\left(\sum_{i<j}u(r_{ij})\right)}
+    \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]^2}_{\mathrm{III}} +
+    \\
+    \underbrace{\prod_{i}\phi(\bold{r}_{i})
+      \exp{\left(\sum_{i<j}u(r_{ij})\right)}
+      \left[\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj})\right]}_{\mathrm{IV}}
+  \end{split}
+\end{align*}
+Where the derivatives of the different parts are obtained from previous.
+We will now divide the second derivative by the trial wavefunction, and obtain:
+\begin{align}
+\frac{1}{\Psi_{T}}\nabla_{k}^2\Psi_{T} =
+\underbrace{\frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{\phi(\bold{r}_{k})})}}_{\mathrm{I}}
++ \underbrace{2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\sum_{j\neq k}\nabla_{k}u(r_{kj})}_{\mathrm{II}}
++ \underbrace{\left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2}_{\mathrm{III}} +
+\underbrace{\left[\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj})\right]}_{\mathrm{IV}}
+\end{align}
+We will now carry out the differentiation in term (II), (III) and (IV). Begining with the
+(II), by using the chain rule we can rewrite (II) as:
+\begin{align*}
+2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\sum_{j\neq k}\pdv{u(r_{kj})}{r_{kj}}\pdv{r_{kj}}{\bold{r}_{k}} =
+2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
+\end{align*}
+Where we have used $\nabla_{k} r_{kj} = (\bold{r}_{k} - \bold{r}_{j})/r_{kj}$.
+Looking at (III), we can write out the square into two factors. The second paranthese the summation index is replaced by a
+dummy index $i$. Thus will look as:
+\begin{align}
+  \left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2 = \left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)\left(\sum_{i\neq k}\nabla_{k} u(r_{ki})\right)
+\end{align}
+From (II) we found the derivative of this function. Thus this can be expressed as (combining also the double sum):
+\begin{align}
+  \left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2 =
+  \sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+  \left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
+\end{align}
+The last part (IV), we must use the chain rule and product rule together. We will obtain
+the following term:
+\begin{align}
+  \sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj}) =
+  \sum_{j \neq k}\nabla_{k}\left(
+  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)^2 u''(r_{kj}) + u'(r_{kj})\nabla_{k}
+  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)\right)
+\end{align}
+Note that this is a unit vector squared:
+\begin{align}
+  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)^2 = 1
+\end{align}
+and the last part is found by using the qoutient rule. This is the divergence to the vectors, since we are evaluating for
+specific particle k, and gradient to scalar (we must look for all combination of k particle):
+\begin{align}
+  \nabla_{k}
+  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+  = \frac{r_{kj}\left(\nabla_{k}\cdot\bold{r}_{k}-
+  \nabla_{k}\cdot\bold{r}_{j}\right) -
+  (\bold{r}_{k}-\bold{r}_{j})\nabla_{k}r_{kj}}{r_{kj}^2}
+\end{align}
+This simply becomes:
+\begin{align}
+  \nabla_{k}
+  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+  = \frac{3r_{kj}^2 - \bold{r}^2_{k} + 2(\bold{r}_{k}\cdot \bold{r}_{j}) - \bold{r}^2_{j}}{r_{kj}^3}
+\end{align}
+Note that $r_{kj} - \bold{r}^2_{k} + 2(\bold{r}_{k}\cdot \bold{r}_{j}) - \bold{r}^2_{j} = 0$, this leaves us with:
+\begin{align}
+  \nabla_{k}
+  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+  = \frac{2}{r_{kj}}
+\end{align}
+Thus expression (IV) can be expressed as:
+\begin{align}
+  \sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj}) =
+  \sum_{j \neq k}\nabla_{k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})
+\right)
+\end{align}
+Combining (I), (II), (III) and (IV), we we will get that the second derivative
+of the trial function is:
+\begin{align}
+  \begin{split}
+  \frac{1}{\Psi_{t}}\nabla_{k}^2\Psi_{T} =
+  \frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{\phi(\bold{r}_{k})})}
+  +
+  2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
+  +\\
+  \sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+  \left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
+  +
+  \sum_{j \neq k}\nabla_{k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
+\end{split}
+\end{align}
 \end{document}
