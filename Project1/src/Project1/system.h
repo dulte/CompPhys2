@@ -28,7 +28,7 @@ public:
     std::vector<Particle> particles;
     std::vector<double> phi_values;
     std::shared_ptr<TrialFunction> trial_function;
-    int dimension = 3;
+    int dimension = Parameters::dimension;
     double alpha;
     int size;
 };
