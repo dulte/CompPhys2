@@ -24,7 +24,7 @@ double HarmonicOscillator::get_inter_potential(std::vector<double> r_i, std::vec
         dist+=(r_i[k]-r_j[k])*(r_i[k]-r_j[k]);
     }
     dist=sqrt(dist);
-    if(dist<a){
+    if(dist<=a){
         return FLOAT_MAX;
     }
     else{

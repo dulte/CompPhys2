@@ -42,7 +42,7 @@ void RandomSystem::propose_step(){
 
 double RandomSystem::check_acceptance_and_return_energy(){
 
-    double delta_energi = 0;
+    double delta_energy = 0;
     double r = (float)rand()/RAND_MAX;
     double acceptance_probability = 0;
 
@@ -58,8 +58,8 @@ double RandomSystem::check_acceptance_and_return_energy(){
             trial_function->get_probability(particles,size,alpha); //Not sure if should be here
         }
 
-        delta_energi = delta_energi + trial_function->get_local_energy(1,1);
+        delta_energy = delta_energy + trial_function->get_local_energy(1,1);
     }
-    return delta_energi;
+    return delta_energy;
 }
 

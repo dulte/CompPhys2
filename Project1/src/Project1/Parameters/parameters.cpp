@@ -25,13 +25,16 @@ void Parameters::read_parameters(std::string location){
         if (name.front() == '#'){
             continue;
         }
-        else if(name == "text"){
-            text = variable;
-        }
         else if(name == "MC_cycles"){
             MC_cycles = variable;
             if(MC_cycles>0){
                 MC_cycles_set=true;
+            }
+        }
+        else if(name == "dimensions"){
+            dimension = variable;
+            if(dimension>0 && dimension<4){
+                dimension_set=true;
             }
         }
         else if(name == "alpha_min"){
@@ -77,8 +80,17 @@ void Parameters::read_parameters(std::string location){
         }
     }
 
+    if(!MC_cycles_set){
+        std::cout << "MC cycles not set!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
-    if(!alpha_max_set){
+    else if(!dimension){
+        std::cout << "Dimensions not set or invalid!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    else if(!alpha_max_set){
         std::cout << "Max alpha not set!" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -121,6 +133,7 @@ void Parameters::read_parameters(std::string location){
 
 }
 bool Parameters::MC_cycles_set=false;
+bool Parameters::dimension_set=false;
 bool Parameters::alpha_max_set=false;
 bool Parameters::alpha_min_set=false;
 bool Parameters::alpha_num_set=false;
@@ -130,8 +143,8 @@ bool Parameters::omega_z_set=false;
 bool Parameters::a_set=false;
 bool Parameters::dx_set=false;
 
-int Parameters::text = 0;
 int Parameters::MC_cycles = 0;
+int Parameters::dimension=0;
 double Parameters::alpha_min = 0;
 double Parameters::alpha_max = 0;
 int Parameters::alpha_num = 0;

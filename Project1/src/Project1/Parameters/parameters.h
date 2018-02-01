@@ -12,10 +12,11 @@ public:
     static Parameters* m_instance;
 
     static void read_parameters(std::string location);
-    static int text;
     static int MC_cycles;
     static bool MC_cycles_set;
 
+    static int dimension;
+    static bool dimension_set;
 
 
     static double alpha_max;
