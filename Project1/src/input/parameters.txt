@@ -6,3 +6,4 @@ alpha_num 300
 omega 0
 omega_z 0
 a 0
+dx 0.001

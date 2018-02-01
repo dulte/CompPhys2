@@ -6,6 +6,7 @@ HarmonicOscillator::HarmonicOscillator()
 {
     double omega = Parameters::omega;
     double omega_z = Parameters::omega_z;
+    double a = Parameters::a;
 }
 
 double HarmonicOscillator::get_external_potential(double m_r){
@@ -18,7 +19,17 @@ double HarmonicOscillator::get_external_potential(std::vector<double> r){
 }
 
 double HarmonicOscillator::get_inter_potential(std::vector<double> r_i, std::vector<double> r_j){
-    return 0.0;
+    double dist=0;
+    for(int k=0;k<3;k++){
+        dist+=(r_i[k]-r_j[k])*(r_i[k]-r_j[k]);
+    }
+    dist=sqrt(dist);
+    if(dist<a){
+        return FLOAT_MAX;
+    }
+    else{
+        return 0;
+    }
 }
 
 
