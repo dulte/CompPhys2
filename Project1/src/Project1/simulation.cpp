@@ -25,6 +25,7 @@ void Simulation::run(int m_MCsteps){
     double energy = 0;
     double energy_squared = 0;
     double delta_energy = 0;
+    double kinetic_energy = 0;
 
 
     for(double a = alpha_min; a <= alpha_max; a = a + alpha_step){
@@ -35,10 +36,11 @@ void Simulation::run(int m_MCsteps){
             system->propose_step();
 
             delta_energy = system->check_acceptance_and_return_energy();
+            kinetic_energy = system->trial_function->calculate_kinetic_energy(system->particles,a);
 
             energy = energy + delta_energy;
             energy_squared = energy_squared + delta_energy*delta_energy;
-            std::cout << "Energy " << delta_energy << std::endl;
+            std::cout << "Energy " << kinetic_energy << std::endl;
             dump.push_back(energy);
             position_dump.push_back(system->get_postions());
 

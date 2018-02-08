@@ -10,6 +10,9 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
     dimension = Parameters::dimension;
     N = Parameters::N;
     D = Parameters::D;
+
+    h = 0.00001;
+
     allocate_empty_arrays();
 
     if(Parameters::a != 0){
@@ -45,18 +48,24 @@ void TrialFunction::allocate_empty_arrays(){
     }
 }
 
-void TrialFunction::calculate_trial(std::vector<Particle> p, int size, double alpha)
+void TrialFunction::calculate_trial(std::vector<Particle> p, double alpha)
+{
+    function_value = return_trial(p,alpha);
+}
+
+double TrialFunction::return_trial(std::vector<Particle> p, double alpha)
 {
     double val = 1;
     std::vector<double> r;
 
-    for(int i = 0; i<size;i++){
+    for(int i = 0; i<N;i++){
         r = p[i].r;
         val *= phi(r,alpha)*(this->*f_func)(p);
     }
 
-    function_value = val;
+    return val;
 }
+
 
 void TrialFunction::calculate_probability(){
     function_probability = function_value*function_value;
@@ -238,7 +247,7 @@ double TrialFunction::greens_function_ratio_id(std::vector<Particle> p, double a
 
 
 double TrialFunction::get_probability(std::vector<Particle> p,int size,double alpha){
-    calculate_trial(p,size,alpha);
+    calculate_trial(p,alpha);
     calculate_probability();
     return function_probability;
 }
@@ -267,4 +276,35 @@ double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int
 double TrialFunction::get_local_energy(int n, int dim){
     calculate_local_energy(n,dim);
     return local_energy;
+}
+
+double TrialFunction::calculate_kinetic_energy(std::vector<Particle> p,double alpha){
+    double psi_minus = 0;
+    double psi_plus = 0;
+    double psi = function_value;
+
+    std::vector<Particle> p_min = p;
+
+    double kinetic_energy = 0;
+
+    for(int i = 0; i<N;i++){
+        for(int j = 0; j<dimension;j++){
+            p[i].r[j] += h;
+            p_min[i].r[j]-=h;
+
+            psi_minus = return_trial(p_min,alpha);
+            psi_plus = return_trial(p,alpha);
+
+            kinetic_energy += (psi_plus+psi_minus - 2*psi);
+
+            p[i].r[j] -= h;
+            p_min[i].r[j]+=h;
+
+
+        }
+
+    }
+
+
+    return -0.5*(psi_plus+psi_minus - 2*psi)/(h*h)/psi;
 }
