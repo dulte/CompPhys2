@@ -163,6 +163,7 @@ bool Parameters::omega_set=false;
 bool Parameters::omega_z_set=false;
 bool Parameters::a_set=false;
 bool Parameters::dx_set=false;
+bool Parameters::D_set=false;
 
 int Parameters::MC_cycles = 0;
 int Parameters::dimension=0;
@@ -175,6 +176,7 @@ double Parameters::omega = 0;
 double Parameters::omega_z = 0;
 double Parameters::a = 0;
 double Parameters::dx=0;
+double Parameters::D=0;
 
 
 

@@ -68,6 +68,11 @@ Abstract awesomeness
 \subsection{Outlook}
 
 \begin{appendices}
+\section{Finding the drift force}
+We wish to compute:
+\begin{equation}
+\vec{F}=2\frac{1}{\psi_T}\nabla \psi_T
+\end{equation}
 \section{Finding the analytic expression for the local energy}
 We wish to find:
 \begin{equation}
@@ -134,13 +139,13 @@ except the last term $i = k$. This leaves us with:
   \left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj})\right]
 \end{align}
 We can now write the second term as \ref{second term in first derivative}):
-\begin{align}
+\begin{align}\label{combined sum}
 \prod_{i}\phi(\bold{r}_{i})
   \exp{\left(\sum_{i<j}u(r_{ij})\right)}
   \left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj}) +
-  \left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]
-  \label{combined sum}
+  \left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]\right]
 \end{align}
+%CHECK THIS EQUATION
 This can be rewritten to:
   \begin{align}
   \prod_{i}\phi(\bold{r}_{i})

@@ -7,6 +7,10 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
     beta=Parameters::beta;
     a=Parameters::a;
     dx=Parameters::dx;
+    dimension = Parameters::dimension;
+    N = Parameters::N;
+    D = Parameters::D;
+
     if(Parameters::a != 0){
         TrialFunction::f_func = &TrialFunction::f;
     }
@@ -14,6 +18,24 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
         TrialFunction::f_func= &TrialFunction::f_id;
     }
 
+}
+
+void TrialFunction::allocate_empty_arrays(){
+
+    std::vector<double> empty_N;
+    for(int i=0; i<N;i++){
+       empty_N.push_back(0.0);
+    }
+    for(int i=0; i<N;i++){
+       distance_matrix.push_back(empty_N);
+       distance_matrix_new.push_back(empty_N);
+    }
+
+    for(int i=0;i<dimension;i++){
+        quantum_force_matrix.push_back(empty_N);
+        quantum_force_matrix_new.push_back(empty_N);
+
+    }
 }
 
 void TrialFunction::calculate_trial(std::vector<Particle> p, int size, double alpha)
@@ -76,6 +98,125 @@ double TrialFunction::f(std::vector<Particle> p)
 
 double TrialFunction::f_id(std::vector<Particle> p){
     return 1.0;
+}
+
+
+void TrialFunction::quantum_force(std::vector<Particle> p,double alpha)
+{
+    double dist=0;
+    double dist_new=0;
+    double grad_value=0;
+    for(int i=0; i<N; i++){
+        for(int j=0; j<i; j++){
+            for(int k=0; k<dimension;k++){
+                dist+=(p[i].r[k]-p[j].r[k])*(p[i].r[k]-p[j].r[k]);
+            }
+            dist=sqrt(dist);
+            distance_matrix[i][j]=dist;
+            distance_matrix[j][i]=dist;
+            dist=0;
+        }
+    }
+
+    for(int i=0; i<N;i++){
+        for(int j=0; j<dimension;j++){
+            for(int k=0; k<N;k++){
+                if(k !=i){
+                    grad_value+=a*(p[i].r[j]-p[k].r[j])/(distance_matrix[i][k]*distance_matrix[i][k]*distance_matrix[i][k]);
+                 }
+            }
+            if(j==2){
+               quantum_force_matrix[i][j]=-4.0*alpha*beta*p[i].r[j]+grad_value;
+
+            }
+            else{
+                quantum_force_matrix[i][j]=-4.0*alpha*p[i].r[j]+grad_value;
+            }
+            grad_value=0;
+        }
+    }
+}
+
+    void TrialFunction::quantum_force_new(std::vector<Particle> p, double alpha, int chosen_particle)
+    {
+        double dist=0;
+        double dist_new=0;
+        double grad_value=0;
+        std::vector<double> r;
+        for(int i=0; i<N; i++){
+            if(i == chosen_particle){
+                r=p[i].next_r;
+            }
+            else{
+                r=p[i].r;
+            }
+            for(int j=0; j<i; j++){
+                for(int k=0; k<dimension;k++){
+                    dist+=(r[k]-p[j].r[k])*(r[k]-p[j].r[k]);
+                }
+                dist=sqrt(dist);
+                distance_matrix_new[i][j]=dist;
+                distance_matrix_new[j][i]=dist;
+                dist=0;
+            }
+        }
+
+        for(int i=0; i<N;i++){
+            if(i == chosen_particle){
+                r=p[i].next_r;
+            }
+            else{
+                r=p[i].r;
+            }
+            for(int j=0; j<dimension;j++){
+                for(int k=0; k<N;k++){
+                    if(k !=i){
+                        grad_value+=a*(r[j]-p[k].r[j])/(distance_matrix_new[i][k]*distance_matrix_new[i][k]*distance_matrix_new[i][k]);
+                     }
+                }
+                if(j==2){
+                   quantum_force_matrix_new[i][j]=-4.0*alpha*beta*r[j]+grad_value;
+
+                }
+                else{
+                    quantum_force_matrix_new[i][j]=-4.0*alpha*r[j]+grad_value;
+                }
+                grad_value=0;
+            }
+        }
+    }
+
+double TrialFunction::greens_function(std::vector<Particle> p, double alpha,int chosen_particle)
+{
+    double value=0;
+    double value_new=0;
+    double exponent = 0;
+    double exponent_new = 0;
+    double exponent_factor=D*dx;
+
+    quantum_force(p, alpha);
+    quantum_force_new(p, alpha,chosen_particle);
+    std::vector<double> r;
+    for(int i=0; i<N; i++){
+        if(i==chosen_particle){
+            r=p[i].next_r;
+         }
+         else{
+             r=p[i].r;
+         }
+         for(int k=0;k<dimension;k++){
+                exponent+=((p[i].r[k]-r[k])-exponent_factor*quantum_force_matrix[i][k])*((p[i].r[k]-r[k])-exponent_factor*quantum_force_matrix[i][k]);
+                exponent_new+=((r[k]-p[i].r[k])-exponent_factor*quantum_force_matrix_new[i][k])*((r[k]-p[i].r[k])-exponent_factor*quantum_force_matrix_new[i][k]);
+
+            }
+
+        exponent=exponent/(4.0*exponent_factor);
+        exponent_new=exponent_new/(4.0*exponent_factor);
+        value+=exp(-exponent);
+        value_new+=exp(-exponent_new);
+        }
+    return value_new/value;
+
 }
 
 

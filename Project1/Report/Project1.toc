@@ -6,4 +6,5 @@
 \contentsline {subsection}{\numberline {5.1}Conclusion}{1}{subsection.5.1}
 \contentsline {subsection}{\numberline {5.2}Outlook}{1}{subsection.5.2}
 \contentsline {section}{Appendices}{1}{section*.2}
-\contentsline {section}{\numberline {A}Finding the analytic expression for the local energy}{1}{Appendix.a.A}
+\contentsline {section}{\numberline {A}Finding the drift force}{1}{Appendix.a.A}
+\contentsline {section}{\numberline {B}Finding the analytic expression for the local energy}{2}{Appendix.a.B}

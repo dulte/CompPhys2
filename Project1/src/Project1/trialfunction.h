@@ -29,8 +29,10 @@ public:
 
     double f(std::vector<Particle> p);
     double f_id(std::vector<Particle> p);
-
-
+    void quantum_force(std::vector<Particle> p, double alpha);
+    double greens_function(std::vector<Particle> p, double alpha, int chosen_particle);
+    void quantum_force_new(std::vector<Particle> p, double alpha, int chosen_particle);
+    void allocate_empty_arrays();
 private:
     double function_value;
     double function_value_next_step;
@@ -41,6 +43,14 @@ private:
     double beta;
     double dx;
     double a;
+    int dimension;
+    int N;
+    double D;
+    double greens_prefactor;
+    std::vector<std::vector<double>> quantum_force_matrix;
+    std::vector<std::vector<double>> quantum_force_matrix_new;
+    std::vector<std::vector<double>> distance_matrix;
+    std::vector<std::vector<double>> distance_matrix_new;
 
 };
 
