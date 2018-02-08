@@ -10,12 +10,19 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
     dimension = Parameters::dimension;
     N = Parameters::N;
     D = Parameters::D;
+    allocate_empty_arrays();
 
     if(Parameters::a != 0){
         TrialFunction::f_func = &TrialFunction::f;
     }
     else{
         TrialFunction::f_func= &TrialFunction::f_id;
+    }
+    if(Parameters::D != 0){
+        TrialFunction::greens_function_ratio_func = &TrialFunction::greens_function_ratio;
+    }
+    else{
+        TrialFunction::greens_function_ratio_func= &TrialFunction::greens_function_ratio_id;
     }
 
 }
@@ -122,7 +129,9 @@ void TrialFunction::quantum_force(std::vector<Particle> p,double alpha)
         for(int j=0; j<dimension;j++){
             for(int k=0; k<N;k++){
                 if(k !=i){
-                    grad_value+=a*(p[i].r[j]-p[k].r[j])/(distance_matrix[i][k]*distance_matrix[i][k]*distance_matrix[i][k]);
+                    if(distance_matrix[i][k]>a){
+                        grad_value+=a*(p[i].r[j]-p[k].r[j])/(distance_matrix[i][k]*distance_matrix[i][k]*distance_matrix[i][k]);
+                    }
                  }
             }
             if(j==2){
@@ -171,8 +180,10 @@ void TrialFunction::quantum_force(std::vector<Particle> p,double alpha)
             for(int j=0; j<dimension;j++){
                 for(int k=0; k<N;k++){
                     if(k !=i){
-                        grad_value+=a*(r[j]-p[k].r[j])/(distance_matrix_new[i][k]*distance_matrix_new[i][k]*distance_matrix_new[i][k]);
-                     }
+                        if(distance_matrix[i][k]>a){
+                            grad_value+=a*(r[j]-p[k].r[j])/(distance_matrix_new[i][k]*distance_matrix_new[i][k]*distance_matrix_new[i][k]);
+                        }
+                   }
                 }
                 if(j==2){
                    quantum_force_matrix_new[i][j]=-4.0*alpha*beta*r[j]+grad_value;
@@ -186,7 +197,7 @@ void TrialFunction::quantum_force(std::vector<Particle> p,double alpha)
         }
     }
 
-double TrialFunction::greens_function(std::vector<Particle> p, double alpha,int chosen_particle)
+double TrialFunction::greens_function_ratio(std::vector<Particle> p, double alpha,int chosen_particle)
 {
     double value=0;
     double value_new=0;
@@ -219,6 +230,11 @@ double TrialFunction::greens_function(std::vector<Particle> p, double alpha,int 
 
 }
 
+double TrialFunction::greens_function_ratio_id(std::vector<Particle> p, double alpha, int chosen_particle)
+{
+    return 1.0;
+}
+
 
 
 double TrialFunction::get_probability(std::vector<Particle> p,int size,double alpha){
@@ -243,7 +259,7 @@ double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int
         val *= phi(r,alpha); //Can be optimized since this is a product of exp
 
     }
-    return val*val/function_probability;
+    return (this->*greens_function_ratio_func)(p, alpha, move)*val*val/function_probability;
 }
 
 
