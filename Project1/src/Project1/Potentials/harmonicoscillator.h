@@ -17,6 +17,7 @@ public:
     double get_inter_potential(std::vector<double>,std::vector<double>);
     double omega;
     double omega_z;
+    double dimension;
     double a;
 
 private:

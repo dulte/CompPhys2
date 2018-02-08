@@ -286,8 +286,10 @@ double TrialFunction::calculate_kinetic_energy(std::vector<Particle> p,double al
     std::vector<Particle> p_min = p;
 
     double kinetic_energy = 0;
+    double potential_energy =0;
 
     for(int i = 0; i<N;i++){
+        potential_energy+=potential->get_external_potential(p[i].r);
         for(int j = 0; j<dimension;j++){
             p[i].r[j] += h;
             p_min[i].r[j]-=h;
@@ -306,5 +308,6 @@ double TrialFunction::calculate_kinetic_energy(std::vector<Particle> p,double al
     }
 
 
-    return -0.5*(psi_plus+psi_minus - 2*psi)/(h*h)/psi;
+
+    return (potential_energy-0.5*(kinetic_energy)/(h*h))/psi;
 }
