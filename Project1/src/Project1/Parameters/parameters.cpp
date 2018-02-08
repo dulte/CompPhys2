@@ -81,6 +81,10 @@ void Parameters::read_parameters(std::string location){
             dx=variable;
             dx_set=true;
         }
+        else if(name == "D"){
+            D=variable;
+            D_set=true;
+        }
 
         else{
             std::cout << "Unknonw Variable found: " << name << std::endl;
@@ -139,6 +143,10 @@ void Parameters::read_parameters(std::string location){
 
     else if(!dx_set){
         std::cout << "dx not set!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    else if(!D_set){
+        std::cout << "D not set!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
