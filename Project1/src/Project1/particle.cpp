@@ -1,6 +1,6 @@
 #include "particle.h"
 
-Particle::Particle(std::vector<double>& m_r,double m_alpha,double m_beta)
+Particle::Particle(std::vector<double> m_r,double m_alpha,double m_beta)
 {
 
     r = m_r;

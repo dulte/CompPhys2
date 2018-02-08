@@ -20,7 +20,10 @@ void RandomSystem::grid_setup(int m_size, double start_alpha)
     alpha = start_alpha;
     size = Parameters::N;
     std::vector<double> r;
-    r.push_back(0.5);
+    for(int i = 0; i<dimension; i++){
+        r.push_back(0.5);
+    }
+
 
 
     for(int i = 0; i<size; i++){

@@ -4,10 +4,10 @@
 
 HarmonicOscillator::HarmonicOscillator()
 {
-    double omega = Parameters::omega;
-    double omega_z = Parameters::omega_z;
-    double dimension = Parameters::dimension;
-    double a = Parameters::a;
+    omega = Parameters::omega;
+    omega_z = Parameters::omega_z;
+    dimension = Parameters::dimension;
+    a = Parameters::a;
 }
 
 double HarmonicOscillator::get_external_potential(double m_r){
@@ -16,12 +16,15 @@ double HarmonicOscillator::get_external_potential(double m_r){
 
 double HarmonicOscillator::get_external_potential(std::vector<double> r){
     double potential=0;
+
     for(int i=0;i<dimension;i++){
+
         if(i==2){
-            potential+=omega_z*omega_z*(r.at(2)*r.at(2));
+            potential+=omega_z*omega_z*(r[i]*r[i]);
         }
         else{
-            potential+=omega*omega*(r.at(0)*r.at(0));
+            potential+=omega*omega*(r[i]*r[i]);
+
         }
     }
     return 0.5*potential;

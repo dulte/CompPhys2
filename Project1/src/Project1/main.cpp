@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     Simulation simulation = Simulation(pSystem);
     simulation.initiate(1,0,1,1);
 
-    simulation.run(1);
+    simulation.run(Parameters::MC_cycles);
 
     cout << "Done!" << endl;
 

@@ -9,7 +9,7 @@
 class Particle
 {
 public:
-    Particle(std::vector<double>& m_r,double m_alpha,double m_beta);
+    Particle(std::vector<double> m_r, double m_alpha, double m_beta);
 
     void accept_step();
     void update_alpha(double);

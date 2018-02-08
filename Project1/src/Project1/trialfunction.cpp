@@ -41,7 +41,7 @@ void TrialFunction::allocate_empty_arrays(){
        distance_matrix_new.push_back(empty_N);
     }
 
-    for(int i=0;i<dimension;i++){
+    for(int i=0;i<N;i++){
         quantum_force_matrix.push_back(empty_N);
         quantum_force_matrix_new.push_back(empty_N);
 
@@ -296,6 +296,8 @@ double TrialFunction::calculate_kinetic_energy(std::vector<Particle> p,double al
 
             psi_minus = return_trial(p_min,alpha);
             psi_plus = return_trial(p,alpha);
+            //std::cout << "Pos Energy: " << j << " " << p[i].r[j] << std::endl;
+            //std::cout << (psi_plus+psi_minus - 2*psi) << std::endl;
 
             kinetic_energy += (psi_plus+psi_minus - 2*psi);
 
@@ -309,5 +311,5 @@ double TrialFunction::calculate_kinetic_energy(std::vector<Particle> p,double al
 
 
 
-    return (potential_energy-0.5*(kinetic_energy)/(h*h))/psi;
+    return (potential_energy-0.5*(kinetic_energy/(h*h)))/psi;
 }
