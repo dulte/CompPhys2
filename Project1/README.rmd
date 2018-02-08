@@ -1,1 +1,8 @@
-Hei
+# Project 1
+
+Solving Interacting Quantum System in Harmonic Oscillator Potential.
+
+## Content
+### 1: [Src](https://github.com/dulte/FYS4411/tree/master/Project1/src)
+This part contains the sorce code for the solver. 
+
