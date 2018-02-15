@@ -1,6 +1,6 @@
 #include "particle.h"
 
-Particle::Particle(std::vector<double> m_r,double m_alpha,double m_beta)
+Particle::Particle(std::vector<double> m_r,double m_alpha)
 {
 
     r = m_r;
@@ -10,8 +10,7 @@ Particle::Particle(std::vector<double> m_r,double m_alpha,double m_beta)
     r_squared = r_norm*r_norm;
 
     alpha = m_alpha;
-    beta = m_beta;
-
+    beta = Parameters::beta;
 }
 
 void Particle::accept_step(){

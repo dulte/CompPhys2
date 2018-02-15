@@ -11,7 +11,7 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
     N = Parameters::N;
     D = Parameters::D;
 
-    h = 0.00001;
+    h = 1e-8;
 
     allocate_empty_arrays();
 
@@ -27,6 +27,7 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
     else{
         TrialFunction::greens_function_ratio_func= &TrialFunction::greens_function_ratio_id;
     }
+
 
 }
 
@@ -256,6 +257,7 @@ double TrialFunction::get_probability(std::vector<Particle> p,int size,double al
 double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int move, double alpha){
     double val = 1;
     std::vector<double> r;
+    double probability = get_probability(p,size,alpha);
 
     for(int i = 0; i<size;i++){
         if(i == move){
@@ -268,7 +270,7 @@ double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int
         val *= phi(r,alpha); //Can be optimized since this is a product of exp
 
     }
-    return (this->*greens_function_ratio_func)(p, alpha, move)*val*val/function_probability;
+    return (this->*greens_function_ratio_func)(p, alpha, move)*val*val/probability;
 }
 
 
@@ -281,35 +283,33 @@ double TrialFunction::get_local_energy(int n, int dim){
 double TrialFunction::calculate_kinetic_energy(std::vector<Particle> p,double alpha){
     double psi_minus = 0;
     double psi_plus = 0;
-    double psi = function_value;
+
+    double psi = return_trial(p,alpha);
 
     std::vector<Particle> p_min = p;
 
     double kinetic_energy = 0;
-    double potential_energy =0;
+    double potential_energy = 0;
 
     for(int i = 0; i<N;i++){
         potential_energy+=potential->get_external_potential(p[i].r);
         for(int j = 0; j<dimension;j++){
             p[i].r[j] += h;
-            p_min[i].r[j]-=h;
+            p_min[i].r[j]-= h;
 
             psi_minus = return_trial(p_min,alpha);
             psi_plus = return_trial(p,alpha);
-            //std::cout << "Pos Energy: " << j << " " << p[i].r[j] << std::endl;
-            //std::cout << (psi_plus+psi_minus - 2*psi) << std::endl;
 
-            kinetic_energy += (psi_plus+psi_minus - 2*psi);
+            kinetic_energy -= (psi_plus+psi_minus - 2*psi);
+
 
             p[i].r[j] -= h;
-            p_min[i].r[j]+=h;
+            p_min[i].r[j]+= h;
 
 
         }
 
     }
 
-
-
-    return (potential_energy-0.5*(kinetic_energy/(h*h)))/psi;
+    return (potential_energy+0.5*(kinetic_energy/(h*h))/psi);
 }

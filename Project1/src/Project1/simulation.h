@@ -16,7 +16,7 @@ class Simulation
 {
 public:
     Simulation(std::shared_ptr<System> m_system);
-    void initiate(int,int,int,int);
+    void initiate();
     void run(int);
 
 private:

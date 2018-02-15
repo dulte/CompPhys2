@@ -1,11 +1,13 @@
 #include "randomsystem.h"
 #include <iostream>
 #include <math.h>
+#include <time.h>
 
 RandomSystem::RandomSystem(std::shared_ptr<TrialFunction> m_trial)
 {
-    dimension = 1;
+    dimension = Parameters::dimension;
     trial_function = m_trial;//TrialFunction();
+    srand (time(NULL));
 
     std::cout << "MC_cylces: " << Parameters::MC_cycles << std::endl;
 }
@@ -21,14 +23,14 @@ void RandomSystem::grid_setup(int m_size, double start_alpha)
     size = Parameters::N;
     std::vector<double> r;
     for(int i = 0; i<dimension; i++){
-        r.push_back(0.5);
+        r.push_back(0.0);
     }
 
 
 
     for(int i = 0; i<size; i++){
         phi_values.push_back(trial_function->phi(r,start_alpha));
-        particles.push_back(Particle(r,start_alpha,1));
+        particles.push_back(Particle(r,start_alpha));
     }
 
 }
@@ -46,7 +48,7 @@ void RandomSystem::propose_step(){
 double RandomSystem::check_acceptance_and_return_energy(){
 
     double delta_energy = 0;
-    double r = (float)rand()/RAND_MAX;
+    double r;
     double acceptance_probability = 0;
 
 
@@ -57,11 +59,11 @@ double RandomSystem::check_acceptance_and_return_energy(){
         acceptance_probability = trial_function->get_probability_ratio(particles,size,i,alpha);
         if(acceptance_probability >= r){
             particles[i].accept_step();
-            std::cout << "Pos: " << particles[i].r[0] << std::endl;
+            //std::cout << "Pos: " << particles[i].r[0] << std::endl;
             trial_function->get_probability(particles,size,alpha); //Not sure if should be here
         }
 
-        delta_energy = delta_energy + trial_function->get_local_energy(1,1);
+        delta_energy += trial_function->get_local_energy(1,1);
     }
     return delta_energy;
 }

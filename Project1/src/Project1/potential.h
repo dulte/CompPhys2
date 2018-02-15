@@ -3,6 +3,7 @@
 
 #include "Vec3/vec3.h"
 #include <vector>
+#include <iostream>
 
 class Potential
 {

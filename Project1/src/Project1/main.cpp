@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
 
     Simulation simulation = Simulation(pSystem);
-    simulation.initiate(1,0,1,1);
+    simulation.initiate();
 
     simulation.run(Parameters::MC_cycles);
 
