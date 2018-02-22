@@ -9,7 +9,7 @@
 class RandomSystem : public System
 {
 public:
-    RandomSystem(std::shared_ptr<TrialFunction> m_trial);
+    RandomSystem(TrialFunction *m_trial);
 
     void update_alpha(double) override;
     void grid_setup(int,double) override;

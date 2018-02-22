@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-Simulation::Simulation(std::shared_ptr<System> m_system)
+Simulation::Simulation(System *m_system)
 {
     system = m_system;
 }
@@ -33,9 +33,8 @@ void Simulation::run(int m_MCsteps){
         system->update_alpha(a);
         for (int i = 0;i<m_MCsteps;i++){
             system->propose_step();
-
             delta_energy = system->check_acceptance_and_return_energy();
-            kinetic_energy = system->trial_function->calculate_kinetic_energy(system->particles,a);
+            //kinetic_energy = system->trial_function->calculate_kinetic_energy(system->particles,a);
             energy += kinetic_energy;
         }
 

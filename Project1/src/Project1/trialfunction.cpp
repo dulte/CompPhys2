@@ -1,7 +1,7 @@
 #include "trialfunction.h"
 #include <iostream>
 
-TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
+TrialFunction::TrialFunction(HarmonicOscillator *m_potential)
 {
     potential = m_potential;
     beta=Parameters::beta;
@@ -280,13 +280,13 @@ double TrialFunction::get_local_energy(int n, int dim){
     return local_energy;
 }
 
-double TrialFunction::calculate_kinetic_energy(std::vector<Particle> p,double alpha){
+double TrialFunction::calculate_kinetic_energy(std::vector<Particle> &p,double alpha){
     double psi_minus = 0;
     double psi_plus = 0;
 
     double psi = return_trial(p,alpha);
 
-    std::vector<Particle> p_min = p;
+    p_min = p;
 
     double kinetic_energy = 0;
     double potential_energy = 0;

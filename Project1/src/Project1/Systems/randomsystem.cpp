@@ -3,7 +3,7 @@
 #include <math.h>
 #include <time.h>
 
-RandomSystem::RandomSystem(std::shared_ptr<TrialFunction> m_trial)
+RandomSystem::RandomSystem(TrialFunction *m_trial)
 {
     dimension = Parameters::dimension;
     step_size = Parameters::dx;
@@ -60,7 +60,6 @@ double RandomSystem::check_acceptance_and_return_energy(){
         acceptance_probability = trial_function->get_probability_ratio(particles,size,i,alpha);
         if(acceptance_probability >= r){
             particles[i].accept_step();
-            //std::cout << "Pos: " << particles[i].r[0] << std::endl;
             trial_function->get_probability(particles,size,alpha); //Not sure if should be here
         }
 

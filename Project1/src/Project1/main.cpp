@@ -20,16 +20,16 @@ int main(int argc, char *argv[])
     cout << Parameters::beta << endl;
 
     //Place all systems, potentials and trialfunctions here
-    HarmonicOscillator potential = HarmonicOscillator();
-    TrialFunction trial_function = TrialFunction(std::make_shared<HarmonicOscillator>(potential));
-    RandomSystem system = RandomSystem(std::make_shared<TrialFunction>(trial_function));
-    std::shared_ptr<System> pSystem = std::make_shared<RandomSystem>(system);
+    std::unique_ptr<HarmonicOscillator> potential = std::make_unique<HarmonicOscillator>();
+    std::unique_ptr<TrialFunction> trial_function = std::make_unique<TrialFunction>(potential.get());
+    std::unique_ptr<RandomSystem> system = std::make_unique<RandomSystem>(trial_function.get());
+    //std::shared_ptr<System*> pSystem = std::make_shared<RandomSystem*>(system);
 
 
-    Simulation simulation = Simulation(pSystem);
-    simulation.initiate();
+    std::shared_ptr<Simulation> simulation = std::make_shared<Simulation>(system.get());
+    simulation->initiate();
 
-    simulation.run(Parameters::MC_cycles);
+    simulation->run(Parameters::MC_cycles);
 
     cout << "Done!" << endl;
 
