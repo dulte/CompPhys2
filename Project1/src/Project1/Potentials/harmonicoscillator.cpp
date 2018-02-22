@@ -1,5 +1,5 @@
 #include "harmonicoscillator.h"
-#include "potential.h"
+#include "../potential.h"
 #include "../Parameters/parameters.h"
 
 HarmonicOscillator::HarmonicOscillator()

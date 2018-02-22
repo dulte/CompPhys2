@@ -56,15 +56,15 @@ void TrialFunction::calculate_trial(std::vector<Particle> &p, double alpha)
 
 double TrialFunction::return_trial(std::vector<Particle> &p, double alpha)
 {
-    double val = 1;
+    double val = 0;
     //std::vector<double> r;
 
     for(int i = 0; i<N;i++){
        // r = p[i].r;
-        val *= phi(p[i].r,alpha)*(this->*f_func)(p);
+        val += phi(p[i].r,alpha)*(this->*f_func)(p);
     }
 
-    return val;
+    return exp(val);
 }
 
 
@@ -90,7 +90,7 @@ double TrialFunction::phi(std::vector<double> &r, double alpha)
         }
     }
 
-    return exp(-alpha*val);
+    return -alpha*val;
 }
 
 double TrialFunction::f(std::vector<Particle> &p)
@@ -255,7 +255,7 @@ double TrialFunction::get_probability(std::vector<Particle> &p,int size,double a
 
 
 double TrialFunction::get_probability_ratio(std::vector<Particle> &p,int size,int move, double alpha){
-    double val = 1;
+    double val = 0;
     std::vector<double> r;
     double probability = get_probability(p,size,alpha);
 
@@ -267,10 +267,10 @@ double TrialFunction::get_probability_ratio(std::vector<Particle> &p,int size,in
             r = p[i].r;
         }
 
-        val *= phi(r,alpha); //Can be optimized since this is a product of exp
+        val += phi(r,alpha); //Can be optimized since this is a product of exp
 
     }
-    return (this->*greens_function_ratio_func)(p, alpha, move)*val*val/probability;
+    return exp(val+val)/probability;//*(this->*greens_function_ratio_func)(p, alpha, move);
 }
 
 
