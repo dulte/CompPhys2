@@ -6,6 +6,7 @@
 RandomSystem::RandomSystem(std::shared_ptr<TrialFunction> m_trial)
 {
     dimension = Parameters::dimension;
+    step_size = Parameters::dx;
     trial_function = m_trial;//TrialFunction();
     srand (time(NULL));
 
