@@ -13,7 +13,7 @@
 class TrialFunction
 {
 public:
-    TrialFunction(std::shared_ptr<Potential>);
+    TrialFunction(HarmonicOscillator *);
     void calculate_trial(std::vector<Particle> &p,double);
     void calculate_probability();
     void calculate_local_energy(int,int);
@@ -25,7 +25,7 @@ public:
     double get_probability_ratio(std::vector<Particle> &p, int, int move, double alpha);
     double get_local_energy(int,int);
 
-    std::shared_ptr<Potential> potential;
+    HarmonicOscillator *potential;
 
     double f(std::vector<Particle> &p);
     double f_id(std::vector<Particle> &p);
@@ -34,7 +34,7 @@ public:
     double greens_function_ratio_id(std::vector<Particle> &p, double alpha, int chosen_particle);
     void quantum_force_new(std::vector<Particle> &p, double alpha, int chosen_particle);
     void allocate_empty_arrays();
-    double calculate_kinetic_energy(std::vector<Particle> p, double alpha);
+    double calculate_kinetic_energy(std::vector<Particle> &p, double alpha);
 
 
     double return_trial(std::vector<Particle> &p, double alpha);
@@ -53,6 +53,7 @@ private:
     int N;
     double D;
     double h;
+    std::vector<Particle> p_min;
 
     std::vector<std::vector<double>> quantum_force_matrix;
     std::vector<std::vector<double>> quantum_force_matrix_new;

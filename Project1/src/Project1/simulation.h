@@ -15,7 +15,7 @@
 class Simulation
 {
 public:
-    Simulation(std::shared_ptr<System> m_system);
+    Simulation(System *m_system);
     void initiate();
     void run(int);
 
@@ -25,9 +25,9 @@ private:
     double alpha_max;
     double alpha_step;
     int size;
-    std::shared_ptr<System> system;
-    std::shared_ptr<Potential> potential;
-    std::shared_ptr<TrialFunction> trial_function;
+    System *system;
+    Potential *potential;
+    TrialFunction *trial_function;
 
     //DataDump<double> dump;
 };
