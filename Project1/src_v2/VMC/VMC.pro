@@ -3,7 +3,11 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    DataDump/datadump.cpp \
+    Parameters/parameters.cpp \
+    simulation.cpp \
+    system.cpp
 
 HEADERS += \
     Eigen/src/Cholesky/LDLT.h \
@@ -305,7 +309,11 @@ HEADERS += \
     Eigen/StdVector \
     Eigen/SuperLUSupport \
     Eigen/SVD \
-    Eigen/UmfPackSupport
+    Eigen/UmfPackSupport \
+    DataDump/datadump.h \
+    Parameters/parameters.h \
+    simulation.h \
+    system.h
 
 DISTFILES += \
     Eigen/CMakeLists.txt

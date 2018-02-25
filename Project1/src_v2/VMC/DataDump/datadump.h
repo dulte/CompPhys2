@@ -5,7 +5,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "../particle.h"
 #include "../Parameters/parameters.h"
 
 template<class T>
