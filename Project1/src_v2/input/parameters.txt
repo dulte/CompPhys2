@@ -1,0 +1,12 @@
+MC_cycles 1000000
+beta 10
+alpha_min 0.4
+alpha_max 0.6
+alpha_num 2
+omega 1
+omega_z 1
+a 0
+dx 0.001
+dimensions 1
+N 10
+D 0

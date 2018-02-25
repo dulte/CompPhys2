@@ -5,6 +5,7 @@
 #include <random>
 #include <time.h>
 #include <math.h>
+#include <iostream>
 
 class System
 {
@@ -32,9 +33,9 @@ private:
     const double dx = Parameters::dx;
 
     //Vector and double used for holding temp values
-    Eigen::VectorXd temp_r;
-    double temp_value;
-    double temp_value2;
+    //Eigen::VectorXd temp_r;
+    //double temp_value;
+    //double temp_value2;
 
     //Functions for calulations involving wavefunction
     double alpha;
