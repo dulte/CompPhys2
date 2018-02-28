@@ -9,6 +9,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+
+    Eigen::initParallel();
     //Reads the parameter file
     Parameters::read_parameters("../input/parameters.txt");
 

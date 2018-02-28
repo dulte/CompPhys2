@@ -50,6 +50,7 @@ void System::make_move_and_update(const int move){
     double temp_value = 0;
     //Updates the distance matrix after move
 
+    /*
     for(int i = 0;i<N;i++){
         if(i != move){
             temp_value = (r->col(move)- r->col(i)).norm();
@@ -57,15 +58,16 @@ void System::make_move_and_update(const int move){
             next_distance(move,i) = temp_value;
         }
     }
+    */
 
 }
 
-double System::check_acceptance_and_return_energy(){
+double System::check_acceptance_and_return_energy(int move){
     //Random value [0,1]
     double temp_value = (double)rand()/RAND_MAX;
 
     //If r is less than the acceptance prob, r is updated to the new r
-    if(temp_value <= get_probability_ratio()){
+    if(temp_value <= get_probability_ratio(move)){
 
         r = next_r;
         //update();
@@ -90,15 +92,11 @@ double System::phi_exponant(const Eigen::VectorXd &r){
     return -alpha*temp_value;
 }
 
-double System::get_probability_ratio(){
-    double temp_value = get_probability(); //Stores the probability before move
-    double temp_value2 = 0; //Stores the probability of move
-    Eigen::VectorXd temp_r;
-    for(int i = 0; i<N;i++){
-        temp_r = next_r->col(i);
-        temp_value2 += phi_exponant(temp_r);
-    }
-    return exp(2*temp_value2)/temp_value;
+double System::get_probability_ratio(int move){
+    double temp_value = phi_exponant(r->col(move)); //Stores the probability before move
+    double temp_value2 = phi_exponant(next_r->col(move)); //Stores the probability of move
+
+    return exp(2*(temp_value2-temp_value));
 }
 
 double System::get_wavefunction(){

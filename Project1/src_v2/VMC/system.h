@@ -23,7 +23,7 @@ public:
     void make_grid(double m_alpha);
     void make_move_and_update(int move);
     void update();
-    double check_acceptance_and_return_energy();
+    double check_acceptance_and_return_energy(int);
 
 private:
     //Saves all the variables from the parameters to save time
@@ -47,7 +47,7 @@ private:
 
     double phi_exponant(const Eigen::VectorXd &r);
     double get_wavefunction();
-    double get_probability_ratio();
+    double get_probability_ratio(int move);
     double get_probability();
     double get_local_energy();
 

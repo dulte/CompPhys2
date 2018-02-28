@@ -1,4 +1,4 @@
-MC_cycles 100000
+MC_cycles 1000000
 beta 10
 alpha_min 0.4
 alpha_max 0.6
