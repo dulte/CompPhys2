@@ -13,39 +13,39 @@
 class TrialFunction
 {
 public:
-    TrialFunction(std::shared_ptr<Potential>);
-    void calculate_trial(std::vector<Particle> p,double);
+    TrialFunction(HarmonicOscillator *);
+    void calculate_trial(std::vector<Particle> &p,double);
     void calculate_probability();
     void calculate_local_energy(int,int);
 
-    double phi(std::vector<double>, double);
+    double phi(std::vector<double> &, double);
 
 
-    double get_probability(std::vector<Particle> p,int,double);
-    double get_probability_ratio(std::vector<Particle> p, int, int move, double alpha);
+    double get_probability(std::vector<Particle> &p,int,double);
+    double get_probability_ratio(std::vector<Particle> &p, int, int move, double alpha);
     double get_local_energy(int,int);
 
-    std::shared_ptr<Potential> potential;
+    HarmonicOscillator *potential;
 
-    double f(std::vector<Particle> p);
-    double f_id(std::vector<Particle> p);
-    void quantum_force(std::vector<Particle> p, double alpha);
-    double greens_function_ratio(std::vector<Particle> p, double alpha, int chosen_particle);
-    double greens_function_ratio_id(std::vector<Particle> p, double alpha, int chosen_particle);
-    void quantum_force_new(std::vector<Particle> p, double alpha, int chosen_particle);
+    double f(std::vector<Particle> &p);
+    double f_id(std::vector<Particle> &p);
+    void quantum_force(std::vector<Particle> &p, double alpha);
+    double greens_function_ratio(std::vector<Particle> &p, double alpha, int chosen_particle);
+    double greens_function_ratio_id(std::vector<Particle> &p, double alpha, int chosen_particle);
+    void quantum_force_new(std::vector<Particle> &p, double alpha, int chosen_particle);
     void allocate_empty_arrays();
-    double calculate_kinetic_energy(std::vector<Particle> p, double alpha);
+    double calculate_kinetic_energy(std::vector<Particle> &p, double alpha);
 
 
-    double return_trial(std::vector<Particle> p, double alpha);
+    double return_trial(std::vector<Particle> &p, double alpha);
 private:
     double function_value;
     double function_value_next_step;
     double function_probability;
     double function_probability_next_step;
     double local_energy;
-    double (TrialFunction::*f_func)(std::vector<Particle>);
-    double (TrialFunction::*greens_function_ratio_func)(std::vector<Particle>, double, int);
+    double (TrialFunction::*f_func)(std::vector<Particle>&);
+    double (TrialFunction::*greens_function_ratio_func)(std::vector<Particle>&, double, int);
     double beta;
     double dx;
     double a;
@@ -53,6 +53,7 @@ private:
     int N;
     double D;
     double h;
+    std::vector<Particle> p_min;
 
     std::vector<std::vector<double>> quantum_force_matrix;
     std::vector<std::vector<double>> quantum_force_matrix_new;

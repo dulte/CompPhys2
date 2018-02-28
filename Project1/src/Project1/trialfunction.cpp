@@ -1,7 +1,7 @@
 #include "trialfunction.h"
 #include <iostream>
 
-TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
+TrialFunction::TrialFunction(HarmonicOscillator *m_potential)
 {
     potential = m_potential;
     beta=Parameters::beta;
@@ -11,7 +11,7 @@ TrialFunction::TrialFunction(std::shared_ptr<Potential> m_potential)
     N = Parameters::N;
     D = Parameters::D;
 
-    h = 1e-8;
+    h = 5e-8;
 
     allocate_empty_arrays();
 
@@ -49,22 +49,22 @@ void TrialFunction::allocate_empty_arrays(){
     }
 }
 
-void TrialFunction::calculate_trial(std::vector<Particle> p, double alpha)
+void TrialFunction::calculate_trial(std::vector<Particle> &p, double alpha)
 {
     function_value = return_trial(p,alpha);
 }
 
-double TrialFunction::return_trial(std::vector<Particle> p, double alpha)
+double TrialFunction::return_trial(std::vector<Particle> &p, double alpha)
 {
-    double val = 1;
-    std::vector<double> r;
+    double val = 0;
+    //std::vector<double> r;
 
     for(int i = 0; i<N;i++){
-        r = p[i].r;
-        val *= phi(r,alpha)*(this->*f_func)(p);
+       // r = p[i].r;
+        val += phi(p[i].r,alpha)*(this->*f_func)(p);
     }
 
-    return val;
+    return exp(val);
 }
 
 
@@ -77,7 +77,7 @@ void TrialFunction::calculate_local_energy(int n,int dim){
     local_energy = dim/2.0*n; // And external!!!
 }
 
-double TrialFunction::phi(std::vector<double> r, double alpha)
+double TrialFunction::phi(std::vector<double> &r, double alpha)
 {
     int size = r.size();
     double val = 0;
@@ -90,10 +90,10 @@ double TrialFunction::phi(std::vector<double> r, double alpha)
         }
     }
 
-    return exp(-alpha*val);
+    return -alpha*val;
 }
 
-double TrialFunction::f(std::vector<Particle> p)
+double TrialFunction::f(std::vector<Particle> &p)
 {
     int size = p.size();
     double dist=0;
@@ -113,12 +113,12 @@ double TrialFunction::f(std::vector<Particle> p)
     return val;
 }
 
-double TrialFunction::f_id(std::vector<Particle> p){
+double TrialFunction::f_id(std::vector<Particle> &p){
     return 1.0;
 }
 
 
-void TrialFunction::quantum_force(std::vector<Particle> p,double alpha)
+void TrialFunction::quantum_force(std::vector<Particle> &p,double alpha)
 {
     double dist=0;
     double dist_new=0;
@@ -156,7 +156,7 @@ void TrialFunction::quantum_force(std::vector<Particle> p,double alpha)
     }
 }
 
-    void TrialFunction::quantum_force_new(std::vector<Particle> p, double alpha, int chosen_particle)
+    void TrialFunction::quantum_force_new(std::vector<Particle> &p, double alpha, int chosen_particle)
     {
         double dist=0;
         double dist_new=0;
@@ -207,7 +207,7 @@ void TrialFunction::quantum_force(std::vector<Particle> p,double alpha)
         }
     }
 
-double TrialFunction::greens_function_ratio(std::vector<Particle> p, double alpha,int chosen_particle)
+double TrialFunction::greens_function_ratio(std::vector<Particle> &p, double alpha,int chosen_particle)
 {
     double value=0;
     double value_new=0;
@@ -240,22 +240,22 @@ double TrialFunction::greens_function_ratio(std::vector<Particle> p, double alph
 
 }
 
-double TrialFunction::greens_function_ratio_id(std::vector<Particle> p, double alpha, int chosen_particle)
+double TrialFunction::greens_function_ratio_id(std::vector<Particle> &p, double alpha, int chosen_particle)
 {
     return 1.0;
 }
 
 
 
-double TrialFunction::get_probability(std::vector<Particle> p,int size,double alpha){
+double TrialFunction::get_probability(std::vector<Particle> &p,int size,double alpha){
     calculate_trial(p,alpha);
     calculate_probability();
     return function_probability;
 }
 
 
-double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int move, double alpha){
-    double val = 1;
+double TrialFunction::get_probability_ratio(std::vector<Particle> &p,int size,int move, double alpha){
+    double val = 0;
     std::vector<double> r;
     double probability = get_probability(p,size,alpha);
 
@@ -267,10 +267,10 @@ double TrialFunction::get_probability_ratio(std::vector<Particle> p,int size,int
             r = p[i].r;
         }
 
-        val *= phi(r,alpha); //Can be optimized since this is a product of exp
+        val += phi(r,alpha); //Can be optimized since this is a product of exp
 
     }
-    return (this->*greens_function_ratio_func)(p, alpha, move)*val*val/probability;
+    return exp(val+val)/probability;//*(this->*greens_function_ratio_func)(p, alpha, move);
 }
 
 
@@ -280,13 +280,13 @@ double TrialFunction::get_local_energy(int n, int dim){
     return local_energy;
 }
 
-double TrialFunction::calculate_kinetic_energy(std::vector<Particle> p,double alpha){
+double TrialFunction::calculate_kinetic_energy(std::vector<Particle> &p,double alpha){
     double psi_minus = 0;
     double psi_plus = 0;
 
     double psi = return_trial(p,alpha);
 
-    std::vector<Particle> p_min = p;
+    p_min = p;
 
     double kinetic_energy = 0;
     double potential_energy = 0;
