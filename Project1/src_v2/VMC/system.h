@@ -12,8 +12,8 @@ class System
 public:
     System();
 
-    Eigen::MatrixXd r;
-    Eigen::MatrixXd next_r;
+    Eigen::MatrixXd *r;
+    Eigen::MatrixXd *next_r;
 
     Eigen::MatrixXd distance;
     Eigen::MatrixXd next_distance;
@@ -36,6 +36,8 @@ private:
     //Eigen::VectorXd temp_r;
     //double temp_value;
     //double temp_value2;
+    Eigen::MatrixXd *r_temp_pointer;
+
 
     //Functions for calulations involving wavefunction
     double alpha;
