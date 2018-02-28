@@ -19,6 +19,12 @@ System::System()
     srand(time(NULL));
 }
 
+System::~System()
+{
+    delete r;
+    delete next_r;
+}
+
 void System::make_grid(double m_alpha){
     alpha = m_alpha;
     //Sets all positions to a random position [-1,1]

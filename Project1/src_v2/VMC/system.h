@@ -11,6 +11,7 @@ class System
 {
 public:
     System();
+    ~System();
 
     Eigen::MatrixXd *r;
     Eigen::MatrixXd *next_r;

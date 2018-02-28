@@ -23,5 +23,8 @@ int main(int argc, char *argv[])
     simulation->initiate();
     simulation->run();
 
+    delete simulation;
+    delete system;
+
     return 0;
 }
