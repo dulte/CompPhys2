@@ -26,6 +26,9 @@ public:
     virtual double check_acceptance_and_return_energy(){};
 
     std::vector<Particle> particles;
+
+    std::vector<std::vector<double>> particle_r;
+    std::vector<std::vector<double>> particle_r_next;
     std::vector<double> phi_values;
     TrialFunction *trial_function;
     int dimension = Parameters::dimension;

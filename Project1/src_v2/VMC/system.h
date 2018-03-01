@@ -12,11 +12,12 @@ class System
 public:
     System();
 
-    Eigen::MatrixXd *r;
-    Eigen::MatrixXd *next_r;
+    Eigen::MatrixXd r;
+    Eigen::MatrixXd next_r;
 
     Eigen::MatrixXd distance;
     Eigen::MatrixXd next_distance;
+    Eigen::MatrixXd quantum_force_matrix;
 
     const Eigen::MatrixXd get_position() const;
 
@@ -39,6 +40,7 @@ private:
     const int dimension = Parameters::dimension;
     const double beta = Parameters::beta;
     const double dx = Parameters::dx;
+    const double a = Parameters::a;
     const double omega = Parameters::omega;
     double h;
     double wavefunction_value_plus;
@@ -51,6 +53,7 @@ private:
     //Vector and double used for holding temp values
     Eigen::VectorXd temp_r;
     Eigen::VectorXd temp_r2;
+    Eigen::VectorXd temp_N_vec;
     //double temp_value;
     //double temp_value2;
 
@@ -71,6 +74,7 @@ private:
     double get_local_energy();
     void update_probability_ratio();
 
+    double quantum_force();
 
 
 };

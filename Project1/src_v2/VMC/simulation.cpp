@@ -26,7 +26,10 @@ void Simulation::run(){
         system->make_grid(a);
         std::cout << "a: " << a << std::endl;
         for(int i = 0;i<MC_cycles;i++){
-            //std::cout << "Mc steg: " << i << "/" << MC_cycles << std::endl;
+            if(i%100==0){
+            std::cout << "Mc steg: " << i << "/" << MC_cycles << std::endl;
+            //std::cout << "Pos: " << *system->r << std::endl;
+            }
             for(int move = 0;move<N;move++){
                 system->make_move_and_update(move);
                 energy += system->check_acceptance_and_return_energy(move);

@@ -7,7 +7,7 @@ RandomSystem::RandomSystem(TrialFunction *m_trial)
 {
     dimension = Parameters::dimension;
     step_size = Parameters::dx;
-    trial_function = m_trial;//TrialFunction();
+    trial_function = m_trial;
     srand (time(NULL));
 
     std::cout << "MC_cylces: " << Parameters::MC_cycles << std::endl;
