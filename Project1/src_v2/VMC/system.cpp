@@ -18,7 +18,7 @@ System::System()
 
 
     if(Parameters::a !=0){
-        System::make_move = &System::make_move_and_update_interacting;
+        //System::make_move = &System::make_move_and_update_interacting;
         System::compute_energy = &System::calculate_energy_interacting; //FIX
     }
     else{
@@ -77,17 +77,7 @@ void System::make_move_and_update_non_interacting(const int move){
     for(int i = 0; i<dimension; i++){
         next_r(i,move) += dx*((double)rand()/RAND_MAX - 0.5);
     }
-    std::cout << next_r << std::endl;
-    std::cout << r << std::endl;
-    //double temp_value = 0;
-    //Updates the distance matrix after move
-    for(int i = 0;i<N;i++){
-        if(i != move){
-            temp_value = (r->col(move)- r->col(i)).norm();
-            next_distance(i,move) = temp_value;
-            next_distance(move,i) = temp_value;
-        }
-    }
+
 }
 
 double System::check_acceptance_and_return_energy(int move){
@@ -150,8 +140,8 @@ double System::calculate_energy_noninteracting(){
     kinetic_energy=0;
     potential_energy=0;
     for(int i=0; i<N;i++){
-        temp_r=r->col(i);
-        temp_r2=r->col(i);
+        temp_r=r.col(i);
+        temp_r2=r.col(i);
         potential_energy += 0.5*omega*temp_r.squaredNorm();
         for(int j=0; j<dimension;j++){
             //temp_r2(j)+=h;
@@ -175,14 +165,14 @@ double System::calculate_energy_interacting(){
     potential_energy = 0;
     wavefunction_value=get_wavefunction();
     for(int i = 0; i<N;i++){
-        potential_energy+=omega*omega*r->col(i).squaredNorm();
+        potential_energy+=omega*omega*r.col(i).squaredNorm();
         for(int j = 0; j<dimension;j++){
             //std::cout<<r->coeffRef(j,i)<<std::endl;
-            r->coeffRef(j,i)+=h;
+            r.coeffRef(j,i)+=h;
             wavefunction_value_plus=get_wavefunction();
-            r->coeffRef(j,i)-=2*h;
+            r(j,i)-=2*h;
             wavefunction_value_minus=get_wavefunction();
-            r->coeffRef(j,i)+=h;
+            r(j,i)+=h;
             kinetic_energy -= (wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value)/h/h/wavefunction_value;
             //std::cout<<r->coeffRef(j,i)<<std::endl;
         }
@@ -196,7 +186,7 @@ double System::calculate_energy_interacting(){
 
 
 void System::update_wavefunction(const int move){
-    wavefunction_value*=exp(phi_exponant(next_r->col(move))-phi_exponant(r->col(move)));
+    wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)));
 
 }
 

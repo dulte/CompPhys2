@@ -26,8 +26,8 @@ void Simulation::run(){
         system->make_grid(a);
         std::cout << "a: " << a << std::endl;
         for(int i = 0;i<MC_cycles;i++){
-            if(i%100==0){
-            std::cout << "Mc steg: " << i << "/" << MC_cycles << std::endl;
+            if(i%10000==0){
+            //std::cout << "Mc steg: " << i << "/" << MC_cycles << std::endl;
             //std::cout << "Pos: " << *system->r << std::endl;
             }
             for(int move = 0;move<N;move++){
