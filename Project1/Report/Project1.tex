@@ -61,6 +61,29 @@ Abstract awesomeness
 \section{Introduction}
 \section{Theoretical model}
 \section{Methods}\label{Method_section}
+\subsection{Minimizing computation in the non-interacting case}
+For the non-interacting case ($a=0$), certain shortcuts are possible, to save FLOPS. 
+\subsubsection{Computing the numerical energy}
+From the Schrödinger equation:
+\begin{equation}
+\hat{H}\Psi_T = \left(-\frac{1}{2}\nabla^2+V\right)\Psi_T= E\Psi_T
+\end{equation}
+The kinetic energy is, numerically, given by (in dimensionless form):
+\begin{equation}
+T=-\frac{1}{2}\nabla^2 \Psi_T
+\end{equation}
+This gives, for particle $i$ and component $j$:
+\begin{equation}
+T_{ij} \approx \frac{\Psi_T(\boldsymbol{r_1},...,\boldsymbol{r_{i,j}}+h,...,\boldsymbol{r_n})-2\Psi_T(\boldsymbol{r})+\Psi_T(\boldsymbol{r_1},...,\boldsymbol{r_{i,j}}-h,...,\boldsymbol{r_n})}{h^2}
+\end{equation}
+Which gives, for the simplest trialfunction ($a=0$):
+\small
+\begin{equation}
+T_{ij}=-\frac{1}{2}\Psi_T\left(\frac{\exp(-\alpha_j (x_j+h)^2)}{\exp(-\alpha_j x_j^2)}-2+\frac{\exp(-\alpha_j ( x_j -h)^2)}{\exp(-\alpha_j x_j^2)}\right)\frac{1}{h^2}=-\frac{1}{2h^2}\Psi_T\left(\exp(-2\alpha_j x_j h-\alpha_jh^2)+\exp(2\alpha_j x_j h-\alpha_j h^2)-2\right)
+\end{equation}
+\normalsize
+
+
 \section{Results and discussion}
 \section{Conclusion}
 \subsection{Conclusion}

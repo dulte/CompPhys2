@@ -13,12 +13,16 @@ System::System()
     potential_energy=0;
     wavefunction_probability=0;
     wavefunction_value=get_wavefunction();
+    h=1e-5;
+
 
     if(Parameters::a !=0){
         System::make_move = &System::make_move_and_update_interacting;
+        System::compute_energy = &System::calculate_energy_interacting; //FIX
     }
     else{
         System::make_move=&System::make_move_and_update_non_interacting;
+        System::compute_energy = &System::calculate_energy_interacting;//FIX
     }
 
     //Temp variables
@@ -32,11 +36,6 @@ System::System()
     srand(time(NULL));
 }
 
-System::~System()
-{
-    delete r;
-    delete next_r;
-}
 
 void System::make_grid(double m_alpha){
     alpha = m_alpha;
@@ -66,11 +65,18 @@ void System::make_move_and_update(const int move){
     (this->*make_move)(move);
 }
 
+double System::calculate_energy(){
+    return (this->*compute_energy)();
+
+}
+
 
 void System::make_move_and_update_non_interacting(const int move){
     //Makes a random move
     for(int i = 0; i<dimension; i++){
-        next_r->coeffRef(i,move) += dx*((double)rand()/RAND_MAX - 0.5);
+        std::cout << r->coeffRef(i,move) << std::endl;
+        next_r->coeffRef(i,move) = r->coeffRef(i,move) + dx*((double)rand()/RAND_MAX - 0.5);
+        std::cout << next_r->coeffRef(i,move) << r->coeffRef(i,move) << std::endl;
     }
 
 }
@@ -100,8 +106,12 @@ double System::check_acceptance_and_return_energy(int move){
     if(temp_value <= get_probability_ratio(move)){
         update_wavefunction(move);
         r = next_r;
+        acceptance++;
         //update();
         //distance = next_distance;
+    }
+    else{
+        next_r=r;
     }
     return get_local_energy();
 }
@@ -145,21 +155,53 @@ double System::get_probability(){
 }
 
 double System::calculate_energy_noninteracting(){
+    kinetic_energy=0;
+    potential_energy=0;
     for(int i=0; i<N;i++){
         temp_r=r->col(i);
         temp_r2=r->col(i);
         potential_energy += 0.5*omega*temp_r.squaredNorm();
         for(int j=0; j<dimension;j++){
-            temp_r2(j)+=h;
-            kinetic_energy+=exp(phi_exponant(temp_r2-temp_r));
-            temp_r2(j)-=2*h;
-            kinetic_energy+=exp(phi_exponant(temp_r2-temp_r));
+            //temp_r2(j)+=h;
+            //kinetic_energy+=exp(phi_exponant(temp_r2-temp_r));
+            //temp_r2(j)-=2*h;
+            //kinetic_energy+=exp(phi_exponant(temp_r2-temp_r));
+            kinetic_energy+=exp(-2*alpha*h*temp_r(j)-alpha*h*h)+exp(2*alpha*temp_r(j)-alpha*h*h)-2;
         }
     }
-    kinetic_energy *= 1/(2.0*h*h);
+    kinetic_energy *= -1/(2.0*h*h);
+    std::cout<<kinetic_energy<<std::endl;
     return kinetic_energy+potential_energy;
 
 }
+
+double System::calculate_energy_interacting(){
+    wavefunction_value_plus = 0;
+    wavefunction_value_minus = 0;
+
+    kinetic_energy = 0;
+    potential_energy = 0;
+    wavefunction_value=get_wavefunction();
+    for(int i = 0; i<N;i++){
+        potential_energy+=omega*omega*r->col(i).squaredNorm();
+        for(int j = 0; j<dimension;j++){
+            //std::cout<<r->coeffRef(j,i)<<std::endl;
+            r->coeffRef(j,i)+=h;
+            wavefunction_value_plus=get_wavefunction();
+            r->coeffRef(j,i)-=2*h;
+            wavefunction_value_minus=get_wavefunction();
+            r->coeffRef(j,i)+=h;
+            kinetic_energy -= (wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value)/h/h/wavefunction_value;
+            //std::cout<<r->coeffRef(j,i)<<std::endl;
+        }
+        //kinetic_energy += 2*dimension*alpha-4*alpha*alpha*r->col(i).squaredNorm();
+
+    }
+    //sstd::cout<<wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value<<std::endl;
+
+    return (0.5*potential_energy+0.5*(kinetic_energy));
+}
+
 
 void System::update_wavefunction(const int move){
     wavefunction_value*=exp(phi_exponant(next_r->col(move))-phi_exponant(r->col(move)));

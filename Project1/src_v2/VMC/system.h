@@ -11,7 +11,6 @@ class System
 {
 public:
     System();
-    ~System();
 
     Eigen::MatrixXd *r;
     Eigen::MatrixXd *next_r;
@@ -21,6 +20,7 @@ public:
 
     const Eigen::MatrixXd get_position() const;
 
+    int acceptance = 0;
     void make_grid(double m_alpha);
     void make_move_and_update_non_interacting(const int move);
     void make_move_and_update_interacting(const int move);
@@ -31,6 +31,8 @@ public:
 
     void update_wavefunction(const int move);
     double calculate_energy_noninteracting();
+    double calculate_energy();
+    double calculate_energy_interacting();
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
@@ -38,9 +40,13 @@ private:
     const double beta = Parameters::beta;
     const double dx = Parameters::dx;
     const double omega = Parameters::omega;
-    const double h=1e-8;
+    double h;
+    double wavefunction_value_plus;
+    double wavefunction_value_minus;
 
     void (System::*make_move)(const int);
+    double (System::*compute_energy)();
+
 
     //Vector and double used for holding temp values
     Eigen::VectorXd temp_r;
@@ -64,7 +70,6 @@ private:
     double get_probability();
     double get_local_energy();
     void update_probability_ratio();
-
 
 
 

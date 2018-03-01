@@ -22,6 +22,7 @@ private:
     int N;
 
     double energy;
+    double energy_numerical;
 
 
 };
