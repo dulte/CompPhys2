@@ -9,7 +9,8 @@ System::System()
     next_r = Eigen::MatrixXd(Parameters::dimension,Parameters::N);
     distance.resize(Parameters::N,Parameters::N);
     next_distance.resize(Parameters::N,Parameters::N);
-    quantum_force_matrix.resize(Parameters::N,Parameters::N);
+    quantum_force_matrix.resize(Parameters::N,Parameters::dimension);
+    quantum_force_matrix_new.resize(Parameters::N,Parameters::dimension);
     kinetic_energy=0;
     potential_energy=0;
     wavefunction_probability=0;
@@ -41,10 +42,18 @@ System::System()
 void System::make_grid(double m_alpha){
     alpha = m_alpha;
     //Sets all positions to a random position [-1,1]
-    //r = Eigen::MatrixXd::Random(Parameters::dimension,Parameters::N);
+    //r = Eigen::MatrixXd::Random(Parameters::dimension,Parameters::N)*0.1;
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_real_distribution<double> distribution(0.0,1.0);
 
+    for(int i = 0;i<N;i++){
+        for(int j = 0;j<dimension;j++){
+            r(j,i) = distribution(gen)*sqrt(dx);
+        }
+    }
 
-    r = Eigen::MatrixXd::Constant(Parameters::dimension,Parameters::N,0.0);
+    //r = Eigen::MatrixXd::Constant(Parameters::dimension,Parameters::N,0.0);
     next_r = r;
     update();
 }
@@ -118,7 +127,7 @@ double System::get_probability_ratio(int move){
     double temp_value = phi_exponant(r.col(move)); //Stores the probability before move
     double temp_value2 = phi_exponant(next_r.col(move)); //Stores the probability of move
 
-    return exp(2*(temp_value2-temp_value));
+    return exp(2*(temp_value2-temp_value));//*greens_function_ratio(move);
 }
 
 double System::get_wavefunction(){
@@ -168,7 +177,7 @@ double System::calculate_energy_interacting(){
         potential_energy+=omega*omega*r.col(i).squaredNorm();
         for(int j = 0; j<dimension;j++){
             //std::cout<<r->coeffRef(j,i)<<std::endl;
-            r.coeffRef(j,i)+=h;
+            r(j,i)+=h;
             wavefunction_value_plus=get_wavefunction();
             r(j,i)-=2*h;
             wavefunction_value_minus=get_wavefunction();
@@ -219,7 +228,7 @@ double System::get_local_energy(){
 
 
     /*
-    temp_value = new Eigen::VectorXd(dimension);
+    temp_r = Eigen::VectorXd(dimension);
 
     for(int k = 0; k<N;k++){
 
@@ -250,30 +259,85 @@ double System::get_local_energy(){
 }
 
 
-double System::quantum_force(){
+void System::quantum_force(int move){
     double grad_value = 0;
-    double temp_value = 0;
+    double grad_value_new = 0;
+
+
+    temp_r = Eigen::VectorXd::Zero(dimension);
+
     for(int i=0; i<N;i++){
+        if(i==move){
+            temp_r = next_r.col(move);
+        }
+        else{
+            temp_r = r.col(move);
+        }
+
         for(int j=0; j<dimension;j++){
+
             for(int k=0; k<N;k++){
                 if(k !=i){
                     if(distance(i,k)>a){
-                        grad_value+=a*(r(j,i)-(r(j,k)))/(distance(i,k)*distance(i,k)*distance(i,k));
+                        grad_value+=2*a*(r(j,i)-(r(j,k)))/(distance(i,k)*distance(i,k)*distance(i,k));
+                        grad_value_new+=2*a*(r(j,i)-temp_r(j))/(next_distance(i,k)*next_distance(i,k)*next_distance(i,k));
                     }
                  }
             }
             if(j==2){
                quantum_force_matrix(i,j)=-4.0*alpha*beta*r(j,i)+grad_value;
+               quantum_force_matrix_new(i,j)=-4.0*alpha*beta*temp_r(j)+grad_value;
 
             }
             else{
                 quantum_force_matrix(i,j)=-4.0*alpha*r(j,i)+grad_value;
+                quantum_force_matrix_new(i,j)=-4.0*alpha*temp_r(j)+grad_value;
             }
             grad_value=0;
+            grad_value_new=0;
         }
     }
 
+
+
 }
+
+
+double System::greens_function_ratio(int move)
+{
+    double value=0;
+    double value_new=0;
+    double exponent = 0;
+    double exponent_new = 0;
+    double exponent_factor=D*dx;
+
+    temp_r = Eigen::VectorXd::Zero(dimension);
+
+    quantum_force(move);
+    for(int i=0; i<N; i++){
+        if(i==move){
+            temp_r = next_r.col(move);
+         }
+         else{
+             temp_r = r.col(move);
+         }
+         for(int k=0;k<dimension;k++){
+                exponent += ((r(k,i)-temp_r(k))-exponent_factor*quantum_force_matrix(i,k))*((r(k,i)-temp_r(k))-exponent_factor*quantum_force_matrix(i,k));
+                exponent_new += ((temp_r(k)-r(k,i))-exponent_factor*quantum_force_matrix_new(i,k))*((temp_r(k)-r(k,i))-exponent_factor*quantum_force_matrix_new(i,k));
+
+         }
+
+        exponent=exponent/(4.0*exponent_factor);
+        exponent_new=exponent_new/(4.0*exponent_factor);
+        value+=exp(-exponent);
+        value_new+=exp(-exponent_new);
+
+    }
+
+    return value_new/value;
+
+}
+
 
 
 
