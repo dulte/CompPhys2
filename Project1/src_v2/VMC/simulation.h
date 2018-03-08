@@ -12,6 +12,8 @@ public:
     void initiate();
     void run();
 
+    double compute_local_energy_derivative(double alpha);
+    double conjugate_gradient(double alpha_0, double b);
 private:
     System *system;
     double alpha_step;

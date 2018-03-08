@@ -72,6 +72,12 @@ void System::update(){
             distance(j,i) = temp_value;
         }
     }
+    expectation_derivative=0;
+    expectation_derivative_energy=0;
+    expectation_local_energy=0;
+    expectation_local_energy_squared=0;
+    wavefunction_probability=0;
+    wavefunction_value=get_wavefunction();
 
     next_distance = distance;
 }
@@ -160,6 +166,7 @@ double System::get_wavefunction(){
     return exp(temp_value);
 }
 
+
 double System::get_probability(){
     double temp_value = get_wavefunction();
     return temp_value*temp_value;
@@ -222,15 +229,18 @@ void System::update_wavefunction(const int move){
 double System::get_local_energy(){
     double total_energy = 0;
     double temp_value = 0;
+    double wavefunction_derivative_value=0;
 
 
     for(int k = 0;k<N;k++){
         for(int i = 0; i<dimension;i++){
             if(i==2){
                 temp_value += r(i,k)*r(i,k)*beta*beta;
+                wavefunction_derivative_value+=beta*r(i,k);
             }
             else{
                 temp_value += r(i,k)*r(i,k);
+                wavefunction_derivative_value+=r(i,k);
             }
         }
 
@@ -239,12 +249,18 @@ double System::get_local_energy(){
         if(dimension>=3){
             temp_value += 2*alpha - 2*alpha*beta;
         }
+        wavefunction_derivative_value*=-2*wavefunction_value;
 
         total_energy += temp_value;
         temp_value = 0;
     }
+    temp_value=-0.5*total_energy;
+    expectation_local_energy+=temp_value;
+    expectation_local_energy_squared+=temp_value*temp_value;
+    expectation_derivative+=wavefunction_derivative_value/wavefunction_value;
+    expectation_derivative_energy+=(wavefunction_derivative_value/wavefunction_value)*temp_value;
 
-    return -0.5*total_energy;
+    return temp_value;
 
 
     /*
@@ -275,7 +291,6 @@ double System::get_local_energy(){
 
     }
     */
-    return 0;
 }
 
 

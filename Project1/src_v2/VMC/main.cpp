@@ -21,7 +21,8 @@ int main(int argc, char *argv[])
     Simulation * simulation = new Simulation(system);
 
     simulation->initiate();
-    simulation->run();
+    //simulation->run();
+    std::cout << "Correct a: " << simulation->conjugate_gradient(0.5, 1e-7)<<std::endl;
 
     delete simulation;
     delete system;
