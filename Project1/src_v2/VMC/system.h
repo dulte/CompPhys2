@@ -18,6 +18,7 @@ public:
     Eigen::MatrixXd distance;
     Eigen::MatrixXd next_distance;
     Eigen::MatrixXd quantum_force_matrix;
+    Eigen::MatrixXd quantum_force_matrix_new;
 
     const Eigen::MatrixXd get_position() const;
 
@@ -34,6 +35,8 @@ public:
     double calculate_energy_noninteracting();
     double calculate_energy();
     double calculate_energy_interacting();
+    double greens_function_ratio(int move);
+    void update_next_distance(int);
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
@@ -42,6 +45,7 @@ private:
     const double dx = Parameters::dx;
     const double a = Parameters::a;
     const double omega = Parameters::omega;
+    const double D = Parameters::D;
     double h;
     double wavefunction_value_plus;
     double wavefunction_value_minus;
@@ -74,7 +78,12 @@ private:
     double get_local_energy();
     void update_probability_ratio();
 
-    double quantum_force();
+    void quantum_force(int);
+
+    //Functions for the use of normal distributions
+    std::random_device rd;
+    std::mt19937_64 gen;
+    std::normal_distribution<double> distribution;
 
 
 };
