@@ -252,20 +252,19 @@ double System::get_local_energy(){
             }
 
 
-        }
+            }
         }
 
         if(dimension >= 3){
             total_energy = factor1_B + factor2*temp_value;
         }
-        wavefunction_derivative_value*=-2*wavefunction_value;
         else{
             total_energy = factor1_noB + factor2*temp_value;
         }
 
+        wavefunction_derivative_value*=-2*wavefunction_value;
         total_energy += temp_value;
         temp_value = 0;
-    }
     temp_value=-0.5*total_energy;
     expectation_local_energy+=temp_value;
     expectation_local_energy_squared+=temp_value*temp_value;
@@ -277,7 +276,7 @@ double System::get_local_energy(){
 
     return -0.5*total_energy + pot_factor*r_i_annen;
 
-
+}
     /*
     temp_r = Eigen::VectorXd(dimension);
 
@@ -306,7 +305,6 @@ double System::get_local_energy(){
 
     }
     */
-}
 
 
 void System::quantum_force(int move){
