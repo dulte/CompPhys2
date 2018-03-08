@@ -3,6 +3,7 @@
 #include "system.h"
 #include "Parameters/parameters.h"
 #include "DataDump/datadump.h"
+#include <string>
 
 
 class Simulation
@@ -10,7 +11,7 @@ class Simulation
 public:
     Simulation(System *m_system);
     void initiate();
-    void run();
+    void run(std::string);
 
 private:
     System *system;
@@ -23,6 +24,8 @@ private:
 
     double energy;
     double energy_numerical;
+
+
 
 
 };
