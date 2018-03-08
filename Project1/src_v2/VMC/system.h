@@ -36,6 +36,7 @@ public:
     double calculate_energy();
     double calculate_energy_interacting();
     double greens_function_ratio(int move);
+    void update_next_distance(int);
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
@@ -78,6 +79,11 @@ private:
     void update_probability_ratio();
 
     void quantum_force(int);
+
+    //Functions for the use of normal distributions
+    std::random_device rd;
+    std::mt19937_64 gen;
+    std::normal_distribution<double> distribution;
 
 
 };

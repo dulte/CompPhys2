@@ -9,6 +9,8 @@ System::System()
     next_r = Eigen::MatrixXd(Parameters::dimension,Parameters::N);
     distance.resize(Parameters::N,Parameters::N);
     next_distance.resize(Parameters::N,Parameters::N);
+
+
     quantum_force_matrix.resize(Parameters::N,Parameters::dimension);
     quantum_force_matrix_new.resize(Parameters::N,Parameters::dimension);
     kinetic_energy=0;
@@ -16,6 +18,10 @@ System::System()
     wavefunction_probability=0;
     wavefunction_value=get_wavefunction();
     h=1e-5;
+
+    std::random_device rd;
+    gen = std::mt19937_64(rd());
+    distribution = std::normal_distribution<double>(0.0,1.0);
 
 
     if(Parameters::a !=0){
@@ -43,9 +49,7 @@ void System::make_grid(double m_alpha){
     alpha = m_alpha;
     //Sets all positions to a random position [-1,1]
     //r = Eigen::MatrixXd::Random(Parameters::dimension,Parameters::N)*0.1;
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
-    std::uniform_real_distribution<double> distribution(0.0,1.0);
+
 
     for(int i = 0;i<N;i++){
         for(int j = 0;j<dimension;j++){
@@ -68,6 +72,17 @@ void System::update(){
             distance(j,i) = temp_value;
         }
     }
+
+    next_distance = distance;
+}
+
+void System::update_next_distance(int move){
+    double dist = 0;
+    for(int i = 0;i<N;i++){
+        dist = (next_r.col(i)- next_r.col(move)).norm();
+        next_distance(i,move) = dist;
+        next_distance(move,i) = dist;
+    }
 }
 
 
@@ -83,23 +98,28 @@ double System::calculate_energy(){
 
 void System::make_move_and_update_non_interacting(const int move){
     //Makes a random move
+    double random_nr = 0;
     for(int i = 0; i<dimension; i++){
-        next_r(i,move) += dx*((double)rand()/RAND_MAX - 0.5);
+        random_nr = dx*distribution(gen);
+        //std::cout << random_nr << std::endl;
+        next_r(i,move) += random_nr;//((double)rand()/RAND_MAX - 0.5);
     }
-
+    update_next_distance(move);
 }
 
 double System::check_acceptance_and_return_energy(int move){
     //Random value [0,1]
-    double temp_value = (double)rand()/RAND_MAX;
+    double temp_value = (double)rand()/((double)RAND_MAX);
 
     //If r is less than the acceptance prob, r is updated to the new r
     if(temp_value <= get_probability_ratio(move)){
         update_wavefunction(move);
+
         r = next_r;
+
+        distance = next_distance;
         acceptance++;
-        //update();
-        //distance = next_distance;
+
     }
     else{
         next_r=r;
@@ -188,7 +208,7 @@ double System::calculate_energy_interacting(){
         //kinetic_energy += 2*dimension*alpha-4*alpha*alpha*r->col(i).squaredNorm();
 
     }
-    //sstd::cout<<wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value<<std::endl;
+    //std::cout<<wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value<<std::endl;
 
     return (0.5*potential_energy+0.5*(kinetic_energy));
 }
@@ -280,6 +300,8 @@ void System::quantum_force(int move){
                 if(k !=i){
                     if(distance(i,k)>a){
                         grad_value+=2*a*(r(j,i)-(r(j,k)))/(distance(i,k)*distance(i,k)*distance(i,k));
+                    }
+                    if(next_distance(i,k)>a){
                         grad_value_new+=2*a*(r(j,i)-temp_r(j))/(next_distance(i,k)*next_distance(i,k)*next_distance(i,k));
                     }
                  }
