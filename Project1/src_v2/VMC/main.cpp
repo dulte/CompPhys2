@@ -35,6 +35,8 @@ int main(int nargs, char *args[])
     filename.append(".txt");
 
     simulation->initiate();
+    //simulation->run();
+    std::cout << "Correct a: " << simulation->conjugate_gradient(0.5, 1e-7)<<std::endl;
     simulation->run(filename);
 
     delete simulation;
