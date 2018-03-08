@@ -262,19 +262,18 @@ double System::get_local_energy(){
             total_energy = factor1_noB + factor2*temp_value;
         }
 
-        wavefunction_derivative_value*=-2*wavefunction_value;
-        total_energy += temp_value;
-        temp_value = 0;
-    temp_value=-0.5*total_energy;
+    wavefunction_derivative_value*=-2;
+    //temp_value = 0;
+    temp_value=-0.5*total_energy+ pot_factor*r_i_annen;
     expectation_local_energy+=temp_value;
     expectation_local_energy_squared+=temp_value*temp_value;
-    expectation_derivative+=wavefunction_derivative_value/wavefunction_value;
-    expectation_derivative_energy+=(wavefunction_derivative_value/wavefunction_value)*temp_value;
+    expectation_derivative+=wavefunction_derivative_value;
+    expectation_derivative_energy+=(wavefunction_derivative_value)*temp_value;
 
 
 
 
-    return -0.5*total_energy + pot_factor*r_i_annen;
+    return temp_value;
 
 }
     /*

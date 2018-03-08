@@ -36,7 +36,7 @@ int main(int nargs, char *args[])
 
     simulation->initiate();
     //simulation->run();
-    std::cout << "Correct a: " << simulation->conjugate_gradient(0.5, 1e-7)<<std::endl;
+    //std::cout << "Correct a: " << simulation->conjugate_gradient(0.5, 0.01)<<std::endl;
     simulation->run(filename);
 
     delete simulation;

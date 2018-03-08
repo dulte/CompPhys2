@@ -27,8 +27,8 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
     while(i<=max_iter){
         alpha=alpha_next;
         gradient=compute_local_energy_derivative(alpha);
-        std::cout<<"Gradient "<<gradient<<std::endl;
         alpha_next=alpha-b*gradient;
+        std::cout<<"Gradient "<<abs(gradient)<<std::endl;
         if(abs(gradient) < tol){
             std::cout<<"MOM WE DID IT"<<std::endl;
             break;
