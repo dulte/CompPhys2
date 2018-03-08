@@ -7,23 +7,24 @@ QMAKE_CXXFLAGS -= -O2
 QMAKE_CXXFLAGS += -O3
 
 # MPI Settings
-QMAKE_CXX = mpicxx
-QMAKE_CXX_RELEASE = $$QMAKE_CXX
-QMAKE_CXX_DEBUG = $$QMAKE_CXX
-QMAKE_LINK = $$QMAKE_CXX
-QMAKE_CC = mpicc
+#QMAKE_CXX = mpicxx
+#QMAKE_CXX_RELEASE = $$QMAKE_CXX
+#QMAKE_CXX_DEBUG = $$QMAKE_CXX
+#QMAKE_LINK = $$QMAKE_CXX
+#QMAKE_CC = mpicc
 
-QMAKE_CFLAGS += $$system(mpicc --showme:compile)
-QMAKE_LFLAGS += $$system(mpicxx --showme:link)
-QMAKE_CXXFLAGS += $$system(mpicxx --showme:compile) -DMPICH_IGNORE_CXX_SEEK
-QMAKE_CXXFLAGS_RELEASE += $$system(mpicxx --showme:compile) -DMPICH_IGNORE_CXX_SEEK
-
+#QMAKE_CFLAGS += $$system(mpicc --showme:compile)
+#QMAKE_LFLAGS += $$system(mpicxx --showme:link)
+#QMAKE_CXXFLAGS += $$system(mpicc --showme:compile) -DMPICH_IGNORE_CXX_SEEK
+#QMAKE_CXXFLAGS_RELEASE += $$system(mpicxx --showme:compile) -DMPICH_IGNORE_CXX_SEEK
 
 SOURCES += main.cpp \
     DataDump/datadump.cpp \
     Parameters/parameters.cpp \
     simulation.cpp \
     system.cpp
+
+
 
 HEADERS += \
     Eigen/src/Cholesky/LDLT.h \
@@ -329,7 +330,11 @@ HEADERS += \
     DataDump/datadump.h \
     Parameters/parameters.h \
     simulation.h \
-    system.h
+    system.h \
+    mpi.h
 
 DISTFILES += \
     Eigen/CMakeLists.txt
+
+#INCLUDEPATH += -I/usr/local/Cellar/open-mpi/3.0.0_2/include
+LIBS += -L/usr/local/opt/libevent/lib -L/usr/local/Cellar/open-mpi/3.0.0_2/lib -lmpi
