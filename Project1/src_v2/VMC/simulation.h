@@ -3,6 +3,7 @@
 #include "system.h"
 #include "Parameters/parameters.h"
 #include "DataDump/datadump.h"
+#include <string>
 
 
 class Simulation
@@ -10,8 +11,10 @@ class Simulation
 public:
     Simulation(System *m_system);
     void initiate();
-    void run();
+    void run(std::string);
 
+    double compute_local_energy_derivative(double alpha);
+    double conjugate_gradient(double alpha_0, double b);
 private:
     System *system;
     double alpha_step;
@@ -23,6 +26,8 @@ private:
 
     double energy;
     double energy_numerical;
+
+
 
 
 };

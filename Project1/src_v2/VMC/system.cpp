@@ -5,11 +5,9 @@ System::System()
 {
 
     r = Eigen::MatrixXd(Parameters::dimension,Parameters::N);
-    std::cout << "Ehi" << std::endl;
     next_r = Eigen::MatrixXd(Parameters::dimension,Parameters::N);
     distance.resize(Parameters::N,Parameters::N);
     next_distance.resize(Parameters::N,Parameters::N);
-
 
     quantum_force_matrix.resize(Parameters::N,Parameters::dimension);
     quantum_force_matrix_new.resize(Parameters::N,Parameters::dimension);
@@ -72,6 +70,12 @@ void System::update(){
             distance(j,i) = temp_value;
         }
     }
+    expectation_derivative=0;
+    expectation_derivative_energy=0;
+    expectation_local_energy=0;
+    expectation_local_energy_squared=0;
+    wavefunction_probability=0;
+    wavefunction_value=get_wavefunction();
 
     next_distance = distance;
 }
@@ -160,6 +164,7 @@ double System::get_wavefunction(){
     return exp(temp_value);
 }
 
+
 double System::get_probability(){
     double temp_value = get_wavefunction();
     return temp_value*temp_value;
@@ -181,7 +186,7 @@ double System::calculate_energy_noninteracting(){
         }
     }
     kinetic_energy *= -1/(2.0*h*h);
-    std::cout<<kinetic_energy<<std::endl;
+
     return kinetic_energy+potential_energy;
 
 }
@@ -222,29 +227,55 @@ void System::update_wavefunction(const int move){
 double System::get_local_energy(){
     double total_energy = 0;
     double temp_value = 0;
+    temp_r = Eigen::VectorXd::Zero(dimension);
+    //r_temp = Eigen::VectorXd::Zero(dimension);
+    double factor1_noB = -2*(dimension)*alpha*N ;
+    double factor1_B = -2*alpha*(dimension -1)*N -2*alpha*beta*N;
+    double factor2 = 4*alpha*alpha;
+    double pot_factor = 0.5*omega*omega;
+    double r_i_annen = 0;
+    double wavefunction_derivative_value=0;
+
 
 
     for(int k = 0;k<N;k++){
         for(int i = 0; i<dimension;i++){
             if(i==2){
                 temp_value += r(i,k)*r(i,k)*beta*beta;
+                r_i_annen += r(i,k)*r(i,k);
+                wavefunction_derivative_value+=beta*r(i,k);
             }
             else{
                 temp_value += r(i,k)*r(i,k);
+                wavefunction_derivative_value+=r(i,k);
+                r_i_annen += r(i,k)*r(i,k);
             }
+
+
+        }
         }
 
-        temp_value *= 4*alpha*alpha;
-        temp_value -= 2*dimension*alpha;
-        if(dimension>=3){
-            temp_value += 2*alpha - 2*alpha*beta;
+        if(dimension >= 3){
+            total_energy = factor1_B + factor2*temp_value;
+        }
+        wavefunction_derivative_value*=-2*wavefunction_value;
+        else{
+            total_energy = factor1_noB + factor2*temp_value;
         }
 
         total_energy += temp_value;
         temp_value = 0;
     }
+    temp_value=-0.5*total_energy;
+    expectation_local_energy+=temp_value;
+    expectation_local_energy_squared+=temp_value*temp_value;
+    expectation_derivative+=wavefunction_derivative_value/wavefunction_value;
+    expectation_derivative_energy+=(wavefunction_derivative_value/wavefunction_value)*temp_value;
 
-    return -0.5*total_energy;
+
+
+
+    return -0.5*total_energy + pot_factor*r_i_annen;
 
 
     /*
@@ -275,7 +306,6 @@ double System::get_local_energy(){
 
     }
     */
-    return 0;
 }
 
 

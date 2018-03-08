@@ -37,6 +37,12 @@ public:
     double calculate_energy_interacting();
     double greens_function_ratio(int move);
     void update_next_distance(int);
+
+    double expectation_local_energy;
+    double expectation_derivative;
+    double expectation_derivative_energy;
+    double expectation_local_energy_squared;
+
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
@@ -49,6 +55,7 @@ private:
     double h;
     double wavefunction_value_plus;
     double wavefunction_value_minus;
+
 
     void (System::*make_move)(const int);
     double (System::*compute_energy)();
