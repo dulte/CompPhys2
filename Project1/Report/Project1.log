@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.10.18)  9 MAR 2018 18:59
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.10.18)  9 MAR 2018 19:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1791,41 +1791,41 @@ File: uwasy.fd 2003/10/30 v2.0 Wasy-2 symbol font definitions
 
 
 LaTeX Font Warning: Font shape `U/wasy/b/n' in size <7> not available
-(Font)              Font shape `U/wasy/m/n' tried instead on input line 77.
+(Font)              Font shape `U/wasy/m/n' tried instead on input line 65.
 
 
 LaTeX Font Warning: Font shape `U/wasy/b/n' in size <5> not available
-(Font)              Font shape `U/wasy/m/n' tried instead on input line 77.
+(Font)              Font shape `U/wasy/m/n' tried instead on input line 65.
 
+[1
 
-Overfull \hbox (100.2889pt too wide) detected at line 83
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (100.2889pt too wide) detected at line 127
 []\OML/cmm/m/it/9 T[] \OT1/cmr/m/n/9 = \OMS/cmsy/m/n/9 ^^@[]\OT1/cmr/m/n/9 	[] 
 [] [] = \OMS/cmsy/m/n/9 ^^@[]\OT1/cmr/m/n/9 	[] []
  []
 
-[1
-
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
+[2] [3]
 
 Package amsfonts Warning: Obsolete command \bold; \mathbf should be used instea
-d on input line 138.
+d on input line 182.
 
-[3] [4]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 288.
- [5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 288.
+[4] [5]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 332.
+ [6]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 332.
  (./Project1.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 288.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 288.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 332.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 332.
 Package rerunfilecheck Info: File `Project1.out' has not changed.
-(rerunfilecheck)             Checksum: 99A27CB61E3BE52315D630D9E4AF85C4;656.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 288.
+(rerunfilecheck)             Checksum: 9587CA8D0A6DD2BF7736E0046F3AC39D;801.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 332.
  ) 
 Here is how much of TeX's memory you used:
- 18515 strings out of 493029
- 316951 string characters out of 6136233
+ 18531 strings out of 493029
+ 317211 string characters out of 6136233
  414309 words of memory out of 5000000
- 21797 multiletter control sequences out of 15000+600000
+ 21801 multiletter control sequences out of 15000+600000
  24477 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,26n,58p,10407b,402s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1855,10 +1855,10 @@ lic/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx207
 xmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/publ
 ic/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1728
 .pfb>
-Output written on Project1.pdf (5 pages, 315068 bytes).
+Output written on Project1.pdf (6 pages, 325866 bytes).
 PDF statistics:
- 244 PDF objects out of 1000 (max. 8388607)
- 206 compressed objects within 3 object streams
- 49 named destinations out of 1000 (max. 500000)
- 89 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 270 PDF objects out of 1000 (max. 8388607)
+ 231 compressed objects within 3 object streams
+ 61 named destinations out of 1000 (max. 500000)
+ 105 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -60,6 +60,50 @@ Abstract awesomeness
 \tableofcontents
 \section{Introduction}
 \section{Theoretical model}
+We investigate bosons in a potential trap. The Hamiltonian of such a system for $N$ bosons is in general given by:
+\begin{equation} \label{eq:general_Hamiltonian}
+H=\sum_{i=1}^N\left(-\frac{\hbar^2}{2m}\nabla_i^2 +V_{ext}(\boldsymbol{r}_i)\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+\end{equation}
+Where $V_{ext}$ is the external potential, i.e. the potential of the trap, whereas $V_{int}$ is the interal potential, i.e. the potential between the bosons. We wish to approximate the ground state energy of our system described by the Hamiltonian given in equation \ref{eq:general_Hamiltonian}.
+\subsection{The potentials employed}
+\subsubsection{The external potential}
+We will focus on two different trap shapes: spherical and elliptical. The spherical trap can be described by a standard harmonic oscillator potential, which is given by:
+\begin{equation}
+V_{ext}(\boldsymbol{r})=\frac{1}{2}m\omega_{ho}^2 r^2 \quad \mathrm{(spherical\  trap)}
+\end{equation}
+Where $m$ is the mass of the bosons and $\omega_{ho}$ is a parameter characterizing the strength of the potential (the characteristic frequency of the trap). The elliptical trap, however, is given by:
+\begin{equation}
+V_{ext}(\boldsymbol{r})=\frac{1}{2}m[\omega_{ho}^2 (x^2+y^2)+\omega_z z^2] \quad \mathrm{(elliptical\  trap)}
+\end{equation}
+I.e. we allow the strength of the potential to vary in one direction, which we designate as the $z$-axis.
+\subsubsection{The internal potential}
+We will begin by investigating models where there is no repulsion between the bosons, however, we will later act a repulsive potential that prevents bosons from occupying the same point in space. With $a$ as a typical diameter of our bosons (the hard-core diameter), we define our internal potential as:
+\begin{equation}
+V_{int}(|\boldsymbol{r}_i-\boldsymbol{r}_j|)= 
+     \begin{cases}
+       \infty & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j| \leq  a\\
+       0 & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j|>  a\\
+     \end{cases}
+\end{equation}
+This potential thus represents the impossibility of bosons to occupy the same point in space.
+\subsection{The variational method}
+\subsubsection{The variational principle}
+To find the ground state energy, $E_0$ of bosons trapped in a potential, we employ the variational method. The variational principle states that:
+\begin{equation}
+E_0\leq \langle \Psi_T |H|\Psi_T \rangle
+\end{equation}
+Where $H$ is the Hamiltonian of our system and $\Psi_T$ is any normalized trial wavefunction. We therefore choose a functional form for $\Psi_T$, with a number of free parameters. By varying these parameteres, we can find an upper bound for the ground state energy. If our chosen functional form is reasonably close to the exact wavefunction, $\Psi$ of the system, then our estimate for $E_0$ should be reasonably close to the actual ground state energy of our system.
+\subsubsection{Choosing a trial wavefunction}
+
+
+
+
+
+
+
+
+
+
 \section{Methods}\label{Method_section}
 \subsection{Minimizing computation in the non-interacting case}
 For the non-interacting case ($a=0$), certain shortcuts are possible, to save FLOPS. 
