@@ -89,7 +89,7 @@ This potential thus represents the impossibility of bosons to occupy the same po
 \subsection{The variational method}
 \subsubsection{The variational principle}
 To find the ground state energy, $E_0$ of bosons trapped in a potential, we employ the variational method. The variational principle states that:
-\begin{equation}
+\begin{equation}\label{eq:Variational_principle}
 E_0\leq \langle \Psi_T |H|\Psi_T \rangle
 \end{equation}
 Where $H$ is the Hamiltonian of our system and $\Psi_T$ is any normalized trial wavefunction. We therefore choose a functional form for $\Psi_T$, with a number of free parameters. By varying these parameteres, we can find an upper bound for the ground state energy. If our chosen functional form is reasonably close to the exact wavefunction, $\Psi$ of the system, then our estimate for $E_0$ should be reasonably close to the actual ground state energy of our system.
@@ -98,7 +98,25 @@ As noted above, we must choose our trial wavefunction to be reasonably close to 
 \begin{equation}
 h(\boldsymbol{r}_1, ..., \boldsymbol{r}_N, \alpha, \beta)=\prod_{i=1}^N g(\alpha,\beta, \boldsymbol{r}_i)=\prod_{i=1}^N \exp[-\alpha(x_i^2+y_i^2+\beta z_i^2)]=\exp[-\alpha \sum_{i=1}^N (x_i^2+y_i^2+\beta z_i^2)]
 \end{equation}
-Where we now have two variational parameters, $\alpha$ and $\beta$. Here $\beta$ tunes the strength of the potential as a whole, whereas $\beta$ tunes the asymmetry of the spherical oscillator.
+Where we now have two variational parameters, $\alpha$ and $\beta$. Here $\beta$ tunes the strength of the potential as a whole, whereas $\beta$ tunes the asymmetry of the spherical oscillator.\\
+\linebreak
+For the internal potential, we expect a function that attenuates our wavefunction down to zero if the distance between any pair of particles becomes less than $a$. We choose this function to be continuous, on physical grounds. A simple choice for such a function is:
+\begin{equation}
+f(a,|\boldsymbol{r}_i-\boldsymbol{r}_j|)= 
+     \begin{cases}
+       0 & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j| \leq  a\\
+       1-\frac{a}{|\boldsymbol{r}_i-\boldsymbol{r}_j|} & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j|>  a\\
+     \end{cases}
+\end{equation}
+Putting this together, gives our trial wavefunction as:
+\begin{equation}\label{eq:trial_wavefunction}
+\Psi_T(\boldsymbol{r}_1, \boldsymbol{r}_2, ..., \boldsymbol{r}_N, \alpha, \beta)=\prod_ig(\alpha,\beta, \boldsymbol{r}_i)\prod_{i<j}f(a, |\boldsymbol{r}_i-\boldsymbol{r}_j|)
+\end{equation}
+This is thus the wavefunction that we will be using in equation \ref{eq:Variational_principle} to find our upper bound on the ground state energy.
+\subsection{Variational Monte Carlo}
+\subsubsection{The Metropolis algorithm}
+\subsubsection{Importance Sampling}
+\subsection{Gradient descent and conjugate gradient}
 
 
 

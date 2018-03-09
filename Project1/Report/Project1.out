@@ -2,12 +2,14 @@
 \BOOKMARK [1][-]{section.2}{Theoretical model}{}% 2
 \BOOKMARK [2][-]{subsection.2.1}{The potentials employed}{section.2}% 3
 \BOOKMARK [2][-]{subsection.2.2}{The variational method}{section.2}% 4
-\BOOKMARK [1][-]{section.3}{Methods}{}% 5
-\BOOKMARK [2][-]{subsection.3.1}{Minimizing computation in the non-interacting case}{section.3}% 6
-\BOOKMARK [1][-]{section.4}{Results and discussion}{}% 7
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 8
-\BOOKMARK [2][-]{subsection.5.1}{Conclusion}{section.5}% 9
-\BOOKMARK [2][-]{subsection.5.2}{Outlook}{section.5}% 10
-\BOOKMARK [1][-]{section*.2}{Appendices}{}% 11
-\BOOKMARK [1][-]{Appendix.a.A}{Finding the drift force}{}% 12
-\BOOKMARK [1][-]{Appendix.a.B}{Finding the analytic expression for the local energy}{}% 13
+\BOOKMARK [2][-]{subsection.2.3}{Variational Monte Carlo}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Gradient descent and conjugate gradient}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Methods}{}% 7
+\BOOKMARK [2][-]{subsection.3.1}{Minimizing computation in the non-interacting case}{section.3}% 8
+\BOOKMARK [1][-]{section.4}{Results and discussion}{}% 9
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 10
+\BOOKMARK [2][-]{subsection.5.1}{Conclusion}{section.5}% 11
+\BOOKMARK [2][-]{subsection.5.2}{Outlook}{section.5}% 12
+\BOOKMARK [1][-]{section*.2}{Appendices}{}% 13
+\BOOKMARK [1][-]{Appendix.a.A}{Finding the drift force}{}% 14
+\BOOKMARK [1][-]{Appendix.a.B}{Finding the analytic expression for the local energy}{}% 15
