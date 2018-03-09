@@ -90,9 +90,9 @@ This potential thus represents the impossibility of bosons to occupy the same po
 \subsubsection{The variational principle}
 To find the ground state energy, $E_0$ of bosons trapped in a potential, we employ the variational method. The variational principle states that:
 \begin{equation}\label{eq:Variational_principle}
-E_0\leq \langle \Psi_T |H|\Psi_T \rangle
+E_0\leq  \frac{\langle \Psi_T |H|\Psi_T \rangle}{\langle \Psi|\Psi\rangle}
 \end{equation}
-Where $H$ is the Hamiltonian of our system and $\Psi_T$ is any normalized trial wavefunction. We therefore choose a functional form for $\Psi_T$, with a number of free parameters. By varying these parameteres, we can find an upper bound for the ground state energy. If our chosen functional form is reasonably close to the exact wavefunction, $\Psi$ of the system, then our estimate for $E_0$ should be reasonably close to the actual ground state energy of our system.
+Where $H$ is the Hamiltonian of our system and $\Psi_T$ is any trial wavefunction. We therefore choose a functional form for $\Psi_T$, with a number of free parameters. By varying these parameteres, we can find an upper bound for the ground state energy. If our chosen functional form is reasonably close to the exact wavefunction, $\Psi$ of the system, then our estimate for $E_0$ should be reasonably close to the actual ground state energy of our system.
 \subsubsection{Choosing a trial wavefunction}
 As noted above, we must choose our trial wavefunction to be reasonably close to the expected form of the actual position wavefunctions of our system. We note first that the external potential represents a harmonic oscillator. For the harmonic oscillator, it is well known from introductory quantum mechanics that the eigenfunctions are exponential functions for each particle seperately. Note that the elliptic oscillator has a preferred direction (the $z$-axis). We accomodate for this by introducing a parameter $\beta$, representing the asymmetry of the elliptical oscillator. We therefore choose our trial wavefunction for this part of the potential to be:
 \begin{equation}
@@ -114,7 +114,29 @@ Putting this together, gives our trial wavefunction as:
 \end{equation}
 This is thus the wavefunction that we will be using in equation \ref{eq:Variational_principle} to find our upper bound on the ground state energy.
 \subsection{Variational Monte Carlo}
+Note that equation \ref{eq:Variational_principle} involves two integrals over $3N$ dimensions. This is usually not possible to evaluate analytically for large $N$, and traditional numerical methods such as gaussian quadrature are far too slow in high dimensions to be feasible. We therefore employ variational Monte Carlo methods to help in evaluting these integrals. To do this, we consider these integrals to represents stochastic quantities, and define the probability distribution as:
+\begin{equation}
+P(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)=\frac{|\Psi_T|^2}{\int d\boldsymbol{r}_1d\boldsymbol{r}_2...d\boldsymbol{r_n}|\Psi_T|^2}
+\end{equation}
+Now define a new quantity, the local energy, as:
+\begin{equation}
+E_L(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)=\frac{1}{\Psi_T}H\Psi_T
+\end{equation}
+The	expectation value of the Hamiltonian (i.e. the estimate of the energy) now turns into:
+\begin{equation}
+E[H(\alpha, \beta)]=\int P(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)E_L(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)d\boldsymbol{r}_1d\boldsymbol{r}_2...d\boldsymbol{r}_N\approx \frac{1}{M}\sum_{i=1}^M E_{L,i}
+\end{equation}
+Where now $M$ is the number of Monte Carlo cycles, whereas $E_{L,i}$ is the local energy computed in the i-th Monte Carlo step. Note that the quality of this approximation is contingent upon our ability to sample our space. We employ two different algorithms for sampling our coordinate space.
 \subsubsection{The Metropolis algorithm}
+To move from one Monte Carlo step to the other, we will employ the Metropolis algorithm, as described in \textbf{REFERENCE}. The alogrithm works by sampling the probability distribution, but adding a bias to sample mostly in the regions where the probaility distribution actually is large, to avoid wasting CPU cycles. The algorithm works by proposing a step:
+\begin{equation}
+\boldsymbol{r}_{p, new}=\boldsymbol{r}_p+r \cdot \boldsymbol{dx}
+\end{equation}
+Where $r$ is a random number in $[0,1]$ and $\boldsymbol{dx}$ is a chosen step vector. We then compute the ratio:
+\begin{equation}
+w=\frac{P(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p,new}, ..., \boldsymbol{r}_n)}{P(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p}, ..., \boldsymbol{r}_n)}=\frac{|\Psi_T(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p,new}, ..., \boldsymbol{r}_n)|^2}{|\Psi_T(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p}, ..., \boldsymbol{r}_n)|^2}
+\end{equation}
+This ratio determines whether 
 \subsubsection{Importance Sampling}
 \subsection{Gradient descent and conjugate gradient}
 
