@@ -269,6 +269,7 @@ double System::get_local_energy(){
     expectation_local_energy_squared+=temp_value*temp_value;
     expectation_derivative+=wavefunction_derivative_value;
     expectation_derivative_energy+=(wavefunction_derivative_value)*temp_value;
+    //std::cout<<temp_value<<std::endl;
 
 
 

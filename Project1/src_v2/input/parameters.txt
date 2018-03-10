@@ -7,6 +7,6 @@ omega 1
 omega_z 1
 a 0
 dx .01
-dimensions 1
-N 1
+dimensions 3
+N 10
 D 0.5
