@@ -84,9 +84,11 @@ void System::update_next_distance(int move){
     double dist = 0;
     for(int i = 0;i<N;i++){
         dist = (next_r.col(i)- next_r.col(move)).norm();
+
         next_distance(i,move) = dist;
         next_distance(move,i) = dist;
     }
+
 }
 
 
@@ -123,12 +125,11 @@ double System::check_acceptance_and_return_energy(int move){
 
         distance = next_distance;
         acceptance++;
-
     }
     else{
         next_r=r;
     }
-    return get_local_energy();
+    return local_energy_interacting();
 }
 
 
@@ -305,6 +306,135 @@ double System::get_local_energy(){
     }
     */
 
+
+double System::udiv(int idx1,int idx2){
+    double du_dphi;
+    if(distance(idx1,idx2) <= a){
+        du_dphi = 1e15;
+    }
+    if(distance(idx1,idx2) > a){
+        du_dphi = a/(distance(idx1,idx2)*distance(idx1,idx2) - a*distance(idx1,idx2));
+
+    }
+    return du_dphi;
+    }
+
+double System::udivdiv(int idx1,int idx2){
+    double du2_dphi2;
+    if(distance(idx1,idx2) <= a){
+        du2_dphi2 = 1e15;
+
+    }
+    if(distance(idx1,idx2) > a){
+        du2_dphi2 = (a*a - 2*a*distance(idx1,idx2))/(
+                    (distance(idx1,idx2)*distance(idx1,idx2)-
+                     a*distance(idx1,idx2))*(distance(idx1,idx2)*distance(idx1,idx2)-a*distance(idx1,idx2)));
+
+    }
+    return du2_dphi2;
+}
+
+double System::local_energy_interacting(){
+    double sec_fac = 0;
+    double trd_fac = 0;
+    double frt_fac = 0;
+
+    double total_energy = 0;
+    double temp_value = 0;
+    temp_r = Eigen::VectorXd::Zero(dimension);
+    double factor1_noB = -2*(dimension)*alpha*N ;
+    double factor1_B = -2*alpha*(dimension -1)*N -2*alpha*beta*N;
+    double factor2 = 4*alpha*alpha;
+    double pot_factor = 0.5*omega*omega;
+    double r_i_annen = 0;
+    double wavefunction_derivative_value=0;
+
+
+
+    for(int k = 0;k<N;k++){
+        for(int i = 0; i<dimension;i++){
+            if(i==2){
+                temp_value += r(i,k)*r(i,k)*beta*beta;
+                r_i_annen += r(i,k)*r(i,k);
+                wavefunction_derivative_value+=beta*r(i,k);
+            }
+            else{
+                temp_value += r(i,k)*r(i,k);
+                wavefunction_derivative_value+=r(i,k);
+                r_i_annen += r(i,k)*r(i,k);
+            }
+
+
+            }
+        }
+
+    for(int idx1 = 0; idx1 < N; idx1++ ){
+        for(int idx2 = 0; idx2 < N; idx2++){
+
+            for(int dim = 0; dim < dimension; dim++){
+                if(dim == 2){
+
+                    if(idx1 != idx2){
+                        sec_fac += udiv(idx1,idx2)*beta*beta*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
+                                                     /distance(idx1,idx2)));
+
+                        frt_fac += udivdiv(idx1,idx2) + 2*udiv(idx1,idx2)/distance(idx1,idx2);
+
+
+
+                    }
+                    }
+                else{
+                    if(idx1 != idx2){
+
+
+                        sec_fac += udiv(idx1,idx2)*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
+                                                     /distance(idx1,idx2)));
+
+                        frt_fac += udivdiv(idx1,idx2) + 2*udiv(idx1,idx2)/distance(idx1,idx2);
+
+
+
+                    }
+
+                }
+            }
+        }
+    }
+
+    for(int idx11 = 0; idx11 < N; idx11++){
+        for(int idx22 = 0; idx22 < N; idx22++){
+            for(int idx33 = 0; idx33 < N; idx33++){
+                if( idx11 != idx22 && idx11 !=idx33){
+                    trd_fac += udiv(idx11,idx33)*udiv(idx11,idx22)*(((r(0,idx11)*r(0,idx11) + r(1,idx11)*r(1,idx11) + r(2,idx11)*r(2,idx11))
+                                                                     -(r(0,idx11)*r(0,idx33) + r(1,idx11)*r(0,idx33) + r(2,idx11)*r(2,idx33))
+                                                                     -(r(0,idx11)*r(0,idx22) + r(1,idx11)*r(0,idx22) + r(2,idx11)*r(2,idx22))
+                                                                     +(r(0,idx22)*r(0,idx33) + r(1,idx22)*r(0,idx33) + r(2,idx22)*r(2,idx33)))/distance(idx11,idx22)*distance(idx11,idx33));
+                    }
+
+            }
+        }
+    }
+
+
+    sec_fac = -2*alpha*sec_fac;
+    if(dimension >= 3){
+        total_energy = factor1_B + factor2*temp_value + sec_fac + trd_fac + frt_fac;
+    }
+    else{
+        total_energy = factor1_noB + factor2*temp_value + sec_fac + trd_fac + frt_fac;
+    }
+
+    temp_value= -0.5*total_energy+ pot_factor*r_i_annen;
+
+
+
+
+
+
+
+    return temp_value;
+}
 
 void System::quantum_force(int move){
     double grad_value = 0;

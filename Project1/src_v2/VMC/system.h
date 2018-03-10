@@ -43,6 +43,11 @@ public:
     double expectation_derivative_energy;
     double expectation_local_energy_squared;
 
+    double local_energy_interacting();
+    double udiv(int,int);
+    double udivdiv(int,int);
+
+
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
