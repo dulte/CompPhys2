@@ -28,6 +28,7 @@ public:
     }
 
     void push_back(T);
+    void push_back_stamp(double);
 
     void dump(T);
     void dump(T,double);

@@ -19,6 +19,13 @@ void DataDump<T>::push_back(T data_point){
 }
 
 template<class T>
+void DataDump<T>::push_back_stamp(double data_point){
+    data_stamp.push_back(data_point);
+}
+
+
+
+template<class T>
 void DataDump<T>::dump(T data_point){
     outfile << data_point;
 }
@@ -32,7 +39,7 @@ template<class T>
 void DataDump<T>::dump(T data_point,double stamp){
     dump(data_point);
     if(include_stamp){
-        stampfile << stamp;
+        stampfile << stamp << " ";
     }
 
 }
@@ -42,7 +49,7 @@ template<>
 void DataDump<std::vector<double>>::dump(std::vector<double> data_point,double stamp){
     dump_vector(data_point);
     if(include_stamp){
-        stampfile << stamp;
+        stampfile << stamp << " ";
     }
 
 }
@@ -51,12 +58,12 @@ template<class T>
 void DataDump<T>::dump_all(){
     int data_size = data.size();
     for(int i = 0; i<data_size;i++){
-        outfile << data[i] << "\n";
+        outfile << data[i] << " ";
     }
     if(include_stamp){
         int stamp_size = data_stamp.size();
         for(int i = 0; i<   stamp_size;i++){
-            stampfile << data_stamp[i];
+            stampfile << data_stamp[i] << " ";
         }
     }
 }
@@ -70,7 +77,7 @@ void DataDump<std::vector<double>>::dump_all(){
     if(include_stamp){
         int stamp_size = data_stamp.size();
         for(int i = 0; i<   stamp_size;i++){
-            stampfile << data_stamp[i];
+            stampfile << data_stamp[i] << " ";
         }
     }
 }
@@ -97,6 +104,13 @@ void DataDump<T>::dump_metadata(std::string m_location){
     metafile << "Beta " << Parameters::beta << "\n";
     metafile << "Omega " << Parameters::omega << "\n";
     metafile << "Omega_z " << Parameters::omega_z << "\n";
+
+    metafile << "Dimensions " << Parameters::dimension << "\n";
+    metafile << "N " << Parameters::N << "\n";
+
+    metafile << "a " << Parameters::a << "\n";
+    metafile << "D " << Parameters::D << "\n";
+    metafile << "dx " << Parameters::dx << "\n";
 
     metafile.close();
 

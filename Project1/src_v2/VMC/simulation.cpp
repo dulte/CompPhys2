@@ -62,9 +62,25 @@ double Simulation::compute_local_energy_derivative(double alpha){
 
 
 
-void Simulation::run(std::string output_file){
+void Simulation::run(int rank){
 
-    DataDump<double> dump(output_file);
+    //Initializes dump files
+
+    std::string filename = "..//output//data";
+    filename.append(std::to_string(rank));
+    filename.append(".bin");
+
+    std::string stampname = "..//output//stamp";
+    stampname.append(std::to_string(rank));
+    stampname.append(".bin");
+
+    DataDump<double> dump(filename,stampname);
+
+    if(rank == 0){
+        dump.dump_metadata("..//output//metadata.txt");
+    }
+
+    //Main MC
 
     energy = 0;
     double total_energy = 0;
@@ -72,6 +88,7 @@ void Simulation::run(std::string output_file){
 
     for(double a = alpha_min; a < alpha_max; a+=alpha_step){
         system->make_grid(a);
+        dump.push_back_stamp(a);
         std::cout << "a: " << a << std::endl;
         for(int i = 0;i<MC_cycles;i++){
             energy = 0;

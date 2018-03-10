@@ -1,4 +1,4 @@
-MC_cycles 10000000
+MC_cycles 1048576 #Husk 2**n!
 beta 1
 alpha_min 0.3
 alpha_max 0.7
