@@ -24,6 +24,7 @@ private:
     int MC_cycles;
     int N;
 
+    double total_energy;
     double energy;
     double energy_numerical;
 
