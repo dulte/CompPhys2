@@ -30,14 +30,11 @@ int main(int nargs, char *args[])
     System * system = new System();
     Simulation * simulation = new Simulation(system);
 
-    std::string filename = "..//output//data";
-    filename.append(std::to_string(my_rank));
-    filename.append(".txt");
 
     simulation->initiate();
     //simulation->run();
     //std::cout << "Correct a: " << simulation->conjugate_gradient(0.5, 0.01)<<std::endl;
-    simulation->run(filename);
+    simulation->run(my_rank);
 
     delete simulation;
     delete system;

@@ -51,7 +51,7 @@
 \lstset{breaklines}
 \title{FYS4411 - Project 1\\
 Variational Monte Carlo}
-\author{Daniel Heinesen, Gunnar Lange}
+\author{Daniel Heinesen, Gunnar Lange \& Aram Salihi}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -60,6 +60,94 @@ Abstract awesomeness
 \tableofcontents
 \section{Introduction}
 \section{Theoretical model}
+We investigate bosons in a potential trap. The Hamiltonian of such a system for $N$ bosons is in general given by:
+\begin{equation} \label{eq:general_Hamiltonian}
+H=\sum_{i=1}^N\left(-\frac{\hbar^2}{2m}\nabla_i^2 +V_{ext}(\boldsymbol{r}_i)\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+\end{equation}
+Where $V_{ext}$ is the external potential, i.e. the potential of the trap, whereas $V_{int}$ is the interal potential, i.e. the potential between the bosons. We wish to approximate the ground state energy of our system described by the Hamiltonian given in equation \ref{eq:general_Hamiltonian}.
+\subsection{The potentials employed}
+\subsubsection{The external potential}
+We will focus on two different trap shapes: spherical and elliptical. The spherical trap can be described by a standard harmonic oscillator potential, which is given by:
+\begin{equation}
+V_{ext}(\boldsymbol{r})=\frac{1}{2}m\omega_{ho}^2 r^2 \quad \mathrm{(spherical\  trap)}
+\end{equation}
+Where $m$ is the mass of the bosons and $\omega_{ho}$ is a parameter characterizing the strength of the potential (the characteristic frequency of the trap). The elliptical trap, however, is given by:
+\begin{equation}
+V_{ext}(\boldsymbol{r})=\frac{1}{2}m[\omega_{ho}^2 (x^2+y^2)+\omega_z z^2] \quad \mathrm{(elliptical\  trap)}
+\end{equation}
+I.e. we allow the strength of the potential to vary in one direction, which we designate as the $z$-axis.
+\subsubsection{The internal potential}
+We will begin by investigating models where there is no repulsion between the bosons, however, we will later act a repulsive potential that prevents bosons from occupying the same point in space. With $a$ as a typical diameter of our bosons (the hard-core diameter), we define our internal potential as:
+\begin{equation}
+V_{int}(|\boldsymbol{r}_i-\boldsymbol{r}_j|)= 
+     \begin{cases}
+       \infty & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j| \leq  a\\
+       0 & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j|>  a\\
+     \end{cases}
+\end{equation}
+This potential thus represents the impossibility of bosons to occupy the same point in space.
+\subsection{The variational method}
+\subsubsection{The variational principle}
+To find the ground state energy, $E_0$ of bosons trapped in a potential, we employ the variational method. The variational principle states that:
+\begin{equation}\label{eq:Variational_principle}
+E_0\leq  \frac{\langle \Psi_T |H|\Psi_T \rangle}{\langle \Psi|\Psi\rangle}
+\end{equation}
+Where $H$ is the Hamiltonian of our system and $\Psi_T$ is any trial wavefunction. We therefore choose a functional form for $\Psi_T$, with a number of free parameters. By varying these parameteres, we can find an upper bound for the ground state energy. If our chosen functional form is reasonably close to the exact wavefunction, $\Psi$ of the system, then our estimate for $E_0$ should be reasonably close to the actual ground state energy of our system.
+\subsubsection{Choosing a trial wavefunction}
+As noted above, we must choose our trial wavefunction to be reasonably close to the expected form of the actual position wavefunctions of our system. We note first that the external potential represents a harmonic oscillator. For the harmonic oscillator, it is well known from introductory quantum mechanics that the eigenfunctions are exponential functions for each particle seperately. Note that the elliptic oscillator has a preferred direction (the $z$-axis). We accomodate for this by introducing a parameter $\beta$, representing the asymmetry of the elliptical oscillator. We therefore choose our trial wavefunction for this part of the potential to be:
+\begin{equation}
+h(\boldsymbol{r}_1, ..., \boldsymbol{r}_N, \alpha, \beta)=\prod_{i=1}^N g(\alpha,\beta, \boldsymbol{r}_i)=\prod_{i=1}^N \exp[-\alpha(x_i^2+y_i^2+\beta z_i^2)]=\exp[-\alpha \sum_{i=1}^N (x_i^2+y_i^2+\beta z_i^2)]
+\end{equation}
+Where we now have two variational parameters, $\alpha$ and $\beta$. Here $\beta$ tunes the strength of the potential as a whole, whereas $\beta$ tunes the asymmetry of the spherical oscillator.\\
+\linebreak
+For the internal potential, we expect a function that attenuates our wavefunction down to zero if the distance between any pair of particles becomes less than $a$. We choose this function to be continuous, on physical grounds. A simple choice for such a function is:
+\begin{equation}
+f(a,|\boldsymbol{r}_i-\boldsymbol{r}_j|)= 
+     \begin{cases}
+       0 & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j| \leq  a\\
+       1-\frac{a}{|\boldsymbol{r}_i-\boldsymbol{r}_j|} & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j|>  a\\
+     \end{cases}
+\end{equation}
+Putting this together, gives our trial wavefunction as:
+\begin{equation}\label{eq:trial_wavefunction}
+\Psi_T(\boldsymbol{r}_1, \boldsymbol{r}_2, ..., \boldsymbol{r}_N, \alpha, \beta)=\prod_ig(\alpha,\beta, \boldsymbol{r}_i)\prod_{i<j}f(a, |\boldsymbol{r}_i-\boldsymbol{r}_j|)
+\end{equation}
+This is thus the wavefunction that we will be using in equation \ref{eq:Variational_principle} to find our upper bound on the ground state energy.
+\subsection{Variational Monte Carlo}
+Note that equation \ref{eq:Variational_principle} involves two integrals over $3N$ dimensions. This is usually not possible to evaluate analytically for large $N$, and traditional numerical methods such as gaussian quadrature are far too slow in high dimensions to be feasible. We therefore employ variational Monte Carlo methods to help in evaluting these integrals. To do this, we consider these integrals to represents stochastic quantities, and define the probability distribution as:
+\begin{equation}
+P(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)=\frac{|\Psi_T|^2}{\int d\boldsymbol{r}_1d\boldsymbol{r}_2...d\boldsymbol{r_n}|\Psi_T|^2}
+\end{equation}
+Now define a new quantity, the local energy, as:
+\begin{equation}
+E_L(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)=\frac{1}{\Psi_T}H\Psi_T
+\end{equation}
+The	expectation value of the Hamiltonian (i.e. the estimate of the energy) now turns into:
+\begin{equation}
+E[H(\alpha, \beta)]=\int P(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)E_L(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)d\boldsymbol{r}_1d\boldsymbol{r}_2...d\boldsymbol{r}_N\approx \frac{1}{M}\sum_{i=1}^M E_{L,i}
+\end{equation}
+Where now $M$ is the number of Monte Carlo cycles, whereas $E_{L,i}$ is the local energy computed in the i-th Monte Carlo step. Note that the quality of this approximation is contingent upon our ability to sample our space. We employ two different algorithms for sampling our coordinate space.
+\subsubsection{The Metropolis algorithm}
+To move from one Monte Carlo step to the other, we will employ the Metropolis algorithm, as described in \textbf{REFERENCE}. The alogrithm works by sampling the probability distribution, but adding a bias to sample mostly in the regions where the probaility distribution actually is large, to avoid wasting CPU cycles. The algorithm works by proposing a step:
+\begin{equation}
+\boldsymbol{r}_{p, new}=\boldsymbol{r}_p+r \cdot \boldsymbol{dx}
+\end{equation}
+Where $r$ is a random number in $[0,1]$ and $\boldsymbol{dx}$ is a chosen step vector. We then compute the ratio:
+\begin{equation}
+w=\frac{P(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p,new}, ..., \boldsymbol{r}_n)}{P(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p}, ..., \boldsymbol{r}_n)}=\frac{|\Psi_T(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p,new}, ..., \boldsymbol{r}_n)|^2}{|\Psi_T(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p}, ..., \boldsymbol{r}_n)|^2}
+\end{equation}
+This ratio determines whether 
+\subsubsection{Importance Sampling}
+\subsection{Gradient descent and conjugate gradient}
+
+
+
+
+
+
+
+
+
 \section{Methods}\label{Method_section}
 \subsection{Minimizing computation in the non-interacting case}
 For the non-interacting case ($a=0$), certain shortcuts are possible, to save FLOPS. 
