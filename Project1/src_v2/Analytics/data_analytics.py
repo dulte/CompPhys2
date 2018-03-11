@@ -1,5 +1,6 @@
 #from numpy import log2, zeros, mean, var, sum, loadtxt, arange, array, cumsum, dot, transpose, diagonal, floor
 import numpy as np
+import matplotlib.pyplot as plt
 from numpy.linalg import inv
 from time import time
 
@@ -73,7 +74,17 @@ class Analytics:
             self.meta_average = np.copy(self.averages)
             self.meta_error = np.copy(self.errors)
 
-
+    def plot_average(self):
+        if self.num_proc != 1:
+            alphas = self.stamps[:,0]
+        else:
+            alphas = self.stamps[:,0]
+        f, axarr = plt.subplots(2)
+        axarr[0].plot(alphas, self.meta_average)
+        axarr[0].set_title(r"$\mu$ for different $\alpha$")
+        axarr[1].plot(alphas,np.sqrt(self.meta_error))
+        axarr[1].set_title(r"$\sigma$ for different $\alpha$")
+        plt.show()
 
     def block(self,x):
         # preliminaries
@@ -119,3 +130,4 @@ if __name__ == '__main__':
     #print(an.data[:,:,0])
     print(an.meta_average)
     print(an.meta_error)
+    an.plot_average()

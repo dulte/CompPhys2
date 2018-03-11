@@ -39,6 +39,7 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
     while(i<max_iter){
         p_k=-gradient_k/B_k;
         std::cout << "Gradient: "<<gradient_k<<std::endl;
+
         while(j<max_iter_inner){
             temp=compute_local_energy_derivative(x_k+j*r);
             //std::cout<<total_energy << " "<<local_energy_current<<std::endl;
@@ -50,9 +51,11 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
             j++;
         }
         j=1;
+
         s_k=alpha_k*p_k;
         x_k_1=x_k+s_k;
-        std::cout<<x_k_1<<std::endl;
+        std::cout<< p_k << " " << s_k<<std::endl;
+        //std::cout<<x_k_1<<std::endl;
         gradient_k_1=compute_local_energy_derivative(x_k_1);
         y_k=gradient_k_1-gradient_k;
         B_k=y_k/s_k;
@@ -98,6 +101,7 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
 
 double Simulation::compute_local_energy_derivative(double alpha){
     //std::cout<<alpha<<std::endl;
+
     energy = 0;
     total_energy = 0;
     energy_numerical=0;
@@ -112,12 +116,12 @@ double Simulation::compute_local_energy_derivative(double alpha){
         }
             total_energy += energy/N;
         }
-        total_energy =total_energy/MC_cycles;
+    total_energy =total_energy/MC_cycles;
     //std::cout<<"Derivative: " << system->expectation_derivative<<std::endl;
     //std::cout<<"D&E: " << system->expectation_derivative_energy<<std::endl;
     //std::cout<<"E: " << system->expectation_local_energy<<std::endl;
-    local_energy_derivative=(2.0/(N*MC_cycles))*(system->expectation_derivative_energy-system->expectation_derivative*system->expectation_local_energy);
-    //std::cout<<local_energy_derivative<<std::endl;
+    local_energy_derivative=(2.0/(N*MC_cycles))*(system->expectation_derivative_energy-(2.0/(N*MC_cycles))*system->expectation_derivative*system->expectation_local_energy);
+
     return local_energy_derivative;
 
 }
