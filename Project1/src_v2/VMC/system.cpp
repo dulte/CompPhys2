@@ -427,7 +427,7 @@ double System::get_local_energy_interacting(){
                         trd_fac += udiv(idx11,idx33)*udiv(idx11,idx22)*(r(d,idx11)*r(d,idx11)
                                                                         - r(d,idx11)*r(d,idx22)
                                                                         -r(d,idx11)*r(d,idx33)
-                                                                        +r(d,idx22)*r(d,idx33));
+                                                                        +r(d,idx22)*r(d,idx33))/(distance(idx11,idx22)*distance(idx11,idx33));
                     }
                 }
 
