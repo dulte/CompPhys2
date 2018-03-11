@@ -138,8 +138,23 @@ w=\frac{P(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p,new}, ..., \boldsymbol{r}_n)}
 \end{equation}
 This ratio determines whether the new position has a higher or lower value of the PDF than the old position. We then accept the move if and only if $w\geq r$, where $r\in [0,1]$ is a uniformly distributed random variable. This ensures that some steps that decrease the value of the PDF are accepted (giving a spread of value), but that we mostly sample where the PDF is large (which avoids wasting CPU cycles).
 \subsubsection{The Metropolis-Hastings algorithm (importance sampling)}
-The simple Metropolis algorithm described above assigns no preferred direction $\boldsymbol{dx}$ for the proposed step. This can be improved by adding a force term, "pushing" the algorithm towards the direction of 
-
+The simple Metropolis algorithm described above assigns no preferred direction $\boldsymbol{dx}$ for the proposed step. This can be improved by adding a force term, "pushing" the Monte Carlo loop towards the region where the PDF is large. This is described in further detail in \textbf{REFERENCE}, where it is shown that the expression fur such a quantum force is given, for particle $k$, by:
+\begin{equation}
+\boldsymbol{F}_k(\boldsymbol{r}_1, ..., \boldsymbol{r}_N)=2\frac{1}{\Psi_T}\nabla_k \Psi_T
+\end{equation}
+We compute explicitly the expression for $\boldsymbol{F}$, using the trial wavefunction in equation \ref{eq:trial_wavefunction}. This gives:
+\begin{equation}
+\boldsymbol{F}=
+\end{equation}
+\textbf{REMEMBER TO ADD THIS}. A more detailed analysis (given in \textbf{REFERENCE}) shows that the correct way to incorporate such a term into the Metropolis algorithm is by adding a transition probability term given by the Green's functions:
+\begin{equation}
+G(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)=\frac{1}{(4\pi D \Delta t)^{3/2}}\sum_{i=1}^N \exp \left(-\frac{(\boldsymbol{r}_i-\boldsymbol{r'}_i-D\Delta t\boldsymbol{F}_i(\boldsymbol{r}_1,...,\boldsymbol{r}_N))^2}{4D\Delta t}\right)
+\end{equation}
+Where $\boldsymbol{r}_i$ are the coordinates prior to the move and $\boldsymbol{r'}_i$ are the coordinates after the move. The effect of this term is to modulate the acceptance probability, $w$. This term is now given by:
+\begin{equation}
+w(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)=\frac{G(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|\Psi_T(\boldsymbol{r}_1,...,\boldsymbol{r}_N)|^2}{G(\boldsymbol{r'}_N,...,\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1)|\Psi_T(\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|^2}
+\end{equation}
+Which leads to the modified Metropolis algorithm, the Metropolis-Hastings algorithm, where a move is accepted if and only if $w\geq r$ where $r\in [0,1]$ again is a uniformly distributed random variable. This method is computationally far more intensive, but leads to a larger number of accepted steps.
 \subsection{Gradient descent and conjugate gradient}
 
 
