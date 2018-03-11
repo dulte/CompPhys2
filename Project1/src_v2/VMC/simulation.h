@@ -11,7 +11,7 @@ class Simulation
 public:
     Simulation(System *m_system);
     void initiate();
-    void run(std::string);
+    void run(int);
 
     double compute_local_energy_derivative(double alpha);
     double conjugate_gradient(double alpha_0, double b);

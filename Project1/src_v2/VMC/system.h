@@ -43,6 +43,7 @@ public:
     double expectation_derivative_energy;
     double expectation_local_energy_squared;
 
+    void update_expectation();
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;

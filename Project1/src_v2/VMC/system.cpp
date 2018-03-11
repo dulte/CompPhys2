@@ -58,6 +58,7 @@ void System::make_grid(double m_alpha){
     //r = Eigen::MatrixXd::Constant(Parameters::dimension,Parameters::N,0.0);
     next_r = r;
     update();
+    wavefunction_value=get_wavefunction();
 }
 
 //Updates the distances between the particles
@@ -70,14 +71,18 @@ void System::update(){
             distance(j,i) = temp_value;
         }
     }
+
+    /*
     expectation_derivative=0;
     expectation_derivative_energy=0;
     expectation_local_energy=0;
     expectation_local_energy_squared=0;
     wavefunction_probability=0;
     wavefunction_value=get_wavefunction();
-
+    */
+    update_expectation();
     next_distance = distance;
+
 }
 
 void System::update_next_distance(int move){
@@ -87,6 +92,15 @@ void System::update_next_distance(int move){
         next_distance(i,move) = dist;
         next_distance(move,i) = dist;
     }
+}
+
+void System::update_expectation(){
+    expectation_derivative=0;
+    expectation_derivative_energy=0;
+    expectation_local_energy=0;
+    expectation_local_energy_squared=0;
+    wavefunction_probability=0;
+    wavefunction_value=get_wavefunction();
 }
 
 
@@ -105,7 +119,6 @@ void System::make_move_and_update_non_interacting(const int move){
     double random_nr = 0;
     for(int i = 0; i<dimension; i++){
         random_nr = dx*distribution(gen);
-        //std::cout << random_nr << std::endl;
         next_r(i,move) += random_nr;//((double)rand()/RAND_MAX - 0.5);
     }
     update_next_distance(move);
@@ -243,11 +256,11 @@ double System::get_local_energy(){
             if(i==2){
                 temp_value += r(i,k)*r(i,k)*beta*beta;
                 r_i_annen += r(i,k)*r(i,k);
-                wavefunction_derivative_value+=beta*r(i,k);
+                wavefunction_derivative_value+=beta*r(i,k)*r(i,k);
             }
             else{
                 temp_value += r(i,k)*r(i,k);
-                wavefunction_derivative_value+=r(i,k);
+                wavefunction_derivative_value+=r(i,k)*r(i,k);
                 r_i_annen += r(i,k)*r(i,k);
             }
 
@@ -262,7 +275,7 @@ double System::get_local_energy(){
             total_energy = factor1_noB + factor2*temp_value;
         }
 
-    wavefunction_derivative_value*=-2;
+    wavefunction_derivative_value*=-1;
     //temp_value = 0;
     temp_value=-0.5*total_energy+ pot_factor*r_i_annen;
     expectation_local_energy+=temp_value;
