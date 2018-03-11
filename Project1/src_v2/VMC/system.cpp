@@ -288,10 +288,8 @@ double System::get_local_energy_noninteracting(){
         for(int i = 0; i<dimension;i++){
             if(i==2){
                 temp_value += r(i,k)*r(i,k)*beta*beta;
-                r_i_annen += r(i,k)*r(i,k);
                 wavefunction_derivative_value+=beta*r(i,k)*r(i,k);
-                r_i_annen += omega_ratio*r(i,k)*r(i,k);
-                wavefunction_derivative_value+=beta*r(i,k);
+                r_i_annen += omega_ratio*r(i,k)*r(i,k);              
             }
             else{
                 temp_value += r(i,k)*r(i,k);
