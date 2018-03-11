@@ -1,12 +1,12 @@
-MC_cycles 1000000 #Husk 2**n!
+MC_cycles 100000 #Husk 2**n!
 beta 1
 alpha_min 0.3
 alpha_max 0.7
 alpha_num 10
 omega 1
 omega_z 1
-a 0.001
+a 0
 dx .01
 dimensions 3
-N 2
-D 0.5
+N 100
+D 0

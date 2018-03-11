@@ -77,9 +77,9 @@ V_{ext}(\boldsymbol{r})=\frac{1}{2}m[\omega_{ho}^2 (x^2+y^2)+\omega_z z^2] \quad
 \end{equation}
 I.e. we allow the strength of the potential to vary in one direction, which we designate as the $z$-axis.
 \subsubsection{The internal potential}
-We will begin by investigating models where there is no repulsion between the bosons, however, we will later act a repulsive potential that prevents bosons from occupying the same point in space. With $a$ as a typical diameter of our bosons (the hard-core diameter), we define our internal potential as:
+We will begin by investigating models where there is no repulsion between the bosons, however, we will later act a repulsive potential that prevents bosons from occupying the same point in space. Here $a$ is a typical diameter of our bosons (the hard-core diameter), which equals the scattering length of the single boson potential. We then define our internal potential as:
 \begin{equation}
-V_{int}(|\boldsymbol{r}_i-\boldsymbol{r}_j|)= 
+V_{int}(a,|\boldsymbol{r}_i-\boldsymbol{r}_j|)= 
      \begin{cases}
        \infty & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j| \leq  a\\
        0 & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j|>  a\\
@@ -154,7 +154,7 @@ Where $\boldsymbol{r}_i$ are the coordinates prior to the move and $\boldsymbol{
 \begin{equation}
 w(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)=\frac{G(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|\Psi_T(\boldsymbol{r}_1,...,\boldsymbol{r}_N)|^2}{G(\boldsymbol{r'}_N,...,\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1)|\Psi_T(\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|^2}
 \end{equation}
-Which leads to the modified Metropolis algorithm, the Metropolis-Hastings algorithm, where a move is accepted if and only if $w\geq r$ where $r\in [0,1]$ again is a uniformly distributed random variable. This method is computationally far more intensive, but leads to a larger number of accepted steps.
+Which leads to the modified Metropolis algorithm, the Metropolis-Hastings algorithm, where a move is accepted if and only if $w\geq r$ where $r\in [0,1]$ again is a uniformly distributed random variable. This method is computationally far more expensive than the brute-force Metropolis algorithm, but it leads to a  significantly larger number of accepted steps.
 \subsection{The local energy}
 Note that in  order to estimate the expectation value of the Hamiltonian we must, according to equation \ref{eq:Expectation_Hamiltonian} compute the local energy, given by equation \ref{eq:Local_energy_general_expression}, in every Monte Carlo step. The local energy can be rewritten as:
 \begin{equation}
@@ -180,10 +180,18 @@ E_L=
 
 \section{Methods}\label{Method_section}
 \subsection{A note on units}
-\subsection{Outline of the algorithm of our program}
+The scattering-length for a typical BEC condensate atom is somewhere in the range $85<a<140a_0$, where $a_0$ is the Bohr radius. The characteristic trap length (at 0 K), however, is $a_{ho}=(\hbar/m\omega)^{1/2}\approx 10^{4}$Å$-2\cdot 10^{4}$Å. We introduce length units of $a_{ho}$ and energy units of $\hbar \omega$. We show in appendix \textbf{APPENDIX} that, using these units, the Hamiltonian can be rewritten as:
+\begin{equation}\label{eq:Hamiltonian_dimensionless}
+H=\sum_{i=1}^N\left(-\nabla_i^2 + x_i^2+y_i^2+\gamma z_i^2\right)+\sum_{i<j}V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+\end{equation}
+Where $\gamma=\omega_z^2$.
+
+
+
+\subsection{Outline of the structure of our program}
 \subsection{Statistical treatment of the data}
 \subsection{A brief note on some technicalities to save FLOPs}
-
+\subsection{Benchmarks}
 
 
 
@@ -327,7 +335,6 @@ This can be rewritten to:
       \exp{\left(\sum_{i<j}u(r_{ij})\right)}
       \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
   \end{align}
-\end{appendices}
 Lastly we will calculate the second derivative of the trial function, where we
 use the product rule and the chain rule. We will then obtain the following:
 \begin{align*}
@@ -428,4 +435,27 @@ of the trial function is:
   \sum_{j \neq k}\nabla_{k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
 \end{split}
 \end{align}
+\section{The dimensionless Hamiltonian}
+We aim to demonstrate that the Hamiltonian in equation \ref{eq:general_Hamiltonian} is equivalent to the Hamiltonian shown in equation \ref{eq:Hamiltonian_dimensionless} under the the coordinate transformation:
+\begin{equation}
+\boldsymbol{r}\rightarrow \frac{\boldsymbol{r}}{a_{ho}}=\boldsymbol{r} \sqrt{\frac{m\omega}{\hbar}} \quad E\rightarrow \frac{E}{\hbar \omega}
+\end{equation}
+Where $a_{ho}=(h/m\omega)^{1/2}$. To show this, I multiply and divide the entire equation by $1/a_{ho}^2=(\hbar/m\omega)$. This gives:
+\begin{equation}
+\frac{\hbar m\omega }{\hbar m \omega}H =\frac{\hbar \omega}{2} \left(\sum_{i=1}^N \left(-\frac{\partial^2}{\partial (m\omega/\hbar) x^2}-\frac{\partial^2}{\partial (m\omega/\hbar) y^2}-\frac{\partial^2}{\partial (m\omega/\hbar) z^2}      \right)+ \frac{m\omega}{\hbar}\left(x^2+y^2+\omega_z^2 z^2\right)\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+\end{equation}
+Renaming the $\boldsymbol{r}$ to rescaled variable gives 
+\begin{equation}
+H=\hbar \omega \frac{1}{2}\sum_{i=1}^N \left(-\nabla^2_i+x^2+y^2+ \omega_z^2 z^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+\end{equation}
+Now use that $H\Psi_T=E\Psi_T$, and rescale the energy as $E/\hbar \omega$. This gives:
+\begin{equation}
+\frac{1}{\hbar \omega}H\Psi = \frac{1}{2}\sum_{i=1}^N\left(-\nabla^2_i +x_i^2+y_i^2+  \omega_z^2 z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j) = \frac{E}{\hbar \omega}\Psi
+\end{equation}
+Relabeling the energy and defining $\gamma=\omega_z^2$ gives:
+\begin{equation}
+H=\frac{1}{2}\sum_{i=1}^N \left(-\nabla_i^2 +x_i^2+y_i^2+\gamma z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+\end{equation}
+Which is exactly equation \ref{eq:Hamiltonian_dimensionless}.
+\end{appendices}
 \end{document}

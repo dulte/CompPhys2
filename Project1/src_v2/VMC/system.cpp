@@ -115,11 +115,11 @@ double System::calculate_energy_numeric(){
 }
 
 void System::update_wavefunction(const int move){
-    (this->*wavefunction_function_pointer)(move);
+    return (this->*wavefunction_function_pointer)(move);
 }
 
 double System::get_local_energy(){
-    (this->*compute_local_energy)();
+    return (this->*compute_local_energy)();
 }
 
 void System::make_move_and_update(const int move){
