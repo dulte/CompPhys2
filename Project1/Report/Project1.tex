@@ -113,17 +113,17 @@ Putting this together, gives our trial wavefunction as:
 \Psi_T(\boldsymbol{r}_1, \boldsymbol{r}_2, ..., \boldsymbol{r}_N, \alpha, \beta)=\prod_ig(\alpha,\beta, \boldsymbol{r}_i)\prod_{i<j}f(a, |\boldsymbol{r}_i-\boldsymbol{r}_j|)
 \end{equation}
 This is thus the wavefunction that we will be using in equation \ref{eq:Variational_principle} to find our upper bound on the ground state energy.
-\subsection{Variational Monte Carlo}
+\subsection{Variational Monte Carlo methods}
 Note that equation \ref{eq:Variational_principle} involves two integrals over $3N$ dimensions. This is usually not possible to evaluate analytically for large $N$, and traditional numerical methods such as gaussian quadrature are far too slow in high dimensions to be feasible. We therefore employ variational Monte Carlo methods to help in evaluting these integrals. To do this, we consider these integrals to represents stochastic quantities, and define the probability distribution as:
 \begin{equation}
 P(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)=\frac{|\Psi_T|^2}{\int d\boldsymbol{r}_1d\boldsymbol{r}_2...d\boldsymbol{r_n}|\Psi_T|^2}
 \end{equation}
 Now define a new quantity, the local energy, as:
-\begin{equation}
+\begin{equation}\label{eq:Local_energy_general_expression}
 E_L(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)=\frac{1}{\Psi_T}H\Psi_T
 \end{equation}
 The	expectation value of the Hamiltonian (i.e. the estimate of the energy) now turns into:
-\begin{equation}
+\begin{equation}\label{eq:Expectation_Hamiltonian}
 E[H(\alpha, \beta)]=\int P(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)E_L(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)d\boldsymbol{r}_1d\boldsymbol{r}_2...d\boldsymbol{r}_N\approx \frac{1}{M}\sum_{i=1}^M E_{L,i}
 \end{equation}
 Where now $M$ is the number of Monte Carlo cycles, whereas $E_{L,i}$ is the local energy computed in the i-th Monte Carlo step. Note that the quality of this approximation is contingent upon our ability to sample our space. We employ two different algorithms for sampling our coordinate space.
@@ -155,6 +155,19 @@ Where $\boldsymbol{r}_i$ are the coordinates prior to the move and $\boldsymbol{
 w(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)=\frac{G(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|\Psi_T(\boldsymbol{r}_1,...,\boldsymbol{r}_N)|^2}{G(\boldsymbol{r'}_N,...,\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1)|\Psi_T(\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|^2}
 \end{equation}
 Which leads to the modified Metropolis algorithm, the Metropolis-Hastings algorithm, where a move is accepted if and only if $w\geq r$ where $r\in [0,1]$ again is a uniformly distributed random variable. This method is computationally far more intensive, but leads to a larger number of accepted steps.
+\subsection{The local energy}
+Note that in  order to estimate the expectation value of the Hamiltonian we must, according to equation \ref{eq:Expectation_Hamiltonian} compute the local energy, given by equation \ref{eq:Local_energy_general_expression}, in every Monte Carlo step. The local energy can be rewritten as:
+\begin{equation}
+E_L=\frac{1}{\Psi_T}H\Psi_T =\sum_{i=1}^N\left(-\frac{\hbar^2}{2m\Psi_T}\nabla_i^2 \Psi_T+V_{\mathrm{ext}}(\boldsymbol{r}_i)\right)+\sum_{i<j}^N V_{\mathrm{int}}
+\end{equation}
+We compute this numerically, but we also include an analytic computation, using our trial wavefunction $\Psi_T$ defined in equation \ref{eq:trial_wavefunction}. This is done in detail in appendix \textbf{APPENDIX}, and gives:
+\begin{equation}
+E_L=
+\end{equation}
+\textbf{FINISH THIS}.
+
+
+
 \subsection{Gradient descent and conjugate gradient}
 
 
@@ -166,6 +179,31 @@ Which leads to the modified Metropolis algorithm, the Metropolis-Hastings algori
 
 
 \section{Methods}\label{Method_section}
+\subsection{A note on units}
+\subsection{Outline of the algorithm of our program}
+\subsection{Statistical treatment of the data}
+\subsection{A brief note on some technicalities to save FLOPs}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \subsection{Minimizing computation in the non-interacting case}
 For the non-interacting case ($a=0$), certain shortcuts are possible, to save FLOPS. 
 \subsubsection{Computing the numerical energy}
