@@ -225,6 +225,27 @@ void System::update_wavefunction(const int move){
 
 }
 
+double System::f(double dist){
+    double function;
+    if(dist <= a){
+        function = 0
+    }
+    else{
+        function = 1 - a/dist
+    }
+    return function;
+}
+
+
+double System::update_wavefunction_interacting(const int move){
+    double second_factor_of_psi;
+    for(int i = 0, k < N, i++){
+            if(i != move){
+                 second_factor_of_psi*= f(next_distance(i,move))/f(distance(i,move));
+        }
+    }
+    return second_factor_of_psi;
+}
 double System::get_local_energy(){
     double total_energy = 0;
     double temp_value = 0;
@@ -236,14 +257,14 @@ double System::get_local_energy(){
     double pot_factor = 0.5*omega*omega;
     double r_i_annen = 0;
     double wavefunction_derivative_value=0;
-
+    double omega_ratio = omega_z/omega;
 
 
     for(int k = 0;k<N;k++){
         for(int i = 0; i<dimension;i++){
             if(i==2){
                 temp_value += r(i,k)*r(i,k)*beta*beta;
-                r_i_annen += r(i,k)*r(i,k);
+                r_i_annen += omega_ratio*r(i,k)*r(i,k);
                 wavefunction_derivative_value+=beta*r(i,k);
             }
             else{
@@ -276,36 +297,6 @@ double System::get_local_energy(){
 
 
     return temp_value;
-
-}
-    /*
-    temp_r = Eigen::VectorXd(dimension);
-
-    for(int k = 0; k<N;k++){
-
-        for(int i = 0;i<dimension;i++){
-            if(i==2){
-                temp_value += r->coeffRef(i,k)*r->coeffRef(i,k)*beta;
-            }
-            else{
-                temp_value += r->coeffRef(i,k)*r->coeffRef(i,k);
-            }
-            temp_value *= -4*alpha*temp_value;
-            temp_value -= 2*alpha;
-            total_energy += temp_value;
-            temp_value = 0;
-        }
-
-        for(int j = 0; j<N;j++){
-            if(j!=k){
-                temp_r += (r->col(k)-r->col(j))/distance(k,j);
-            }
-
-        }
-
-
-    }
-    */
 
 
 double System::udiv(int idx1,int idx2){
@@ -349,6 +340,7 @@ double System::local_energy_interacting(){
     double pot_factor = 0.5*omega*omega;
     double r_i_annen = 0;
     double wavefunction_derivative_value=0;
+    double omega_ratio = omega_z/omega;
 
 
 
@@ -356,7 +348,7 @@ double System::local_energy_interacting(){
         for(int i = 0; i<dimension;i++){
             if(i==2){
                 temp_value += r(i,k)*r(i,k)*beta*beta;
-                r_i_annen += r(i,k)*r(i,k);
+                r_i_annen += omega_ratio*r(i,k)*r(i,k);
                 wavefunction_derivative_value+=beta*r(i,k);
             }
             else{

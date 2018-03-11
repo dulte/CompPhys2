@@ -48,6 +48,8 @@ public:
     double udivdiv(int,int);
 
 
+    double update_wavefunction_interacting(int);
+    double f(double);
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
@@ -56,6 +58,7 @@ private:
     const double dx = Parameters::dx;
     const double a = Parameters::a;
     const double omega = Parameters::omega;
+    const double omega_z = Parameters::omega_z;
     const double D = Parameters::D;
     double h;
     double wavefunction_value_plus;
