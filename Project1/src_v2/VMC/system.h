@@ -33,7 +33,7 @@ public:
 
     void update_wavefunction(const int move);
     double calculate_energy_noninteracting();
-    double calculate_energy();
+    double calculate_energy_numeric();
     double calculate_energy_interacting();
     double greens_function_ratio(int move);
     void update_next_distance(int);
@@ -43,6 +43,17 @@ public:
     double expectation_derivative_energy;
     double expectation_local_energy_squared;
 
+    double get_local_energy();
+    double get_local_energy_interacting();
+    double get_local_energy_noninteracting();
+    double udiv(int,int);
+    double udivdiv(int,int);
+
+
+    double f(double);
+    void update_wavefunction_interacting(const int move);
+    void update_wavefunction_noninteracting(const int move);
+    double update_wavefunction_interacting_f(const int move);
     void update_expectation();
 private:
     //Saves all the variables from the parameters to save time
@@ -52,14 +63,17 @@ private:
     const double dx = Parameters::dx;
     const double a = Parameters::a;
     const double omega = Parameters::omega;
+    const double omega_z = Parameters::omega_z;
     const double D = Parameters::D;
     double h;
     double wavefunction_value_plus;
     double wavefunction_value_minus;
 
 
-    void (System::*make_move)(const int);
-    double (System::*compute_energy)();
+    void (System::*wavefunction_function_pointer)(const int);
+    double (System::*compute_energy_numeric)();
+    double (System::*compute_local_energy)();
+
 
 
     //Vector and double used for holding temp values
@@ -83,7 +97,6 @@ private:
     double get_wavefunction();
     double get_probability_ratio(int move);
     double get_probability();
-    double get_local_energy();
     void update_probability_ratio();
 
     void quantum_force(int);

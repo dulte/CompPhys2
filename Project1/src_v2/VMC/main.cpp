@@ -1,10 +1,10 @@
 #include <iostream>
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include "mpi.h"
 #include "Parameters/parameters.h"
 #include "simulation.h"
 #include "system.h"
+#include "mpi.h"
 #include <string>
 
 using namespace std;

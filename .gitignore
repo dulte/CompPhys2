@@ -40,7 +40,7 @@ build-*/
 
 # qtcreator generated files
 *.pro.user*
-
+*.pro
 # xemacs temporary files
 *.flc
 
@@ -73,6 +73,7 @@ build-*/
 # --------
 *.dll
 *.exe
+*.bin
 
 # LaTeX files
 *.aux
