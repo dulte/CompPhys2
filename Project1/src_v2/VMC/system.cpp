@@ -23,12 +23,16 @@ System::System()
 
 
     if(Parameters::a !=0){
-        //System::make_move = &System::make_move_and_update_interacting;
-        System::compute_energy = &System::calculate_energy_interacting; //FIX
+        System::compute_energy_numeric = &System::calculate_energy_interacting;
+        System::wavefunction_function_pointer=&System::update_wavefunction_interacting;
+        System::compute_local_energy=&System::get_local_energy_interacting;
+
     }
     else{
-        System::make_move=&System::make_move_and_update_non_interacting;
-        System::compute_energy = &System::calculate_energy_interacting;//FIX
+        System::compute_energy_numeric = &System::calculate_energy_interacting;//FIX
+        System::wavefunction_function_pointer=&System::update_wavefunction_noninteracting;
+        System::compute_local_energy=&System::get_local_energy_noninteracting;
+
     }
 
     //Temp variables
@@ -92,17 +96,20 @@ void System::update_next_distance(int move){
 }
 
 
+double System::calculate_energy_numeric(){
+    return (this->*compute_energy_numeric)();
+
+}
+
+void System::update_wavefunction(const int move){
+    (this->*wavefunction_function_pointer)(move);
+}
+
+double System::get_local_energy(){
+    (this->*compute_local_energy)();
+}
+
 void System::make_move_and_update(const int move){
-    (this->*make_move)(move);
-}
-
-double System::calculate_energy(){
-    return (this->*compute_energy)();
-
-}
-
-
-void System::make_move_and_update_non_interacting(const int move){
     //Makes a random move
     double random_nr = 0;
     for(int i = 0; i<dimension; i++){
@@ -129,7 +136,7 @@ double System::check_acceptance_and_return_energy(int move){
     else{
         next_r=r;
     }
-    return local_energy_interacting();
+    return get_local_energy();
 }
 
 
@@ -220,33 +227,38 @@ double System::calculate_energy_interacting(){
 }
 
 
-void System::update_wavefunction(const int move){
+void System::update_wavefunction_noninteracting(const int move){
     wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)));
+
+}
+
+void System::update_wavefunction_interacting(const int move){
+    wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)))*update_wavefunction_interacting_f(move);
 
 }
 
 double System::f(double dist){
     double function;
     if(dist <= a){
-        function = 0
+        function = 0;
     }
     else{
-        function = 1 - a/dist
+        function = 1 - a/dist;
     }
     return function;
 }
 
 
-double System::update_wavefunction_interacting(const int move){
-    double second_factor_of_psi;
-    for(int i = 0, k < N, i++){
+double System::update_wavefunction_interacting_f(const int move){
+    double second_factor_of_psi=1;
+    for(int i = 0; i < N; i++){
             if(i != move){
                  second_factor_of_psi*= f(next_distance(i,move))/f(distance(i,move));
         }
     }
     return second_factor_of_psi;
 }
-double System::get_local_energy(){
+double System::get_local_energy_noninteracting(){
     double total_energy = 0;
     double temp_value = 0;
     temp_r = Eigen::VectorXd::Zero(dimension);
@@ -297,7 +309,7 @@ double System::get_local_energy(){
 
 
     return temp_value;
-
+}
 
 double System::udiv(int idx1,int idx2){
     double du_dphi;
@@ -326,7 +338,7 @@ double System::udivdiv(int idx1,int idx2){
     return du2_dphi2;
 }
 
-double System::local_energy_interacting(){
+double System::get_local_energy_interacting(){
     double sec_fac = 0;
     double trd_fac = 0;
     double frt_fac = 0;
