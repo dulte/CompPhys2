@@ -410,12 +410,14 @@ double System::get_local_energy_interacting(){
     for(int idx11 = 0; idx11 < N; idx11++){
         for(int idx22 = 0; idx22 < N; idx22++){
             for(int idx33 = 0; idx33 < N; idx33++){
-                if( idx11 != idx22 && idx11 !=idx33){
-                    trd_fac += udiv(idx11,idx33)*udiv(idx11,idx22)*(((r(0,idx11)*r(0,idx11) + r(1,idx11)*r(1,idx11) + r(2,idx11)*r(2,idx11))
-                                                                     -(r(0,idx11)*r(0,idx33) + r(1,idx11)*r(0,idx33) + r(2,idx11)*r(2,idx33))
-                                                                     -(r(0,idx11)*r(0,idx22) + r(1,idx11)*r(0,idx22) + r(2,idx11)*r(2,idx22))
-                                                                     +(r(0,idx22)*r(0,idx33) + r(1,idx22)*r(0,idx33) + r(2,idx22)*r(2,idx33)))/distance(idx11,idx22)*distance(idx11,idx33));
+                for(int d = 0; d < dimension; d++){
+                    if( idx11 != idx22 && idx11 !=idx33){
+                        trd_fac += udiv(idx11,idx33)*udiv(idx11,idx22)*(r(d,idx11)*r(d,idx11)
+                                                                        - r(d,idx11)*r(d,idx22)
+                                                                        -r(d,idx11)*r(d,idx33)
+                                                                        +r(d,idx22)*r(d,idx33));
                     }
+                }
 
             }
         }
