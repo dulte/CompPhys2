@@ -4,11 +4,13 @@
 #include "Parameters/parameters.h"
 #include "simulation.h"
 #include "system.h"
+#include "mpi.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+    double StartTime = MPI_Wtime();
 
     Eigen::initParallel();
     //Reads the parameter file
@@ -22,6 +24,11 @@ int main(int argc, char *argv[])
 
     simulation->initiate();
     simulation->run();
+
+    double EndTime = MPI_Wtime();
+        double TotalTime = EndTime-StartTime;
+
+    cout << "Time = " << TotalTime << endl;
 
     return 0;
 }
