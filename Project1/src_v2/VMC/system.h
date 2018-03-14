@@ -27,6 +27,12 @@ public:
     void update();
     double check_acceptance_and_return_energy(int);
 
+    double expectation_local_energy;
+    double expectation_derivative;
+    double expectation_derivative_energy;
+    double expectation_local_energy_squared;
+    void update_expectation();
+
     void update_next_distance(int move);
 
     void quantum_force(int move);
@@ -64,6 +70,14 @@ private:
 
     void update_wavefunction(const int move);
     void update_probability_ratio();
+
+    double udiv(int,int);
+    double udivdiv(int,int);
+    double get_local_energy_interacting();
+    double update_wavefunction_interacting_f(const int);
+    void update_wavefunction_interacting(const int);
+    double f(double);
+
 
 
     std::random_device rd;

@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
     Simulation * simulation = new Simulation(system);
 
     simulation->initiate();
-    simulation->run();
+    std::cout << "Correct a: " << simulation->conjugate_gradient(0.3, 1.)<<std::endl;
+    //simulation->run();
 
     double EndTime = MPI_Wtime();
         double TotalTime = EndTime-StartTime;
