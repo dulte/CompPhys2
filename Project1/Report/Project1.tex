@@ -59,6 +59,8 @@ Abstract awesomeness
 \end{abstract}
 \tableofcontents
 \section{Introduction}
+The interest
+
 \section{Theoretical model}
 We investigate bosons in a potential trap. The Hamiltonian of such a system for $N$ bosons is in general given by:
 \begin{equation} \label{eq:general_Hamiltonian}
@@ -169,7 +171,7 @@ E_L=
 
 
 \subsection{Gradient descent and conjugate gradient}
-
+To minimize our search space, we use a minimization method to 
 
 
 
@@ -189,7 +191,23 @@ Where $\gamma=\omega_z^2$.
 
 
 \subsection{Outline of the structure of our program}
+Our program uses the \texttt{Eigen} library in \texttt{C++} to do keep track of the matrices  
 \subsection{Statistical treatment of the data}
+We wish to estimate the statistical errors of our estimate of the local energy. As subsequent values for the local energy are based on the previous values of the local energy, we are dealing with a correlated time series. The normality assumptions usually employed when generating confidence intervals therefore does not hold. Instead, we use blocking to estimate the error in our energy. A detailed mathematical treatment of this method is found in \textbf{REFERENCE}. We therefore present only the algorithm. Assume that we have $n$ observations $Q^0=\{Q_1^0,...,Q_n^0\}$ of the local energy, and we wish to estimate the variance of the local energy. The uncorrelated estimator for the standard deviation is given by:
+\begin{equation}
+s=\sqrt{\frac{1}{n-1}\sum_{i=1}^n (Q_i-\overline{Q})^2}
+\end{equation}
+Where $\overline{Q}$ is the mean of the local energy estimates. This expression is only valid in the uncorrelated case, however. The idea of blocking is to perform iterative transformations of the data, until the covariance of the data is approximately zero. Specifically, the transformation that we will be implementing is the following:
+\begin{equation}
+Q^i \rightarrow Q^{i+1}: Q^{i+1} = \left\{ \frac{Q^i_1+Q^i_2}{2}, \frac{Q^i_3+Q^i_4}{2},...,\frac{Q^i_{n-1}+Q^i_{n}}{2}\right\}
+\end{equation}
+We choose $n$ to be a power of a, i.e. $n=2^d$. Thus, we can perform this transformation a maximum of $d$ times. We now define an estimator for the covariance bewteen observations that are distance $h$ apart by:
+\begin{equation}
+\hat{\gamma^k}(h)=\frac{1}{n}\sum_{i=1}^{n-h}(Q_i^k-\overline{Q}^k)(Q_{i+h}^k-\overline{Q}^k)
+\end{equation}
+We are interested in knowing when $\gamma^k(1)\approx 0$. This can be found by hand, simply by realizing that the transformation $Q^i \rightarrow Q^{i+1}$ described above preserves the variance of the data. It is shown in \textbf{REFERENCE} that $\gamma^k(1) \rightarrow 0$ for succesive iterations, and therefore a plot of the empirical variance as a function of iterations should eventually stabilize, giving the variance. \\
+\linebreak
+We use an alternative, automatic, approach to estimate when the covariance is small. This is based on comparing our results to a $\chi^2$ distribution, and is described further in \textbf{REFERENCE}.
 \subsection{A brief note on some technicalities to save FLOPs}
 \subsection{Benchmarks}
 
