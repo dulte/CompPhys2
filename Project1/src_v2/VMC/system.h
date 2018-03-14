@@ -55,6 +55,7 @@ public:
     void update_wavefunction_noninteracting(const int move);
     double update_wavefunction_interacting_f(const int move);
     void update_expectation();
+
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;

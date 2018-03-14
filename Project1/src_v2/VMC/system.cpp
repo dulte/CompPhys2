@@ -392,7 +392,7 @@ double System::get_local_energy_interacting(){
                 if(dim == 2){
 
                     if(idx1 != idx2){
-                        sec_fac += udiv(idx1,idx2)*beta*beta*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
+                        sec_fac += 2*udiv(idx1,idx2)*beta*beta*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
                                                      /distance(idx1,idx2)));
 
                         frt_fac += udivdiv(idx1,idx2) + 2*udiv(idx1,idx2)/distance(idx1,idx2);
@@ -405,7 +405,7 @@ double System::get_local_energy_interacting(){
                     if(idx1 != idx2){
 
 
-                        sec_fac += udiv(idx1,idx2)*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
+                        sec_fac += 2*udiv(idx1,idx2)*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
                                                      /distance(idx1,idx2)));
 
                         frt_fac += udivdiv(idx1,idx2) + 2*udiv(idx1,idx2)/distance(idx1,idx2);

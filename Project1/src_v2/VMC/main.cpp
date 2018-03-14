@@ -33,8 +33,9 @@ int main(int nargs, char *args[])
 
     simulation->initiate();
     //simulation->run();
-    //std::cout << "Correct a: " << simulation->conjugate_gradient(0.5, 0.01)<<std::endl;
-    simulation->run(my_rank);
+    std::cout << "Correct a: " << simulation->conjugate_gradient(0.3, 1.)<<std::endl;
+    //simulation->run(my_rank);
+    //simulation->check_derivative_of_energy();
 
     delete simulation;
     delete system;
