@@ -10,8 +10,8 @@ System::System()
     distance.resize(Parameters::N,Parameters::N);
     next_distance.resize(Parameters::N,Parameters::N);
 
-    quantum_force_matrix.resize(Parameters::N,Parameters::dimension);
-    quantum_force_matrix_new.resize(Parameters::N,Parameters::dimension);
+    quantum_force_vector.resize(Parameters::dimension);
+    quantum_force_vector_new.resize(Parameters::dimension);
 
     std::random_device rd;
     gen = std::mt19937_64(rd());
@@ -200,43 +200,35 @@ void System::quantum_force(int move){
     double grad_value_new = 0;
 
 
-    temp_r = Eigen::VectorXd::Zero(dimension);
 
-    for(int i=0; i<N;i++){
-        if(i==move){
-            temp_r = next_r.col(move);
+
+    for(int j=0; j<dimension;j++){
+
+        if(a!=0){
+            for(int k=0; k<N;k++){
+                if(k !=move){
+                    if(distance(move,k)>a){
+                        grad_value+=2*a*(r(j,move)-(r(j,k)))/(distance(move,k)*distance(move,k)*distance(move,k));
+                    }
+                    if(next_distance(move,k)>a){
+                        grad_value_new+=2*a*(next_r(j,move)-r(j,k))/(next_distance(move,k)*next_distance(move,k)*next_distance(move,k));
+                    }
+                 }
+            }
+        }
+        if(j==2){
+           quantum_force_vector(j)=-4.0*alpha*beta*r(j,move)+grad_value;
+           quantum_force_vector_new(j)=-4.0*alpha*beta*next_r(j,move)+grad_value;
+
         }
         else{
-            temp_r = r.col(move);
+            quantum_force_vector(j)=-4.0*alpha*r(j,move)+grad_value;
+            quantum_force_vector_new(j)=-4.0*alpha*next_r(j,move)+grad_value;
         }
-
-        for(int j=0; j<dimension;j++){
-
-            if(a!=0){
-                for(int k=0; k<N;k++){
-                    if(k !=i){
-                        if(distance(i,k)>a){
-                            grad_value+=2*a*(r(j,i)-(r(j,k)))/(distance(i,k)*distance(i,k)*distance(i,k));
-                        }
-                        if(next_distance(i,k)>a){
-                            grad_value_new+=2*a*(r(j,i)-temp_r(j))/(next_distance(i,k)*next_distance(i,k)*next_distance(i,k));
-                        }
-                     }
-                }
-            }
-            if(j==2){
-               quantum_force_matrix(i,j)=-4.0*alpha*beta*r(j,i)+grad_value;
-               quantum_force_matrix_new(i,j)=-4.0*alpha*beta*temp_r(j)+grad_value;
-
-            }
-            else{
-                quantum_force_matrix(i,j)=-4.0*alpha*r(j,i)+grad_value;
-                quantum_force_matrix_new(i,j)=-4.0*alpha*temp_r(j)+grad_value;
-            }
-            grad_value=0;
-            grad_value_new=0;
-        }
+        grad_value=0;
+        grad_value_new=0;
     }
+
 
 }
 
@@ -274,7 +266,7 @@ double System::greens_function_ratio(int move)
     }*/
 
     for(int k=0;k<dimension;k++){
-        value += 0.5*(quantum_force_matrix(move,k) - quantum_force_matrix_new(move,k))*(D*dx*0.5*(quantum_force_matrix(move,k)-quantum_force_matrix_new(move,k)) - next_r(k,move) + r(k,move));
+        value += 0.5*(quantum_force_vector(k) - quantum_force_vector_new(k))*(D*dx*0.5*(quantum_force_vector(k)-quantum_force_vector_new(k)) - next_r(k,move) + r(k,move));
 
     }
     return exp(value);

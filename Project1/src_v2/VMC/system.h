@@ -17,8 +17,8 @@ public:
 
     Eigen::MatrixXd distance;
     Eigen::MatrixXd next_distance;
-    Eigen::MatrixXd quantum_force_matrix;
-    Eigen::MatrixXd quantum_force_matrix_new;
+    Eigen::VectorXd quantum_force_vector;
+    Eigen::VectorXd quantum_force_vector_new;
 
     const Eigen::MatrixXd get_position() const;
 
