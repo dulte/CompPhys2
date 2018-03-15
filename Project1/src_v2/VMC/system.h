@@ -39,6 +39,7 @@ public:
     double greens_function_ratio(int move);
     void distribute_particles_interacting();
     void distribute_particles_noninteracting();
+    double calculate_energy_interacting();
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
@@ -69,6 +70,7 @@ private:
     double wavefunction_value;
     double wavefunction_probability;
     double local_energy;
+    double h;
 
     double phi_exponant(const Eigen::VectorXd &r);
     double get_wavefunction();

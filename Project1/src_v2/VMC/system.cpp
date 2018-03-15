@@ -17,6 +17,8 @@ System::System()
     gen = std::mt19937_64(rd());
     distribution = std::normal_distribution<double>(0.0,1.0);
 
+    h=1e-5;
+
     if(Parameters::a !=0){
            //System::compute_energy_numeric = &System::calculate_energy_interacting;
            System::wavefunction_function_pointer=&System::update_wavefunction_interacting;
@@ -31,8 +33,8 @@ System::System()
     }
 
     //Sets the seed of rand() to the current time
-    //srand(time(NULL));
-    srand(23);
+    srand(time(NULL));
+    //srand(23);
 }
 
 void System::make_grid(double m_alpha){
@@ -167,7 +169,9 @@ double System::check_acceptance_and_return_energy(int move){
         //next_distance = distance;
         //next_distance = distance;
     }
-    return get_local_energy();
+    return get_local_energy_noninteracting();
+    //return calculate_energy_interacting();
+    //return get_local_energy();
 }
 
 
@@ -386,30 +390,23 @@ double System::get_local_energy_interacting(){
 
     for(int idx1 = 0; idx1 < N; idx1++ ){
         for(int idx2 = 0; idx2 < N; idx2++){
-
             for(int dim = 0; dim < dimension; dim++){
                 if(dim == 2){
 
                     if(idx1 != idx2){
                         sec_fac += 2*udiv(idx1,idx2)*beta*beta*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
                                                      /distance(idx1,idx2)));
-
                         frt_fac += udivdiv(idx1,idx2) + 2*udiv(idx1,idx2)/distance(idx1,idx2);
 
-
-
                     }
-                    }
+                }
                 else{
                     if(idx1 != idx2){
-
 
                         sec_fac += 2*udiv(idx1,idx2)*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
                                                      /distance(idx1,idx2)));
 
                         frt_fac += udivdiv(idx1,idx2) + 2*udiv(idx1,idx2)/distance(idx1,idx2);
-
-
 
                     }
 
@@ -433,6 +430,16 @@ double System::get_local_energy_interacting(){
             }
         }
     }
+    /*
+    for(int k = 0; k<N;k++){
+        for(int j = 0; j<N;j++){
+            for(int i = 0; i<N;i++){
+                if(k!=i && k!=j){
+                    trd_fac += (r.col(k) - r.col(i)).dot(r.col(k) - r.col(i))/(distance(k,j)*distance(k,i))*udiv(k,i)*udiv(k,j);
+                }
+           }
+        }
+    }*/
 
 
     sec_fac = -2*alpha*sec_fac;
@@ -465,10 +472,10 @@ void System::quantum_force(int move){
             for(int k=0; k<N;k++){
                 if(k !=move){
                     if(distance(move,k)>a){
-                        grad_value+=2*a*(r(j,move)-(r(j,k)))/(distance(move,k)*distance(move,k)*distance(move,k));
+                        grad_value+=2*a*(r(j,move)-(r(j,k)))/distance(move,k)*udiv(move,k);
                     }
                     if(next_distance(move,k)>a){
-                        grad_value_new+=2*a*(next_r(j,move)-r(j,k))/(next_distance(move,k)*next_distance(move,k)*next_distance(move,k));
+                        grad_value_new+=2*a*(next_r(j,move)-next_r(j,k))/next_distance(move,k)*udiv(move,k);
                     }
                  }
             }
@@ -533,6 +540,34 @@ double System::greens_function_ratio(int move)
     return exp(value)+N-1;
     //return value_new/value;
 
+}
+
+
+double System::calculate_energy_interacting(){
+    double wavefunction_value_plus = 0;
+    double wavefunction_value_minus = 0;
+
+    double kinetic_energy = 0;
+    double potential_energy = 0;
+    wavefunction_value=get_wavefunction();
+    for(int i = 0; i<N;i++){
+        potential_energy+=omega*omega*r.col(i).squaredNorm();
+        for(int j = 0; j<dimension;j++){
+            //std::cout<<r->coeffRef(j,i)<<std::endl;
+            r(j,i)+=h;
+            wavefunction_value_plus=get_wavefunction();
+            r(j,i)-=2*h;
+            wavefunction_value_minus=get_wavefunction();
+            r(j,i)+=h;
+            kinetic_energy -= (wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value)/h/h/wavefunction_value;
+            //std::cout<<r->coeffRef(j,i)<<std::endl;
+        }
+        //kinetic_energy += 2*dimension*alpha-4*alpha*alpha*r->col(i).squaredNorm();
+
+    }
+    //std::cout<<wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value<<std::endl;
+
+    return (0.5*potential_energy+0.5*(kinetic_energy));
 }
 
 
