@@ -169,8 +169,8 @@ double System::check_acceptance_and_return_energy(int move){
         //next_distance = distance;
         //next_distance = distance;
     }
-    return get_local_energy_noninteracting();
-    //return calculate_energy_interacting();
+    //return get_local_energy_noninteracting();
+    return calculate_energy_interacting();
     //return get_local_energy();
 }
 
