@@ -1,6 +1,6 @@
 #include <iostream>
-#include <Eigen/Core>
 #include <Eigen/Dense>
+#include <Eigen/Core>
 #include "Parameters/parameters.h"
 #include "simulation.h"
 #include "system.h"
@@ -23,8 +23,9 @@ int main(int argc, char *argv[])
     Simulation * simulation = new Simulation(system);
 
     simulation->initiate();
-    std::cout << "Correct a: " << simulation->conjugate_gradient(0.3, 1.)<<std::endl;
-    //simulation->run();
+    //std::cout << "Correct a: " << simulation->conjugate_gradient(0.3, 1.)<<std::endl;
+    simulation->run();
+    //simulation->data_for_derivated();
 
     double EndTime = MPI_Wtime();
         double TotalTime = EndTime-StartTime;

@@ -3,7 +3,7 @@
 #include "system.h"
 #include "Parameters/parameters.h"
 #include "DataDump/datadump.h"
-#include "MTLS.h"
+//#include "MTLS.h"
 
 
 class Simulation
@@ -15,6 +15,7 @@ public:
 
     double conjugate_gradient(double alpha_0, double b);
     double compute_local_energy_derivative(double alpha);
+    void data_for_derivated();
 private:
     System *system;
     double alpha_step;

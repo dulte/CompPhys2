@@ -16,13 +16,13 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
     double s_k=0;
     double gradient_k_1=0;
     double y_k=0;
-    double alpha_k=0.1;
+    double alpha_k=0.01;
     double alpha_i=1;
     double r=1e-4;
     double temp=0;
     int i=0;
     int j=1;
-    int max_iter=100;
+    int max_iter=200;
     int max_iter_inner=10;
     int max_j=0;
     double tol=1e-8;
@@ -108,7 +108,22 @@ double Simulation::compute_local_energy_derivative(double alpha){
 
 }
 
+void Simulation::data_for_derivated(){
+    DataDump<double> deriv_data("..//output//deriv_data.bin");
+    DataDump<double> data("..//output//data.bin");
+    DataDump<double> alphas("..//output//alphas.bin");
+    for(double a = alpha_min; a < alpha_max; a+=alpha_step){
+        std::cout << "a: " << a << std::endl;
+        alphas.push_back(a);
+        double deriv = compute_local_energy_derivative(a);
+        data.push_back(total_energy);
+        deriv_data.push_back(deriv);
+    }
+    data.dump_all();
+    alphas.dump_all();
+    deriv_data.dump_all();
 
+}
 
 
 
@@ -126,16 +141,26 @@ void Simulation::run(){
 
     energy = 0;
 
+    DataDump<double> data("..//output//data.bin");
+    DataDump<double> alphas("..//output//alphas.bin");
+
     for(double a = alpha_min; a < alpha_max; a+=alpha_step){
         system->make_grid(a);
+        alphas.push_back(a);
         std::cout << "a: " << a << std::endl;
         for(int i = 0;i<MC_cycles;i++){
+
             for(int move = 0;move<N;move++){
+                //std::cout << "move: " << move << std::endl;
                 system->make_move_and_update(move);
                 energy += system->check_acceptance_and_return_energy(move);
             }
         }
+        data.push_back(energy/(N*MC_cycles));
         std::cout << "Energy " << energy/(N*MC_cycles) << std::endl;
         energy = 0;
     }
+
+    data.dump_all();
+    alphas.dump_all();
 }

@@ -17,32 +17,70 @@ System::System()
     gen = std::mt19937_64(rd());
     distribution = std::normal_distribution<double>(0.0,1.0);
 
-    //Temp variables
-    //temp_r.resize(Parameters::dimension);
-    //temp_value = 0;
-    //temp_value2 = 0;
+    if(Parameters::a !=0){
+           //System::compute_energy_numeric = &System::calculate_energy_interacting;
+           System::wavefunction_function_pointer=&System::update_wavefunction_interacting;
+           System::compute_local_energy=&System::get_local_energy_interacting;
+
+       }
+     else{
+           //System::compute_energy_numeric = &System::calculate_energy_interacting;//FIX
+           System::wavefunction_function_pointer=&System::update_wavefunction_noninteracting;
+           System::compute_local_energy=&System::get_local_energy_noninteracting;
+
+    }
 
     //Sets the seed of rand() to the current time
-    srand(time(NULL));
+    //srand(time(NULL));
+    srand(23);
 }
 
 void System::make_grid(double m_alpha){
     alpha = m_alpha;
-        //Sets all positions to a random position [-1,1]
-        //r = Eigen::MatrixXd::Random(Parameters::dimension,Parameters::N)*0.1;
+    //Sets all positions to a random position [-1,1]
+    //r = Eigen::MatrixXd::Random(Parameters::dimension,Parameters::N)*0.1;
+    if(a!=0){
+        distribute_particles_interacting();
+    }
+    else{
+        distribute_particles_noninteracting();
+    }
 
 
-        for(int i = 0;i<N;i++){
-            for(int j = 0;j<dimension;j++){
-                r(j,i) = distribution(gen)*sqrt(dx);
-            }
-        }
 
-        //r = Eigen::MatrixXd::Constant(Parameters::dimension,Parameters::N,0.0);
+    //r = Eigen::MatrixXd::Constant(Parameters::dimension,Parameters::N,0.0);
     next_r = r;
     update();
     wavefunction_value=get_wavefunction();
 }
+
+void System::distribute_particles_interacting(){
+    bool safe_distance = false;
+    for(int i = 0;i<N;i++){
+        safe_distance = false;
+        while(!safe_distance){
+            for(int j = 0;j<dimension;j++){
+                r(j,i) = distribution(gen)*sqrt(dx);
+            }
+            safe_distance = true;
+            for(int n = 0;n<i;n++){
+                if((r.col(n) - r.col(i)).norm() <= a){
+                    safe_distance = false;
+                    break;
+                }
+            }
+        }
+        std::cout << "Particle " << i << " placed" << std::endl;
+    }
+}
+void System::distribute_particles_noninteracting(){
+    for(int i = 0;i<N;i++){
+        for(int j = 0;j<dimension;j++){
+            r(j,i) = distribution(gen)*sqrt(dx);
+        }
+    }
+}
+
 
 //Updates the distances between the particles
 void System::update(){
@@ -64,9 +102,17 @@ void System::make_move_and_update(const int move){
     //Makes a random move
     double random_nr = 0;
     for(int i = 0; i<dimension; i++){
-        random_nr = dx*distribution(gen);// + quantum_force_matrix(move,i)*dx*D;
+        if(D!=0){
+            random_nr = sqrt(dx)*distribution(gen);// + quantum_force_vector(i)*dx*D;
+        }else{
+            random_nr = dx*distribution(gen);//*((double)rand()/RAND_MAX - 0.5);
+        }
+
         next_r(i,move) = r(i,move) +  random_nr;//((double)rand()/RAND_MAX - 0.5);
     }
+
+    //std::cout << next_r <<std::endl;
+
     update_next_distance(move);
 
 }
@@ -98,12 +144,23 @@ double System::check_acceptance_and_return_energy(int move){
     //If r is less than the acceptance prob, r is updated to the new r
     if(temp_value <= get_probability_ratio(move)){
         update_wavefunction(move);
-        r = next_r;
+        r.col(move) = next_r.col(move);
+        //r = next_r;
         //update();
-        distance = next_distance;
+        distance.col(move) = next_distance.col(move);
+        distance.row(move) = next_distance.row(move);
+        //distance = next_distance;
+        //distance = next_distance;
     }
     else{
-        next_r = r;
+        next_r.col(move) = r.col(move);
+        next_distance.col(move) = distance.col(move);
+        next_distance.row(move) = distance.row(move);
+
+
+        //next_r = r;
+        //next_distance = distance;
+        //next_distance = distance;
     }
     return get_local_energy();
 }
@@ -138,21 +195,41 @@ double System::f(double dist){
 double System::get_probability_ratio(int move){
     double temp_value = phi_exponant(r.col(move)); //Stores the probability before move
     double temp_value2 = phi_exponant(next_r.col(move)); //Stores the probability of move
+    double f_part = 1;
+    double green_part = 1;
+    if(a!=0){
+        f_part *= update_wavefunction_interacting_f(move);
+    }
+    if(D!=0){
+        green_part = greens_function_ratio(move);
+    }
 
-    return exp(2*(temp_value2-temp_value))*greens_function_ratio(move);
+
+    return exp(2*(temp_value2-temp_value))*f_part*f_part;
 }
 
 double System::get_wavefunction(){
     double temp_value = 0; //Stores the exponants of phi
+    double f_part = 1;
     Eigen::VectorXd temp_r;
     for(int i = 0;i<N;i++){
         temp_r = r.col(i);
         temp_value += phi_exponant(temp_r);
+        if(a != 0){
+            for(int other = 0;other<i;other++){
+                f_part*= f(distance(other,i));
+            }
+        }
+
     }
-    return exp(temp_value);
+    return exp(temp_value)*f_part;
 }
 
 void System::update_wavefunction(const int move){
+    return (this->*wavefunction_function_pointer)(move);
+}
+
+void System::update_wavefunction_noninteracting(const int move){
     wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)));
 
 }
@@ -180,6 +257,11 @@ double System::get_probability(){
 
 
 double System::get_local_energy(){
+    return (this->*compute_local_energy)();
+}
+
+
+double System::get_local_energy_noninteracting(){
         double total_energy = 0;
         double temp_value = 0;
         //temp_r = Eigen::VectorXd::Zero(dimension);
@@ -236,6 +318,8 @@ double System::udiv(int idx1,int idx2){
     double du_dphi;
     if(distance(idx1,idx2) <= a){
         du_dphi = 1e15;
+        std::cout << "Help it happend!!!" << std::endl;
+        exit(1);
     }
     if(distance(idx1,idx2) > a){
         du_dphi = a/(distance(idx1,idx2)*distance(idx1,idx2) - a*distance(idx1,idx2));
@@ -355,7 +439,10 @@ double System::get_local_energy_interacting(){
     }
 
     temp_value= -0.5*total_energy+ pot_factor*r_i_annen;
-
+    expectation_local_energy+=temp_value;
+    expectation_local_energy_squared+=temp_value*temp_value;
+    expectation_derivative+=wavefunction_derivative_value;
+    expectation_derivative_energy+=(wavefunction_derivative_value)*temp_value;
 
     return temp_value;
 }
@@ -406,7 +493,7 @@ double System::greens_function_ratio(int move)
     double exponent_new = 0;
     double exponent_factor=D*dx;
 
-    temp_r = Eigen::VectorXd::Zero(dimension);
+    //temp_r = Eigen::VectorXd::Zero(dimension);
 
     quantum_force(move);
     /*
@@ -429,12 +516,16 @@ double System::greens_function_ratio(int move)
         value_new+=exp(-exponent_new);
 
     }*/
-
+/*
     for(int k=0;k<dimension;k++){
         value += 0.5*(quantum_force_vector(k) - quantum_force_vector_new(k))*(D*dx*0.5*(quantum_force_vector(k)-quantum_force_vector_new(k)) - next_r(k,move) + r(k,move));
 
-    }
-    return exp(value);
+    }*/
+
+    value = -(r.col(move) - next_r.col(move) -D*dx*quantum_force_vector_new).squaredNorm()+(next_r.col(move)-r.col(move) - D*dx*quantum_force_vector).squaredNorm();
+    value /= 4*D*dx;
+
+    return exp(value)+N-1;
     //return value_new/value;
 
 }

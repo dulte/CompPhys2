@@ -37,6 +37,8 @@ public:
 
     void quantum_force(int move);
     double greens_function_ratio(int move);
+    void distribute_particles_interacting();
+    void distribute_particles_noninteracting();
 private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
@@ -54,6 +56,12 @@ private:
     double temp_value;
     //double temp_value2;
     Eigen::MatrixXd *r_temp_pointer;
+
+
+
+    void (System::*wavefunction_function_pointer)(const int);
+    double (System::*compute_energy_numeric)();
+    double (System::*compute_local_energy)();
 
 
     //Functions for calulations involving wavefunction
@@ -76,6 +84,8 @@ private:
     double get_local_energy_interacting();
     double update_wavefunction_interacting_f(const int);
     void update_wavefunction_interacting(const int);
+    void update_wavefunction_noninteracting(const int move);
+    double get_local_energy_noninteracting();
     double f(double);
 
 
