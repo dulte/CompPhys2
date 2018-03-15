@@ -51,7 +51,7 @@
 \lstset{breaklines}
 \title{FYS4411 - Project 1\\
 Variational Monte Carlo}
-\author{Daniel Heinesen, Gunnar Lange \& Aram Salihi}
+\author{Daniel Heinesen, Gunnar Lange \& \tiny Aram Salihi}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -152,7 +152,7 @@ We compute explicitly the expression for $\boldsymbol{F}$, using the trial wavef
 \begin{equation}
 G(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)=\frac{1}{(4\pi D \Delta t)^{3/2}}\sum_{i=1}^N \exp \left(-\frac{(\boldsymbol{r}_i-\boldsymbol{r'}_i-D\Delta t\boldsymbol{F}_i(\boldsymbol{r}_1,...,\boldsymbol{r}_N))^2}{4D\Delta t}\right)
 \end{equation}
-Where $\boldsymbol{r}_i$ are the coordinates prior to the move and $\boldsymbol{r'}_i$ are the coordinates after the move. The effect of this term is to modulate the acceptance probability, $w$. This term is now given by:
+\textbf{FIX THIS} Where $\boldsymbol{r}_i$ are the coordinates prior to the move and $\boldsymbol{r'}_i$ are the coordinates after the move. The effect of this term is to modulate the acceptance probability, $w$. This term is now given by:
 \begin{equation}
 w(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)=\frac{G(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|\Psi_T(\boldsymbol{r}_1,...,\boldsymbol{r}_N)|^2}{G(\boldsymbol{r'}_N,...,\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1)|\Psi_T(\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|^2}
 \end{equation}
@@ -171,7 +171,12 @@ E_L=
 
 
 \subsection{Gradient descent and conjugate gradient}
-To minimize our search space, we use a minimization method to 
+To reduce our search space, we use a minimization method to find an approximation to the optimal variational parameter. This minimization method is run with relatively few Monte Carlo steps, and once an approximate optimal parameter is found, we perform the analysis. We implement two different approaches:\\
+\textbf{FINISH}\\
+We therefore require the derivative of the local energy. We show in appendix \textbf{APPENDIX} that this is given by:
+\begin{equation}
+\frac{\partial E_L}{\partial \alpha}=2\left(\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}E_L[\alpha]\big\rangle-\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}\big\rangle \big\langle E_L[\alpha]\big\rangle\right)
+\end{equation}
 
 
 
@@ -208,6 +213,7 @@ We choose $n$ to be a power of a, i.e. $n=2^d$. Thus, we can perform this transf
 We are interested in knowing when $\gamma^k(1)\approx 0$. This can be found by hand, simply by realizing that the transformation $Q^i \rightarrow Q^{i+1}$ described above preserves the variance of the data. It is shown in \textbf{REFERENCE} that $\gamma^k(1) \rightarrow 0$ for succesive iterations, and therefore a plot of the empirical variance as a function of iterations should eventually stabilize, giving the variance. \\
 \linebreak
 We use an alternative, automatic, approach to estimate when the covariance is small. This is based on comparing our results to a $\chi^2$ distribution, and is described further in \textbf{REFERENCE}.
+\textbf{FINISH}
 \subsection{A brief note on some technicalities to save FLOPs}
 \subsection{Benchmarks}
 
@@ -475,5 +481,15 @@ Relabeling the energy and defining $\gamma=\omega_z^2$ gives:
 H=\frac{1}{2}\sum_{i=1}^N \left(-\nabla_i^2 +x_i^2+y_i^2+\gamma z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 \end{equation}
 Which is exactly equation \ref{eq:Hamiltonian_dimensionless}.
+\section{Finding the derivative of the local energy}
+The local energy, $E_L$ is given by:
+\begin{equation}
+E_L=\langle \Psi_T | H| \Psi_T \rangle
+\end{equation}
+Taking the derivative of this gives:
+\begin{equation}
+\frac{\partial E_L}{\partial \alpha}=\langle \frac{\partial \Psi_T}{\partial \alpha}|H|\Psi_T\rangle + \langle \Psi_T |\frac{\partial H}{\partial \alpha}	|\Psi_T\rangle + \langle \Psi_T |H|\frac{\partial \Psi_T}{\partial \alpha}\rangle
+\end{equation}
+The Hamiltonian does not depend on the variational parameter $\alpha$. 
 \end{appendices}
 \end{document}
