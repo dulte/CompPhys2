@@ -76,7 +76,11 @@ void System::distribute_particles_interacting(){
 void System::distribute_particles_noninteracting(){
     for(int i = 0;i<N;i++){
         for(int j = 0;j<dimension;j++){
-            r(j,i) = distribution(gen)*sqrt(dx);
+            if(D!=0){
+                r(j,i) = distribution(gen)*sqrt(dx);
+            }else{
+                r(j,i) = 2*((double)rand()/RAND_MAX - 0.5);
+            }
         }
     }
 }
@@ -101,11 +105,12 @@ void System::update(){
 void System::make_move_and_update(const int move){
     //Makes a random move
     double random_nr = 0;
+    quantum_force(move);
     for(int i = 0; i<dimension; i++){
         if(D!=0){
-            random_nr = sqrt(dx)*distribution(gen);// + quantum_force_vector(i)*dx*D;
+            random_nr = sqrt(dx)*distribution(gen) + quantum_force_vector(i)*dx*D;
         }else{
-            random_nr = dx*distribution(gen);//*((double)rand()/RAND_MAX - 0.5);
+            random_nr = dx*2*((double)rand()/RAND_MAX - 0.5);
         }
 
         next_r(i,move) = r(i,move) +  random_nr;//((double)rand()/RAND_MAX - 0.5);
@@ -205,7 +210,7 @@ double System::get_probability_ratio(int move){
     }
 
 
-    return exp(2*(temp_value2-temp_value))*f_part*f_part;
+    return exp(2*(temp_value2-temp_value))*f_part*f_part*green_part;
 }
 
 double System::get_wavefunction(){

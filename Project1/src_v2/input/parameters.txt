@@ -1,7 +1,7 @@
-MC_cycles 1000000
+MC_cycles 500000
 beta 1
-alpha_min 0.4
-alpha_max .6
+alpha_min 0.1
+alpha_max .8
 alpha_num 50
 omega 1
 omega_z 1
