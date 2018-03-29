@@ -8,4 +8,5 @@ Computational Physics II with [Gunnar Lange](https://github.com/gunnarlan), [Ara
 
 # Other Links
 [Course Webpage](http://www.uio.no/studier/emner/matnat/fys/FYS4411/)
-[Courwe github](http://compphysics.github.io/ComputationalPhysics2/doc/web/course)
+
+[Course github](http://compphysics.github.io/ComputationalPhysics2/doc/web/course)
