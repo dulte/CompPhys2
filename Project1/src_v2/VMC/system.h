@@ -40,7 +40,14 @@ public:
     void distribute_particles_interacting();
     void distribute_particles_noninteracting();
     double calculate_energy_interacting();
-private:
+
+
+    double get_wavefunction();
+    double get_probability_ratio(int move);
+    double get_probability();
+    double get_local_energy();
+
+//private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
     const int dimension = Parameters::dimension;
@@ -73,10 +80,6 @@ private:
     double h;
 
     double phi_exponant(const Eigen::VectorXd &r);
-    double get_wavefunction();
-    double get_probability_ratio(int move);
-    double get_probability();
-    double get_local_energy();
 
     void update_wavefunction(const int move);
     void update_probability_ratio();

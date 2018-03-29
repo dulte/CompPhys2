@@ -139,28 +139,64 @@ void Simulation::initiate(){
 
 void Simulation::run(){
 
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_real_distribution<double> distribution(0,N);
+
     energy = 0;
+    int move = 0;
 
     DataDump<double> data("..//output//data.bin");
     DataDump<double> alphas("..//output//alphas.bin");
 
     for(double a = alpha_min; a < alpha_max; a+=alpha_step){
+
         system->make_grid(a);
         alphas.push_back(a);
         std::cout << "a: " << a << std::endl;
         for(int i = 0;i<MC_cycles;i++){
+            move = (int)distribution(gen);
+            system->make_move_and_update(move);
+            energy += system->check_acceptance_and_return_energy(move);
 
-            for(int move = 0;move<N;move++){
-                //std::cout << "move: " << move << std::endl;
-                system->make_move_and_update(move);
-                energy += system->check_acceptance_and_return_energy(move);
-            }
         }
-        data.push_back(energy/(N*MC_cycles));
-        std::cout << "Energy " << energy/(N*MC_cycles) << std::endl;
+        data.push_back(energy/(MC_cycles));
+        std::cout << "Energy " << energy/(MC_cycles) << std::endl;
         energy = 0;
     }
-
     data.dump_all();
     alphas.dump_all();
+}
+
+
+void Simulation::oneBodyDensity(double optimal_alpha){
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_real_distribution<double> distribution(1,N);
+
+    int move = 1;
+
+    DataDump<double> r_packet("..//output//r_positions.bin");
+    DataDump<double> psi_squared_packet("..//output//psi_squared.bin");
+
+    double wave_function_squared = 0;
+    int number_of_integration_points = 1000;
+    for(int p = 0; p<number_of_integration_points;p++){
+        system->make_grid(optimal_alpha);
+        r_packet.push_back(system->r.col(0).norm());
+
+        for(int i = 0;i<MC_cycles;i++){
+            move = (int)distribution(gen);
+            system->make_move_and_update(move);
+            system->update_wavefunction(move);
+            wave_function_squared += system->get_probability();
+        }
+
+        psi_squared_packet.push_back(wave_function_squared/(MC_cycles));
+        wave_function_squared = 0;
+    }
+
+    r_packet.dump_all();
+    psi_squared_packet.dump_all();
+
 }

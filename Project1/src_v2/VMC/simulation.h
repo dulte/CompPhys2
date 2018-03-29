@@ -16,6 +16,7 @@ public:
     double conjugate_gradient(double alpha_0, double b);
     double compute_local_energy_derivative(double alpha);
     void data_for_derivated();
+    void oneBodyDensity(double optimal_alpha);
 private:
     System *system;
     double alpha_step;
