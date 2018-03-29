@@ -51,7 +51,7 @@
 \lstset{breaklines}
 \title{FYS4411 - Project 1\\
 Variational Monte Carlo}
-\author{Daniel Heinesen, Gunnar Lange \& \tiny Aram Salihi}
+\author{Daniel Heinesen, Gunnar Lange \& Aram Salihi}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -59,7 +59,7 @@ Abstract awesomeness
 \end{abstract}
 \tableofcontents
 \section{Introduction}
-The interest
+
 
 \section{Theoretical model}
 We investigate bosons in a potential trap. The Hamiltonian of such a system for $N$ bosons is in general given by:
@@ -178,9 +178,12 @@ We therefore require the derivative of the local energy. We show in appendix \te
 \frac{\partial E_L}{\partial \alpha}=2\left(\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}E_L[\alpha]\big\rangle-\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}\big\rangle \big\langle E_L[\alpha]\big\rangle\right)
 \end{equation}
 
-
-
-
+\subsection{One-body densities}
+We are interested in investigating the probability of finding a single particle at a distance $r$ from the origin of our system. This is an important quantity, as it can be measured experimentally. We approach this through the concept of the one-body density. The one-body density is defined by:
+\begin{equation}\label{eq:OneBodyDensity}
+\rho(\boldsymbol{r_1})=\int d\boldsymbol{r_2}...d\boldsymbol{r_N}|\Psi_T(\boldsymbol{r_1},\boldsymbol{r_2},...,\boldsymbol{r_N})|^2
+\end{equation}
+Where $\boldsymbol{r_1}$ is the position of any particle. The integral is evaluated using Monte Carlo integration, as described in further detail in section \ref{sec:MetOneBody}.
 
 
 
@@ -214,6 +217,9 @@ We are interested in knowing when $\gamma^k(1)\approx 0$. This can be found by h
 \linebreak
 We use an alternative, automatic, approach to estimate when the covariance is small. This is based on comparing our results to a $\chi^2$ distribution, and is described further in \textbf{REFERENCE}.
 \textbf{FINISH}
+\subsection{Implementing the one-body density}\label{sec:MetOneBody}
+To compute the one-body density defined by equation \ref{eq:OneBodyDensity}, we must compute the stated integral, using Monte Carlo integration. This is done by choosing a maximum distance from the origin $\boldsymbol{r_max}$, beyond which the probability of finding a particle is negligible. We then divide the volume from the origin to $\boldsymbol{r_{max}}$ into spherical shells with equal spacing between the radii of the shells. We then count the number of particles that are in each of the shells during each Monte Carlo cycle. We present a pseudo-code of our implementation \textbf{PSEUDO-CODE}
+
 \subsection{A brief note on some technicalities to save FLOPs}
 \subsection{Benchmarks}
 
