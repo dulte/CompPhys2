@@ -155,22 +155,16 @@ double System::check_acceptance_and_return_energy(int move){
     if(temp_value <= get_probability_ratio(move)){
         update_wavefunction(move);
         r.col(move) = next_r.col(move);
-        //r = next_r;
-        //update();
+
         distance.col(move) = next_distance.col(move);
         distance.row(move) = next_distance.row(move);
-        //distance = next_distance;
-        //distance = next_distance;
+
     }
     else{
         next_r.col(move) = r.col(move);
         next_distance.col(move) = distance.col(move);
         next_distance.row(move) = distance.row(move);
 
-
-        //next_r = r;
-        //next_distance = distance;
-        //next_distance = distance;
     }
     //return get_local_energy_noninteracting();
     //return calculate_energy_interacting();
@@ -201,6 +195,7 @@ double System::f(double dist){
     else{
         function = 1 - a/dist;
     }
+
     return function;
 }
 
@@ -301,15 +296,15 @@ double System::get_local_energy_noninteracting(){
                 }
 
 
-                }
             }
+        }
 
-            if(dimension >= 3){
-                total_energy = factor1_B + factor2*temp_value;
-            }
-            else{
-                total_energy = factor1_noB + factor2*temp_value;
-            }
+        if(dimension >= 3){
+            total_energy = factor1_B + factor2*temp_value;
+        }
+        else{
+            total_energy = factor1_noB + factor2*temp_value;
+        }
 
         wavefunction_derivative_value*=-1;
         //temp_value = 0;
@@ -348,10 +343,10 @@ double System::udivdiv(int idx1,int idx2){
 
     }
     if(distance(idx1,idx2) > a){
-        /*du2_dphi2 = (a*a - 2*a*distance(idx1,idx2))/(
+        du2_dphi2 = (a*a - 2*a*distance(idx1,idx2))/(
                     (distance(idx1,idx2)*distance(idx1,idx2)-
-                     a*distance(idx1,idx2))*(distance(idx1,idx2)*distance(idx1,idx2)-a*distance(idx1,idx2)));*/
-        du2_dphi2 = -(a/((temp_r-a)*(temp_r-a))*a/(temp_r*temp_r) + 2*a/(temp_r*temp_r*temp_r - a*temp_r*temp_r));
+                     a*distance(idx1,idx2))*(distance(idx1,idx2)*distance(idx1,idx2)-a*distance(idx1,idx2)));
+        //du2_dphi2 = -(a/((temp_r-a)*(temp_r-a))*a/(temp_r*temp_r) + 2*a/(temp_r*temp_r*temp_r - a*temp_r*temp_r));
     }
     return du2_dphi2;
 }
@@ -382,17 +377,17 @@ double System::get_local_energy_interacting(){
             if(i==2){
                 temp_value += r(i,k)*r(i,k)*beta*beta;
                 r_i_annen += omega_ratio*r(i,k)*r(i,k);
-                wavefunction_derivative_value+=beta*r(i,k);
+                wavefunction_derivative_value+=beta*r(i,k)*r(i,k);
             }
             else{
                 temp_value += r(i,k)*r(i,k);
-                wavefunction_derivative_value+=r(i,k);
+                wavefunction_derivative_value+=r(i,k)*r(i,k);
                 r_i_annen += r(i,k)*r(i,k);
             }
         }
     }
 
-    /*
+
     for(int idx1 = 0; idx1 < N; idx1++ ){
         for(int idx2 = 0; idx2 < N; idx2++){
             for(int dim = 0; dim < dimension; dim++){
@@ -418,10 +413,9 @@ double System::get_local_energy_interacting(){
                 }
             }
         }
-    }*/
+    }
 
 
-    /*
     for(int idx11 = 0; idx11 < N; idx11++){
         for(int idx22 = 0; idx22 < N; idx22++){
             for(int idx33 = 0; idx33 < N; idx33++){
@@ -437,9 +431,9 @@ double System::get_local_energy_interacting(){
             }
         }
     }
-    */
 
 
+    /*
 
     for(int k = 0;k<N;k++){
         temp_r = r.col(k);
@@ -476,10 +470,10 @@ double System::get_local_energy_interacting(){
                 frt_fac += udivdiv(k,j) + 2.0/(distance(k,j))*udiv(k,j);
             }
         }
-    }
+    }*/
 
 
-    //sec_fac = -2*alpha*sec_fac;
+    sec_fac = -2*alpha*sec_fac;
     if(dimension >= 3){
         total_energy = factor1_B + factor2*temp_value + sec_fac + trd_fac + frt_fac;
     }

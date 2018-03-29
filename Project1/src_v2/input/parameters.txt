@@ -1,12 +1,12 @@
-MC_cycles 1000000
+MC_cycles 10000000
 beta 1 #2.82843
-alpha_min 0.4
-alpha_max .7
-alpha_num 15
+alpha_min 0.45
+alpha_max .6
+alpha_num 25
 omega 1
 omega_z 1
 a 0 #0.0043
-dx 1.5 #0.005
-dimensions 3
-N 1
+dx 1.5
+dimensions 1
+N 10
 D 0

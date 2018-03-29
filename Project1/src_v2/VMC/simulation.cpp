@@ -169,34 +169,81 @@ void Simulation::run(){
 }
 
 
-void Simulation::oneBodyDensity(double optimal_alpha){
+void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min, double r_max){
     std::random_device rd;
     std::mt19937_64 gen(rd());
-    std::uniform_real_distribution<double> distribution(1,N);
+    std::uniform_real_distribution<double> distribution(0,N);
 
     int move = 1;
+    double pi = 3.14159265359;
+
+
+
 
     DataDump<double> r_packet("..//output//r_positions.bin");
-    DataDump<double> psi_squared_packet("..//output//psi_squared.bin");
+    DataDump<std::vector<double>> density_packet("..//output//density.bin");
 
-    double wave_function_squared = 0;
-    int number_of_integration_points = 1000;
-    for(int p = 0; p<number_of_integration_points;p++){
-        system->make_grid(optimal_alpha);
-        r_packet.push_back(system->r.col(0).norm());
 
-        for(int i = 0;i<MC_cycles;i++){
-            move = (int)distribution(gen);
-            system->make_move_and_update(move);
-            system->update_wavefunction(move);
-            wave_function_squared += system->get_probability();
+    int r_num = (int)(r_max - r_min)/(r_step);
+
+    std::cout << r_num << " " << (r_max - r_min)/(r_step) << std::endl;
+
+    std::vector<double> density;
+    std::vector<double> rs;
+    std::vector<double> volume;
+    for(double r = r_min;r<=r_max;r+=r_step){
+        rs.push_back(r);
+        density.push_back(0);
+
+        for(int i = 0; i<r_num-1;i++){
+            if(Parameters::dimension ==1){
+                volume.push_back(r+r_step-r);
+            }
+            else if(Parameters::dimension == 2){
+                volume.push_back(pi*((r+r_step)*(r+r_step) - r*r));
+            }
+            else{
+                volume.push_back(4./3*pi*((r+r_step)*(r+r_step)*(r+r_step) - r*r*r));
+            }
         }
-
-        psi_squared_packet.push_back(wave_function_squared/(MC_cycles));
-        wave_function_squared = 0;
     }
 
+
+
+
+
+
+    r_packet.push_back(r_min);
+    r_packet.push_back(r_max);
+    r_packet.push_back((double)r_num);
+
+
+    double distance_from_origo = 0;
+    double wave_function_squared = 0;
+    int bin = 0;
+
+
+    system->make_grid(optimal_alpha);
+
+    for(int i = 0;i<MC_cycles;i++){
+        move = (int)distribution(gen);
+        system->make_move_and_update(move);
+        system->check_acceptance_and_return_energy(move);
+        distance_from_origo = system->r.col(move).norm();
+
+        if(distance_from_origo > r_max){
+            std::cout << "Calculated distance is larger that r_max" << std::endl;
+            exit(1);
+        }
+
+        bin = (int)r_num*distance_from_origo/r_max;
+        density[bin] += 1./(MC_cycles*volume[bin]);
+    }
+
+    density_packet.push_back(density);
+
+
     r_packet.dump_all();
-    psi_squared_packet.dump_all();
+    density_packet.dump_all();
 
 }

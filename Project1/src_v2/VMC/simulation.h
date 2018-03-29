@@ -1,5 +1,6 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
+#include <vector>
 #include "system.h"
 #include "Parameters/parameters.h"
 #include "DataDump/datadump.h"
@@ -16,7 +17,7 @@ public:
     double conjugate_gradient(double alpha_0, double b);
     double compute_local_energy_derivative(double alpha);
     void data_for_derivated();
-    void oneBodyDensity(double optimal_alpha);
+    void oneBodyDensity(double optimal_alpha, double r_step, double r_min, double r_max);
 private:
     System *system;
     double alpha_step;

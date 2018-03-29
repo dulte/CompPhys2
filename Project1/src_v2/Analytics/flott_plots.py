@@ -10,23 +10,16 @@ print("min data: ",np.min(data))
 plt.plot(alpha,data,".")
 
 plt.show()
-exit()
+
 
 r = np.fromfile("../output/r_positions.bin",sep=" ")
-psi2 = np.fromfile("../output/psi_squared.bin",sep=" ")
+rho = np.fromfile("../output/density.bin",sep=" ")
 
 
 
-psi2 = psi2[r.argsort()]
-r = np.sort(r)
+rs = np.linspace(r[0],r[1],int(r[2]),endpoint=True)
 
-N  = 0
+print(len(rs),len(rho[:len(rs)]))
 
-for i in range(1,len(r)):
-    N += psi2[i]*(r[i]-r[i-1])
-
-print(N)
-
-plt.plot(r,psi2)
-
+plt.plot(rs,rho[:len(rs)])
 plt.show()
