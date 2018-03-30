@@ -483,6 +483,8 @@ double System::get_local_energy_interacting(){
         total_energy = factor1_noB + factor2*temp_value + sec_fac + trd_fac + frt_fac;
     }
 
+
+    wavefunction_derivative_value*=-1;
     temp_value= -0.5*total_energy+ pot_factor*r_i_annen;
     expectation_local_energy+=temp_value;
     expectation_local_energy_squared+=temp_value*temp_value;

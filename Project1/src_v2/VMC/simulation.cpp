@@ -25,7 +25,7 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
     int max_iter=200;
     int max_iter_inner=10;
     int max_j=0;
-    double tol=1e-8;
+    double tol=1e-5;
 
     double gradient_10_steps_ago = 1e6;
 

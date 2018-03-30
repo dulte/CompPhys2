@@ -12,6 +12,8 @@ plt.plot(alpha,data,".")
 plt.show()
 
 
+exit()
+
 r = np.fromfile("../output/r_positions.bin",sep=" ")
 rho = np.fromfile("../output/density.bin",sep=" ")
 rho_non = np.fromfile("../output/density_non.bin",sep=" ")
