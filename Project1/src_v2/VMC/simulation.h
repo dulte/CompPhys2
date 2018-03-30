@@ -12,7 +12,7 @@ class Simulation
 public:
     Simulation(System *m_system);
     void initiate();
-    void run();
+    void run(int rank);
 
     double conjugate_gradient(double alpha_0, double b);
     double compute_local_energy_derivative(double alpha);

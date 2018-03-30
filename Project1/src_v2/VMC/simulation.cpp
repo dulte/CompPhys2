@@ -137,35 +137,52 @@ void Simulation::initiate(){
 }
 
 
-void Simulation::run(){
+void Simulation::run(int rank){
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
     std::uniform_real_distribution<double> distribution(0,N);
 
     energy = 0;
+    double total_energy;
     int move = 0;
 
-    DataDump<double> data("..//output//data.bin");
-    DataDump<double> alphas("..//output//alphas.bin");
+    std::string filename = "..//output//data";
+    filename.append(std::to_string(rank));
+    filename.append(".bin");
+
+    std::string stampname = "..//output//stamp";
+    stampname.append(std::to_string(rank));
+    stampname.append(".bin");
+
+    DataDump<double> dump(filename,stampname);
+
+    if(rank == 0){
+         dump.dump_metadata("..//output//metadata.txt");
+    }
+
+
 
     for(double a = alpha_min; a < alpha_max; a+=alpha_step){
 
         system->make_grid(a);
-        alphas.push_back(a);
+        dump.push_back_stamp(a);
         std::cout << "a: " << a << std::endl;
         for(int i = 0;i<MC_cycles;i++){
+            energy = 0;
             move = (int)distribution(gen);
             system->make_move_and_update(move);
             energy += system->check_acceptance_and_return_energy(move);
+            dump.push_back(energy);
+            total_energy += energy;
 
         }
-        data.push_back(energy/(MC_cycles));
-        std::cout << "Energy " << energy/(MC_cycles) << std::endl;
-        energy = 0;
+        //dump.push_back(energy/(MC_cycles));
+        std::cout << "Energy " << total_energy/(MC_cycles) << std::endl;
+        total_energy = 0;
     }
-    data.dump_all();
-    alphas.dump_all();
+    dump.dump_all();
+
 }
 
 

@@ -19,6 +19,11 @@ void DataDump<T>::push_back(T data_point){
 }
 
 template<class T>
+void DataDump<T>::push_back_stamp(double data_point){
+    data_stamp.push_back(data_point);
+}
+
+template<class T>
 void DataDump<T>::dump(T data_point){
     outfile << data_point;
 }
@@ -51,12 +56,12 @@ template<class T>
 void DataDump<T>::dump_all(){
     int data_size = data.size();
     for(int i = 0; i<data_size;i++){
-        outfile << data[i] << "\n";
+        outfile << data[i] << " ";
     }
     if(include_stamp){
         int stamp_size = data_stamp.size();
         for(int i = 0; i<   stamp_size;i++){
-            stampfile << data_stamp[i];
+            stampfile << data_stamp[i] << " ";
         }
     }
 }
@@ -70,7 +75,7 @@ void DataDump<std::vector<double>>::dump_all(){
     if(include_stamp){
         int stamp_size = data_stamp.size();
         for(int i = 0; i<   stamp_size;i++){
-            stampfile << data_stamp[i];
+            stampfile << data_stamp[i] << " ";
         }
     }
 }

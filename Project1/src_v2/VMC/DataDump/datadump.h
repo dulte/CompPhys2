@@ -42,6 +42,7 @@ public:
     std::vector<T> data;
     std::vector<double> data_stamp;
 
+    void push_back_stamp(double data_point);
 private:
     std::fstream outfile;
     std::fstream stampfile;
