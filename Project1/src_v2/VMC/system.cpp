@@ -288,7 +288,7 @@ double System::get_local_energy_noninteracting(){
                 if(i==2){
                     temp_value += r(i,k)*r(i,k)*beta*beta;
                     wavefunction_derivative_value+=beta*r(i,k)*r(i,k);
-                    r_i_annen += r(i,k)*r(i,k);//omega_ratio*r(i,k)*r(i,k);
+                    r_i_annen += omega_ratio*omega_ratio*r(i,k)*r(i,k);
                 }
                 else{
                     temp_value += r(i,k)*r(i,k);
@@ -377,7 +377,7 @@ double System::get_local_energy_interacting(){
         for(int i = 0; i<dimension;i++){
             if(i==2){
                 temp_value += r(i,k)*r(i,k)*beta*beta;
-                r_i_annen += omega_ratio*r(i,k)*r(i,k);
+                r_i_annen += omega_ratio*omega_ratio*r(i,k)*r(i,k);
                 wavefunction_derivative_value+=beta*r(i,k)*r(i,k);
             }
             else{
@@ -586,8 +586,14 @@ double System::calculate_energy_interacting(){
     double potential_energy = 0;
     wavefunction_value=get_wavefunction();
     for(int i = 0; i<N;i++){
-        potential_energy+=omega*omega*r.col(i).squaredNorm();
         for(int j = 0; j<dimension;j++){
+            if (j==2){
+                potential_energy += omega_ratio*omega_ratio*r(j,i);
+            }
+            else{
+                potential_energy+=omega*omega*r(j,i);
+            }
+
             //std::cout<<r->coeffRef(j,i)<<std::endl;
             r(j,i)+=h;
             wavefunction_value_plus=get_wavefunction();

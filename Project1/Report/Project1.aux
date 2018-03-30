@@ -18,17 +18,55 @@
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Theoretical model}{1}{section.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Methods}{1}{section.3}}
-\newlabel{Method_section}{{3}{1}{Methods}{section.3}{}}
-\newlabel{Method_section@cref}{{[section][3][]3}{1}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Results and discussion}{1}{section.4}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{1}{section.5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Conclusion}{1}{subsection.5.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Outlook}{1}{subsection.5.2}}
-\@writefile{toc}{\contentsline {section}{Appendices}{1}{section*.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Finding the drift force}{1}{Appendix.a.A}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}Finding the analytic expression for the local energy}{2}{Appendix.a.B}}
-\newlabel{second term in first derivative}{{10}{2}{Finding the analytic expression for the local energy}{equation.a.B.10}{}}
-\newlabel{second term in first derivative@cref}{{[equation][10][]10}{2}}
-\newlabel{combined sum}{{14}{3}{Finding the analytic expression for the local energy}{equation.a.B.14}{}}
-\newlabel{combined sum@cref}{{[equation][14][]14}{3}}
+\newlabel{eq:general_Hamiltonian}{{1}{1}{Theoretical model}{equation.2.1}{}}
+\newlabel{eq:general_Hamiltonian@cref}{{[equation][1][]1}{1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}The potentials employed}{2}{subsection.2.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.1}The external potential}{2}{subsubsection.2.1.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.2}The internal potential}{2}{subsubsection.2.1.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}The variational method}{2}{subsection.2.2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}The variational principle}{2}{subsubsection.2.2.1}}
+\newlabel{eq:Variational_principle}{{5}{2}{The variational principle}{equation.2.5}{}}
+\newlabel{eq:Variational_principle@cref}{{[equation][5][]5}{2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Choosing a trial wavefunction}{2}{subsubsection.2.2.2}}
+\newlabel{eq:trial_wavefunction}{{8}{3}{Choosing a trial wavefunction}{equation.2.8}{}}
+\newlabel{eq:trial_wavefunction@cref}{{[equation][8][]8}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Variational Monte Carlo methods}{3}{subsection.2.3}}
+\newlabel{eq:Local_energy_general_expression}{{10}{3}{Variational Monte Carlo methods}{equation.2.10}{}}
+\newlabel{eq:Local_energy_general_expression@cref}{{[equation][10][]10}{3}}
+\newlabel{eq:Expectation_Hamiltonian}{{11}{3}{Variational Monte Carlo methods}{equation.2.11}{}}
+\newlabel{eq:Expectation_Hamiltonian@cref}{{[equation][11][]11}{3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.1}The Metropolis algorithm}{3}{subsubsection.2.3.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.2}The Metropolis-Hastings algorithm (importance sampling)}{4}{subsubsection.2.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}The local energy}{4}{subsection.2.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Gradient descent and conjugate gradient}{5}{subsection.2.5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}One-body densities}{5}{subsection.2.6}}
+\newlabel{eq:OneBodyDensity}{{21}{5}{One-body densities}{equation.2.21}{}}
+\newlabel{eq:OneBodyDensity@cref}{{[equation][21][]21}{5}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Methods}{5}{section.3}}
+\newlabel{Method_section}{{3}{5}{Methods}{section.3}{}}
+\newlabel{Method_section@cref}{{[section][3][]3}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}A note on units}{5}{subsection.3.1}}
+\newlabel{eq:Hamiltonian_dimensionless}{{22}{5}{A note on units}{equation.3.22}{}}
+\newlabel{eq:Hamiltonian_dimensionless@cref}{{[equation][22][]22}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Outline of the structure of our program}{5}{subsection.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Statistical treatment of the data}{5}{subsection.3.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Implementing the one-body density}{6}{subsection.3.4}}
+\newlabel{sec:MetOneBody}{{3.4}{6}{Implementing the one-body density}{subsection.3.4}{}}
+\newlabel{sec:MetOneBody@cref}{{[subsection][4][3]3.4}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}A brief note on some technicalities to save FLOPs}{6}{subsection.3.5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Benchmarks}{6}{subsection.3.6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Minimizing computation in the non-interacting case}{6}{subsection.3.7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.7.1}Computing the numerical energy}{6}{subsubsection.3.7.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results and discussion}{7}{section.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{7}{section.5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Conclusion}{7}{subsection.5.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Outlook}{7}{subsection.5.2}}
+\@writefile{toc}{\contentsline {section}{Appendices}{7}{section*.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Finding the drift force}{7}{Appendix.a.A}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Finding the analytic expression for the local energy}{7}{Appendix.a.B}}
+\newlabel{second term in first derivative}{{39}{8}{Finding the analytic expression for the local energy}{equation.a.B.39}{}}
+\newlabel{second term in first derivative@cref}{{[equation][39][]39}{8}}
+\newlabel{combined sum}{{43}{8}{Finding the analytic expression for the local energy}{equation.a.B.43}{}}
+\newlabel{combined sum@cref}{{[equation][43][]43}{8}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}The dimensionless Hamiltonian}{10}{Appendix.a.C}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Finding the derivative of the local energy}{11}{Appendix.a.D}}
