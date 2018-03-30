@@ -17,7 +17,7 @@ System::System()
     gen = std::mt19937_64(rd());
     distribution = std::normal_distribution<double>(0.0,1.0);
 
-    h=1e-5;
+    h=1e-6;
 
     if(Parameters::a !=0){
            //System::compute_energy_numeric = &System::calculate_energy_interacting;
@@ -168,8 +168,8 @@ double System::check_acceptance_and_return_energy(int move){
     }
     //return get_local_energy_noninteracting();
     //return calculate_energy_interacting();
-    //return get_local_energy();
-    return 0;
+    return get_local_energy();
+    //return 0;
 }
 
 
@@ -388,7 +388,7 @@ double System::get_local_energy_interacting(){
         }
     }
 
-
+    /*
     for(int idx1 = 0; idx1 < N; idx1++ ){
         for(int idx2 = 0; idx2 < N; idx2++){
             for(int dim = 0; dim < dimension; dim++){
@@ -434,7 +434,7 @@ double System::get_local_energy_interacting(){
     }
 
 
-    /*
+    */
 
     for(int k = 0;k<N;k++){
         temp_r = r.col(k);
@@ -471,10 +471,11 @@ double System::get_local_energy_interacting(){
                 frt_fac += udivdiv(k,j) + 2.0/(distance(k,j))*udiv(k,j);
             }
         }
-    }*/
+    }
 
-
+    /*
     sec_fac = -2*alpha*sec_fac;
+    */
     if(dimension >= 3){
         total_energy = factor1_B + factor2*temp_value + sec_fac + trd_fac + frt_fac;
     }

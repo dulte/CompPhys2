@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
     simulation->initiate();
     double optimal_alpha = 0.5;//simulation->conjugate_gradient(0.3, 1.);
     //std::cout << "Correct a: " << optimal_alpha <<std::endl;
-    //simulation->run();
+    simulation->run();
     //simulation->data_for_derivated();
-    simulation->oneBodyDensity(optimal_alpha,0.03,0.,6.);
+    //simulation->oneBodyDensity(optimal_alpha,0.03,0.,6.);
 
 
     double EndTime = MPI_Wtime();
