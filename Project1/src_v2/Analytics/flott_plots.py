@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-alpha = np.fromfile("../output/alphas.bin",sep=" ")
+alpha = np.fromfile("../output/stamp0.bin",sep=" ")
 data = np.fromfile("../output/data.bin",sep=" ")
 
 print("min alpha: ",alpha[np.argmin(data)])
