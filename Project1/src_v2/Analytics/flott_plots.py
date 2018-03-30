@@ -14,6 +14,7 @@ plt.show()
 
 r = np.fromfile("../output/r_positions.bin",sep=" ")
 rho = np.fromfile("../output/density.bin",sep=" ")
+rho_non = np.fromfile("../output/density_non.bin",sep=" ")
 
 
 
@@ -21,5 +22,8 @@ rs = np.linspace(r[0],r[1],int(r[2]),endpoint=True)
 
 print(len(rs),len(rho[:len(rs)]))
 
-plt.plot(rs,rho[:len(rs)])
+
+plt.plot(rs,rho[:len(rs)],label="Interacting")
+plt.plot(rs,rho_non[:len(rs)],label="Noninteracting")
+plt.legend()
 plt.show()

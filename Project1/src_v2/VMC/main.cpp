@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     //std::cout << "Correct a: " << optimal_alpha <<std::endl;
     //simulation->run();
     //simulation->data_for_derivated();
-    simulation->oneBodyDensity(optimal_alpha,0.1,0.,4.);
+    simulation->oneBodyDensity(optimal_alpha,0.03,0.,6.);
 
 
     double EndTime = MPI_Wtime();

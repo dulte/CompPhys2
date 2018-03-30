@@ -181,7 +181,11 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
 
 
     DataDump<double> r_packet("..//output//r_positions.bin");
+
     DataDump<std::vector<double>> density_packet("..//output//density.bin");
+
+
+
 
 
     int r_num = (int)(r_max - r_min)/(r_step);

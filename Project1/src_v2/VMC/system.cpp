@@ -168,7 +168,8 @@ double System::check_acceptance_and_return_energy(int move){
     }
     //return get_local_energy_noninteracting();
     //return calculate_energy_interacting();
-    return get_local_energy();
+    //return get_local_energy();
+    return 0;
 }
 
 
@@ -223,7 +224,7 @@ double System::get_wavefunction(){
         temp_r = r.col(i);
         temp_value += phi_exponant(temp_r);
         if(a != 0){
-            for(int other = 0;other<i;other++){
+            for(int other = i+1;other<N;other++){
                 f_part*= f(distance(other,i));
             }
         }
