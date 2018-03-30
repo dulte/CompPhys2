@@ -50,216 +50,452 @@
 \lstset{showtabs=false}
 \lstset{breaklines}
 \title{FYS4411 - Project 1\\
-Variational Monte Carlo}
-\author{Daniel Heinesen, Gunnar Lange}
+	Variational Monte Carlo}
+\author{Daniel Heinesen, Gunnar Lange \& Aram Salihi}
 \begin{document}
-\maketitle
-\begin{abstract}
-Abstract awesomeness
-\end{abstract}
-\tableofcontents
-\section{Introduction}
-\section{Theoretical model}
-\section{Methods}\label{Method_section}
-\section{Results and discussion}
-\section{Conclusion}
-\subsection{Conclusion}
-
-\subsection{Outlook}
-
-\begin{appendices}
-\section{Finding the drift force}
-We wish to compute:
-\begin{equation}
-\vec{F}=2\frac{1}{\psi_T}\nabla \psi_T
-\end{equation}
-\section{Finding the analytic expression for the local energy}
-We wish to find:
-\begin{equation}
-E_L=\frac{1}{\Psi_T}\nabla^2 \Psi_T
-\end{equation}
-Where $\Psi_T$ is given by:
-\begin{equation}
-\exp\left[ -\alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]\prod_{i<j}f(a, |\mathbf{r}_i-\mathbf{r}_j|)
-\end{equation}
-Look first at $a=0$. In this case, this reduces to the harmonic oscillator potential. The local energy is then:
-\begin{equation}
-\exp\left[ \alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]\left(-\frac{\hbar^2}{2m_i}\nabla_i^2+V\right)\exp\left[ -\alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]
-\end{equation}
-In the simple harmonic oscillator case, this gives:
-\begin{equation}
-E_L(\mathbf{r},\alpha)=-\frac{\hbar^2}{2m}\sum_{i=1}^n 2\alpha \left(2\alpha(x_i^2+y_i^2+z_i^2)-3\right)+\frac{1}{2}m\omega_{ho}^2\sum_{i=1}^n(x_i^2+y_i^2+z_i^2)
-\end{equation}
-\textbf{FIX FOR ONE/N PARTICLES AND LOWER DIMENSION}
-Similarly for the drift force:
-\begin{equation}
-F=\frac{2\nabla \Psi_T}{\Psi_T}
-\end{equation}
-\begin{equation}
-F=-2\alpha\sum_{i=1}^n(x_i+y_i+z_i)
-\end{equation}
-Now for the ugly part:\\
-For one particle, $\nabla_k$:
-\begin{equation}
-\nabla_k\Psi_{T} = \nabla_k\left(\Psi_T(\mathbf{r})=\nabla_k \prod_{i=1}^n\phi(\mathbf{r}_i)\exp\left(\sum_{i<j} u(r_{ij})\right)\right)
-\end{equation}
-Now apply the product rule. For the first term, all terms are unchanged except where $i=k$, giving the first term as:
-\begin{equation}
-\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
-\end{equation}
-The second term is trickier. We can rewrite it as follows:
-\begin{align}
-  \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{i < j}u(r_{ij})\right)\right]
-  = \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
-  \label{second term in first derivative}
-\end{align}
-This is calculated by using the chain-rule. To evaluate the innerfunction, we must look
-at \\$1 \le j \le k$, $j = k$ and $j \ge k$. Begining with $1\le  j \le k$,
-the first sum is from $1$ up the kth particle, meaning all terms differentiated before $k$ vanishes
-and we are left with $u(r_{ik})$, thus leaving with us with:
-\begin{align}
-  \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{k}\sum_{i = 1}^{k-1}u(r_{ij})\right)\right]
-  =
-  \prod_{i}\phi(\bold{r}_{i})\exp{\left(\sum_{i<j}u(r_{ij})\right)}
-  \left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]
-\end{align}
-For $j = k$, we see that the first sum goes from and end up at kth particle, meaning
-this sum vanishes, secondly, the second sum is evaluated at $1 \le i \le k-1$, leaving with
-constants up to $k-1$, thus this term becomes $0$.
-\begin{align}
-\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
-= 0
-\end{align}
-For $j > k$,the first sum goes from $k+1\le j \le n$ and the second $1 \le i \le k$.  The second sum vanishes, because all constants are differentiated away
-except the last term $i = k$. This leaves us with:
-\begin{align}
-  \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = k+1}^{n}\sum_{i = 1}^{k}u(r_{ij})\right)\right]
-  = \prod_{i}\phi(\bold{r}_{i})
-  \exp{\left(\sum_{i<j}u(r_{ij})\right)}
-  \left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj})\right]
-\end{align}
-We can now write the second term as \ref{second term in first derivative}):
-\begin{align}\label{combined sum}
-\prod_{i}\phi(\bold{r}_{i})
-  \exp{\left(\sum_{i<j}u(r_{ij})\right)}
-  \left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj}) +
-  \left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]\right]
-\end{align}
-%CHECK THIS EQUATION
-This can be rewritten to:
-  \begin{align}
-  \prod_{i}\phi(\bold{r}_{i})
-    \exp{\left(\sum_{i<j}u(r_{ij})\right)}
-    \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
-  \end{align}
-  FORKLAR denne delen litt. Thus the first derivative of the trial wavefunction
-  can be written as:
-  \begin{align}
-    \nabla_{k}\Psi_{T} =
-    \nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
-    + \prod_{i}\phi(\bold{r}_{i})
-      \exp{\left(\sum_{i<j}u(r_{ij})\right)}
-      \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
-  \end{align}
-\end{appendices}
-Lastly we will calculate the second derivative of the trial function, where we
-use the product rule and the chain rule. We will then obtain the following:
-\begin{align*}
-  \begin{split}
-  \nabla_{k}^2\Psi_{T} =
-  \underbrace{\nabla_k^2 \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)}_{\mathrm{I}} +\\
-   \underbrace{2\left(\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]
-  \exp{\left(\sum_{i<j}u(r_{ij})\right)}
-  \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]\right)}_{\mathrm{II}} +
-  \\
-   \underbrace{\prod_{i}\phi(\bold{r}_{i})
-    \exp{\left(\sum_{i<j}u(r_{ij})\right)}
-    \left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]^2}_{\mathrm{III}} +
-    \\
-    \underbrace{\prod_{i}\phi(\bold{r}_{i})
-      \exp{\left(\sum_{i<j}u(r_{ij})\right)}
-      \left[\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj})\right]}_{\mathrm{IV}}
-  \end{split}
-\end{align*}
-Where the derivatives of the different parts are obtained from previous.
-We will now divide the second derivative by the trial wavefunction, and obtain:
-\begin{align}
-\frac{1}{\Psi_{T}}\nabla_{k}^2\Psi_{T} =
-\underbrace{\frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{\phi(\bold{r}_{k})})}}_{\mathrm{I}}
-+ \underbrace{2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\sum_{j\neq k}\nabla_{k}u(r_{kj})}_{\mathrm{II}}
-+ \underbrace{\left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2}_{\mathrm{III}} +
-\underbrace{\left[\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj})\right]}_{\mathrm{IV}}
-\end{align}
-We will now carry out the differentiation in term (II), (III) and (IV). Begining with the
-(II), by using the chain rule we can rewrite (II) as:
-\begin{align*}
-2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\sum_{j\neq k}\pdv{u(r_{kj})}{r_{kj}}\pdv{r_{kj}}{\bold{r}_{k}} =
-2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
-\end{align*}
-Where we have used $\nabla_{k} r_{kj} = (\bold{r}_{k} - \bold{r}_{j})/r_{kj}$.
-Looking at (III), we can write out the square into two factors. The second paranthese the summation index is replaced by a
-dummy index $i$. Thus will look as:
-\begin{align}
-  \left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2 = \left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)\left(\sum_{i\neq k}\nabla_{k} u(r_{ki})\right)
-\end{align}
-From (II) we found the derivative of this function. Thus this can be expressed as (combining also the double sum):
-\begin{align}
-  \left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2 =
-  \sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-  \left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
-\end{align}
-The last part (IV), we must use the chain rule and product rule together. We will obtain
-the following term:
-\begin{align}
-  \sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj}) =
-  \sum_{j \neq k}\nabla_{k}\left(
-  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)^2 u''(r_{kj}) + u'(r_{kj})\nabla_{k}
-  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)\right)
-\end{align}
-Note that this is a unit vector squared:
-\begin{align}
-  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)^2 = 1
-\end{align}
-and the last part is found by using the qoutient rule. This is the divergence to the vectors, since we are evaluating for
-specific particle k, and gradient to scalar (we must look for all combination of k particle):
-\begin{align}
-  \nabla_{k}
-  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-  = \frac{r_{kj}\left(\nabla_{k}\cdot\bold{r}_{k}-
-  \nabla_{k}\cdot\bold{r}_{j}\right) -
-  (\bold{r}_{k}-\bold{r}_{j})\nabla_{k}r_{kj}}{r_{kj}^2}
-\end{align}
-This simply becomes:
-\begin{align}
-  \nabla_{k}
-  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-  = \frac{3r_{kj}^2 - \bold{r}^2_{k} + 2(\bold{r}_{k}\cdot \bold{r}_{j}) - \bold{r}^2_{j}}{r_{kj}^3}
-\end{align}
-Note that $r_{kj} - \bold{r}^2_{k} + 2(\bold{r}_{k}\cdot \bold{r}_{j}) - \bold{r}^2_{j} = 0$, this leaves us with:
-\begin{align}
-  \nabla_{k}
-  \left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-  = \frac{2}{r_{kj}}
-\end{align}
-Thus expression (IV) can be expressed as:
-\begin{align}
-  \sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj}) =
-  \sum_{j \neq k}\nabla_{k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})
-\right)
-\end{align}
-Combining (I), (II), (III) and (IV), we we will get that the second derivative
-of the trial function is:
-\begin{align}
-  \begin{split}
-  \frac{1}{\Psi_{t}}\nabla_{k}^2\Psi_{T} =
-  \frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{\phi(\bold{r}_{k})})}
-  +
-  2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
-  +\\
-  \sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-  \left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
-  +
-  \sum_{j \neq k}\nabla_{k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
-\end{split}
-\end{align}
+	\maketitle
+	\begin{abstract}
+		Abstract awesomeness
+	\end{abstract}
+	\tableofcontents
+	\section{Introduction}
+	
+	
+	\section{Theoretical model}
+	We investigate bosons in a potential trap. The Hamiltonian of such a system for $N$ bosons is in general given by:
+	\begin{equation} \label{eq:general_Hamiltonian}
+	H=\sum_{i=1}^N\left(-\frac{\hbar^2}{2m}\nabla_i^2 +V_{ext}(\boldsymbol{r}_i)\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+	\end{equation}
+	Where $V_{ext}$ is the external potential, i.e. the potential of the trap, whereas $V_{int}$ is the interal potential, i.e. the potential between the bosons. We wish to approximate the ground state energy of our system described by the Hamiltonian given in equation \ref{eq:general_Hamiltonian}.
+	\subsection{The potentials employed}
+	\subsubsection{The external potential}
+	We will focus on two different trap shapes: spherical and elliptical. The spherical trap can be described by a standard harmonic oscillator potential, which is given by:
+	\begin{equation}
+	V_{ext}(\boldsymbol{r})=\frac{1}{2}m\omega_{ho}^2 r^2 \quad \mathrm{(spherical\  trap)}
+	\end{equation}
+	Where $m$ is the mass of the bosons and $\omega_{ho}$ is a parameter characterizing the strength of the potential (the characteristic frequency of the trap). The elliptical trap, however, is given by:
+	\begin{equation}
+	V_{ext}(\boldsymbol{r})=\frac{1}{2}m[\omega_{ho}^2 (x^2+y^2)+\omega_z z^2] \quad \mathrm{(elliptical\  trap)}
+	\end{equation}
+	I.e. we allow the strength of the potential to vary in one direction, which we designate as the $z$-axis.
+	\subsubsection{The internal potential}
+	We will begin by investigating models where there is no repulsion between the bosons, however, we will later act a repulsive potential that prevents bosons from occupying the same point in space. Here $a$ is a typical diameter of our bosons (the hard-core diameter), which equals the scattering length of the single boson potential. We then define our internal potential as:
+	\begin{equation}
+	V_{int}(a,|\boldsymbol{r}_i-\boldsymbol{r}_j|)= 
+	\begin{cases}
+	\infty & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j| \leq  a\\
+	0 & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j|>  a\\
+	\end{cases}
+	\end{equation}
+	This potential thus represents the impossibility of bosons to occupy the same point in space.
+	\subsection{The variational method}
+	\subsubsection{The variational principle}
+	To find the ground state energy, $E_0$ of bosons trapped in a potential, we employ the variational method. The variational principle states that:
+	\begin{equation}\label{eq:Variational_principle}
+	E_0\leq  \frac{\langle \Psi_T |H|\Psi_T \rangle}{\langle \Psi|\Psi\rangle}
+	\end{equation}
+	Where $H$ is the Hamiltonian of our system and $\Psi_T$ is any trial wavefunction. We therefore choose a functional form for $\Psi_T$, with a number of free parameters. By varying these parameteres, we can find an upper bound for the ground state energy. If our chosen functional form is reasonably close to the exact wavefunction, $\Psi$ of the system, then our estimate for $E_0$ should be reasonably close to the actual ground state energy of our system.
+	\subsubsection{Choosing a trial wavefunction}
+	As noted above, we must choose our trial wavefunction to be reasonably close to the expected form of the actual position wavefunctions of our system. We note first that the external potential represents a harmonic oscillator. For the harmonic oscillator, it is well known from introductory quantum mechanics that the eigenfunctions are exponential functions for each particle seperately. Note that the elliptic oscillator has a preferred direction (the $z$-axis). We accomodate for this by introducing a parameter $\beta$, representing the asymmetry of the elliptical oscillator. We therefore choose our trial wavefunction for this part of the potential to be:
+	\begin{equation}
+	h(\boldsymbol{r}_1, ..., \boldsymbol{r}_N, \alpha, \beta)=\prod_{i=1}^N g(\alpha,\beta, \boldsymbol{r}_i)=\prod_{i=1}^N \exp[-\alpha(x_i^2+y_i^2+\beta z_i^2)]=\exp[-\alpha \sum_{i=1}^N (x_i^2+y_i^2+\beta z_i^2)]
+	\end{equation}
+	Where we now have two variational parameters, $\alpha$ and $\beta$. Here $\beta$ tunes the strength of the potential as a whole, whereas $\beta$ tunes the asymmetry of the spherical oscillator.\\
+	\linebreak
+	For the internal potential, we expect a function that attenuates our wavefunction down to zero if the distance between any pair of particles becomes less than $a$. We choose this function to be continuous, on physical grounds. A simple choice for such a function is:
+	\begin{equation}
+	f(a,|\boldsymbol{r}_i-\boldsymbol{r}_j|)= 
+	\begin{cases}
+	0 & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j| \leq  a\\
+	1-\frac{a}{|\boldsymbol{r}_i-\boldsymbol{r}_j|} & \quad |\boldsymbol{r}_i-\boldsymbol{r}_j|>  a\\
+	\end{cases}
+	\end{equation}
+	Putting this together, gives our trial wavefunction as:
+	\begin{equation}\label{eq:trial_wavefunction}
+	\Psi_T(\boldsymbol{r}_1, \boldsymbol{r}_2, ..., \boldsymbol{r}_N, \alpha, \beta)=\prod_ig(\alpha,\beta, \boldsymbol{r}_i)\prod_{i<j}f(a, |\boldsymbol{r}_i-\boldsymbol{r}_j|)
+	\end{equation}
+	This is thus the wavefunction that we will be using in equation \ref{eq:Variational_principle} to find our upper bound on the ground state energy.
+	\subsection{Variational Monte Carlo methods}
+	Note that equation \ref{eq:Variational_principle} involves two integrals over $3N$ dimensions. This is usually not possible to evaluate analytically for large $N$, and traditional numerical methods such as gaussian quadrature are far too slow in high dimensions to be feasible. We therefore employ variational Monte Carlo methods to help in evaluting these integrals. To do this, we consider these integrals to represents stochastic quantities, and define the probability distribution as:
+	\begin{equation}
+	P(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)=\frac{|\Psi_T|^2}{\int d\boldsymbol{r}_1d\boldsymbol{r}_2...d\boldsymbol{r_n}|\Psi_T|^2}
+	\end{equation}
+	Now define a new quantity, the local energy, as:
+	\begin{equation}\label{eq:Local_energy_general_expression}
+	E_L(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)=\frac{1}{\Psi_T}H\Psi_T
+	\end{equation}
+	The	expectation value of the Hamiltonian (i.e. the estimate of the energy) now turns into:
+	\begin{equation}\label{eq:Expectation_Hamiltonian}
+	E[H(\alpha, \beta)]=\int P(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)E_L(\boldsymbol{r}_1, \boldsymbol{r}_2,...,\boldsymbol{r}_N, \alpha,\beta)d\boldsymbol{r}_1d\boldsymbol{r}_2...d\boldsymbol{r}_N\approx \frac{1}{M}\sum_{i=1}^M E_{L,i}
+	\end{equation}
+	Where now $M$ is the number of Monte Carlo cycles, whereas $E_{L,i}$ is the local energy computed in the i-th Monte Carlo step. Note that the quality of this approximation is contingent upon our ability to sample our space. We employ two different algorithms for sampling our coordinate space.
+	\subsubsection{The Metropolis algorithm}
+	To move from one Monte Carlo step to the other, we will employ the Metropolis algorithm, as described in \textbf{REFERENCE}. The alogrithm works by sampling the probability distribution, but adding a bias to sample mostly in the regions where the probaility distribution actually is large, to avoid wasting CPU cycles. The algorithm works by proposing a step:
+	\begin{equation}
+	\boldsymbol{r}_{p, new}=\boldsymbol{r}_p+r \cdot \boldsymbol{dx}
+	\end{equation}
+	Where $r$ is a random number in $[0,1]$ and $\boldsymbol{dx}$ is a chosen step vector. We then compute the ratio:
+	\begin{equation}
+	w=\frac{P(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p,new}, ..., \boldsymbol{r}_n)}{P(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p}, ..., \boldsymbol{r}_n)}=\frac{|\Psi_T(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p,new}, ..., \boldsymbol{r}_n)|^2}{|\Psi_T(\boldsymbol{r}_1, ..., \boldsymbol{r}_{p}, ..., \boldsymbol{r}_n)|^2}
+	\end{equation}
+	This ratio determines whether the new position has a higher or lower value of the PDF than the old position. We then accept the move if and only if $w\geq r$, where $r\in [0,1]$ is a uniformly distributed random variable. This ensures that some steps that decrease the value of the PDF are accepted (giving a spread of value), but that we mostly sample where the PDF is large (which avoids wasting CPU cycles).
+	\subsubsection{The Metropolis-Hastings algorithm (importance sampling)}
+	The simple Metropolis algorithm described above assigns no preferred direction $\boldsymbol{dx}$ for the proposed step. This can be improved by adding a force term, "pushing" the Monte Carlo loop towards the region where the PDF is large. This is described in further detail in \textbf{REFERENCE}, where it is shown that the expression fur such a quantum force is given, for particle $k$, by:
+	\begin{equation}
+	\boldsymbol{F}_k(\boldsymbol{r}_1, ..., \boldsymbol{r}_N)=2\frac{1}{\Psi_T}\nabla_k \Psi_T
+	\end{equation}
+	We compute explicitly the expression for $\boldsymbol{F}$, using the trial wavefunction in equation \ref{eq:trial_wavefunction}. This gives:
+	\begin{equation}
+	\boldsymbol{F}=
+	\end{equation}
+	\textbf{REMEMBER TO ADD THIS}. A more detailed analysis (given in \textbf{REFERENCE}) shows that the correct way to incorporate such a term into the Metropolis algorithm is by adding a transition probability term given by the Green's functions:
+	\begin{equation}
+	G(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)=\frac{1}{(4\pi D \Delta t)^{3/2}}\sum_{i=1}^N \exp \left(-\frac{(\boldsymbol{r}_i-\boldsymbol{r'}_i-D\Delta t\boldsymbol{F}_i(\boldsymbol{r}_1,...,\boldsymbol{r}_N))^2}{4D\Delta t}\right)
+	\end{equation}
+	\textbf{FIX THIS} Where $\boldsymbol{r}_i$ are the coordinates prior to the move and $\boldsymbol{r'}_i$ are the coordinates after the move. The effect of this term is to modulate the acceptance probability, $w$. This term is now given by:
+	\begin{equation}
+	w(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)=\frac{G(\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|\Psi_T(\boldsymbol{r}_1,...,\boldsymbol{r}_N)|^2}{G(\boldsymbol{r'}_N,...,\boldsymbol{r}_1,...,\boldsymbol{r}_N,\boldsymbol{r'}_1)|\Psi_T(\boldsymbol{r'}_1,...,\boldsymbol{r'}_N)|^2}
+	\end{equation}
+	Which leads to the modified Metropolis algorithm, the Metropolis-Hastings algorithm, where a move is accepted if and only if $w\geq r$ where $r\in [0,1]$ again is a uniformly distributed random variable. This method is computationally far more expensive than the brute-force Metropolis algorithm, but it leads to a  significantly larger number of accepted steps.
+	\subsection{The local energy}
+	Note that in  order to estimate the expectation value of the Hamiltonian we must, according to equation \ref{eq:Expectation_Hamiltonian} compute the local energy, given by equation \ref{eq:Local_energy_general_expression}, in every Monte Carlo step. The local energy can be rewritten as:
+	\begin{equation}
+	E_L=\frac{1}{\Psi_T}H\Psi_T =\sum_{i=1}^N\left(-\frac{\hbar^2}{2m\Psi_T}\nabla_i^2 \Psi_T+V_{\mathrm{ext}}(\boldsymbol{r}_i)\right)+\sum_{i<j}^N V_{\mathrm{int}}
+	\end{equation}
+	We compute this numerically, but we also include an analytic computation, using our trial wavefunction $\Psi_T$ defined in equation \ref{eq:trial_wavefunction}. This is done in detail in appendix \textbf{APPENDIX}, and gives:
+	\begin{equation}
+	E_L=
+	\end{equation}
+	\textbf{FINISH THIS}.
+	
+	
+	
+	\subsection{Gradient descent and conjugate gradient}
+	To reduce our search space, we use a minimization method to find an approximation to the optimal variational parameter. This minimization method is run with relatively few Monte Carlo steps, and once an approximate optimal parameter is found, we perform the analysis. We implement two different approaches:\\
+	\textbf{FINISH}\\
+	We therefore require the derivative of the local energy. We show in appendix \textbf{APPENDIX} that this is given by:
+	\begin{equation}
+	\frac{\partial E_L}{\partial \alpha}=2\left(\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}E_L[\alpha]\big\rangle-\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}\big\rangle \big\langle E_L[\alpha]\big\rangle\right)
+	\end{equation}
+	
+	\subsection{One-body densities}
+	We are interested in investigating the probability of finding a single particle at a distance $r$ from the origin of our system. This is an important quantity, as it can be measured experimentally. We approach this through the concept of the one-body density. The one-body density is defined by:
+	\begin{equation}\label{eq:OneBodyDensity}
+	\rho(\boldsymbol{r_1})=\int d\boldsymbol{r_2}...d\boldsymbol{r_N}|\Psi_T(\boldsymbol{r_1},\boldsymbol{r_2},...,\boldsymbol{r_N})|^2
+	\end{equation}
+	Where $\boldsymbol{r_1}$ is the position of any particle. The integral is evaluated using Monte Carlo integration, as described in further detail in section \ref{sec:MetOneBody}.
+	
+	
+	
+	
+	\section{Methods}\label{Method_section}
+	\subsection{A note on units}
+	The scattering-length for a typical BEC condensate atom is somewhere in the range $85<a<140a_0$, where $a_0$ is the Bohr radius. The characteristic trap length (at 0 K), however, is $a_{ho}=(\hbar/m\omega)^{1/2}\approx 10^{4}$Å$-2\cdot 10^{4}$Å. We introduce length units of $a_{ho}$ and energy units of $\hbar \omega$. We show in appendix \textbf{APPENDIX} that, using these units, the Hamiltonian can be rewritten as:
+	\begin{equation}\label{eq:Hamiltonian_dimensionless}
+	H=\sum_{i=1}^N\left(-\nabla_i^2 + x_i^2+y_i^2+\gamma^2 z_i^2\right)+\sum_{i<j}V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+	\end{equation}
+	Where $\gamma=\omega_z/\omega$.
+	
+	
+	
+	\subsection{Outline of the structure of our program}
+	Our program uses the \texttt{Eigen} library in \texttt{C++} to do keep track of the matrices  
+	\subsection{Statistical treatment of the data}
+	We wish to estimate the statistical errors of our estimate of the local energy. As subsequent values for the local energy are based on the previous values of the local energy, we are dealing with a correlated time series. The normality assumptions usually employed when generating confidence intervals therefore does not hold. Instead, we use blocking to estimate the error in our energy. A detailed mathematical treatment of this method is found in \textbf{REFERENCE}. We therefore present only the algorithm. Assume that we have $n$ observations $Q^0=\{Q_1^0,...,Q_n^0\}$ of the local energy, and we wish to estimate the variance of the local energy. The uncorrelated estimator for the standard deviation is given by:
+	\begin{equation}
+	s=\sqrt{\frac{1}{n-1}\sum_{i=1}^n (Q_i-\overline{Q})^2}
+	\end{equation}
+	Where $\overline{Q}$ is the mean of the local energy estimates. This expression is only valid in the uncorrelated case, however. The idea of blocking is to perform iterative transformations of the data, until the covariance of the data is approximately zero. Specifically, the transformation that we will be implementing is the following:
+	\begin{equation}
+	Q^i \rightarrow Q^{i+1}: Q^{i+1} = \left\{ \frac{Q^i_1+Q^i_2}{2}, \frac{Q^i_3+Q^i_4}{2},...,\frac{Q^i_{n-1}+Q^i_{n}}{2}\right\}
+	\end{equation}
+	We choose $n$ to be a power of a, i.e. $n=2^d$. Thus, we can perform this transformation a maximum of $d$ times. We now define an estimator for the covariance bewteen observations that are distance $h$ apart by:
+	\begin{equation}
+	\hat{\gamma^k}(h)=\frac{1}{n}\sum_{i=1}^{n-h}(Q_i^k-\overline{Q}^k)(Q_{i+h}^k-\overline{Q}^k)
+	\end{equation}
+	We are interested in knowing when $\gamma^k(1)\approx 0$. This can be found by hand, simply by realizing that the transformation $Q^i \rightarrow Q^{i+1}$ described above preserves the variance of the data. It is shown in \textbf{REFERENCE} that $\gamma^k(1) \rightarrow 0$ for succesive iterations, and therefore a plot of the empirical variance as a function of iterations should eventually stabilize, giving the variance. \\
+	\linebreak
+	We use an alternative, automatic, approach to estimate when the covariance is small. This is based on comparing our results to a $\chi^2$ distribution, and is described further in \textbf{REFERENCE}.
+	\textbf{FINISH}
+	\subsection{Implementing the one-body density}\label{sec:MetOneBody}
+	To compute the one-body density defined by equation \ref{eq:OneBodyDensity}, we must compute the stated integral, using Monte Carlo integration. This is done by choosing a maximum distance from the origin $\boldsymbol{r_max}$, beyond which the probability of finding a particle is negligible. We then divide the volume from the origin to $\boldsymbol{r_{max}}$ into spherical shells with equal spacing between the radii of the shells. We then count the number of particles that are in each of the shells during each Monte Carlo cycle. We present a pseudo-code of our implementation \textbf{PSEUDO-CODE}
+	
+	\subsection{A brief note on some technicalities to save FLOPs}
+	\subsection{Benchmarks}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	\subsection{Minimizing computation in the non-interacting case}
+	For the non-interacting case ($a=0$), certain shortcuts are possible, to save FLOPS. 
+	\subsubsection{Computing the numerical energy}
+	From the Schrödinger equation:
+	\begin{equation}
+	\hat{H}\Psi_T = \left(-\frac{1}{2}\nabla^2+V\right)\Psi_T= E\Psi_T
+	\end{equation}
+	The kinetic energy is, numerically, given by (in dimensionless form):
+	\begin{equation}
+	T=-\frac{1}{2}\nabla^2 \Psi_T
+	\end{equation}
+	This gives, for particle $i$ and component $j$:
+	\begin{equation}
+	T_{ij} \approx \frac{\Psi_T(\boldsymbol{r_1},...,\boldsymbol{r_{i,j}}+h,...,\boldsymbol{r_n})-2\Psi_T(\boldsymbol{r})+\Psi_T(\boldsymbol{r_1},...,\boldsymbol{r_{i,j}}-h,...,\boldsymbol{r_n})}{h^2}
+	\end{equation}
+	Which gives, for the simplest trialfunction ($a=0$):
+	\small
+	\begin{equation}
+	T_{ij}=-\frac{1}{2}\Psi_T\left(\frac{\exp(-\alpha_j (x_j+h)^2)}{\exp(-\alpha_j x_j^2)}-2+\frac{\exp(-\alpha_j ( x_j -h)^2)}{\exp(-\alpha_j x_j^2)}\right)\frac{1}{h^2}=-\frac{1}{2h^2}\Psi_T\left(\exp(-2\alpha_j x_j h-\alpha_jh^2)+\exp(2\alpha_j x_j h-\alpha_j h^2)-2\right)
+	\end{equation}
+	\normalsize
+	
+	
+	\section{Results and discussion}
+	\section{Conclusion}
+	\subsection{Conclusion}
+	
+	\subsection{Outlook}
+	
+	\begin{appendices}
+		\section{Finding the drift force}
+		We wish to compute:
+		\begin{equation}
+		\vec{F}=2\frac{1}{\psi_T}\nabla \psi_T
+		\end{equation}
+		\section{Finding the analytic expression for the local energy}
+		We wish to find:
+		\begin{equation}
+		E_L=\frac{1}{\Psi_T}\nabla^2 \Psi_T
+		\end{equation}
+		Where $\Psi_T$ is given by:
+		\begin{equation}
+		\exp\left[ -\alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]\prod_{i<j}f(a, |\mathbf{r}_i-\mathbf{r}_j|)
+		\end{equation}
+		Look first at $a=0$. In this case, this reduces to the harmonic oscillator potential. The local energy is then:
+		\begin{equation}
+		\exp\left[ \alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]\left(-\frac{\hbar^2}{2m_i}\nabla_i^2+V\right)\exp\left[ -\alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]
+		\end{equation}
+		In the simple harmonic oscillator case, this gives:
+		\begin{equation}
+		E_L(\mathbf{r},\alpha)=-\frac{\hbar^2}{2m}\sum_{i=1}^n 2\alpha \left(2\alpha(x_i^2+y_i^2+z_i^2)-3\right)+\frac{1}{2}m\omega_{ho}^2\sum_{i=1}^n(x_i^2+y_i^2+z_i^2)
+		\end{equation}
+		\textbf{FIX FOR ONE/N PARTICLES AND LOWER DIMENSION}
+		Similarly for the drift force:
+		\begin{equation}
+		F=\frac{2\nabla \Psi_T}{\Psi_T}
+		\end{equation}
+		\begin{equation}
+		F=-2\alpha\sum_{i=1}^n(x_i+y_i+z_i)
+		\end{equation}
+		Now for the ugly part:\\
+		For one particle, $\nabla_k$:
+		\begin{equation}
+		\nabla_k\Psi_{T} = \nabla_k\left(\Psi_T(\mathbf{r})=\nabla_k \prod_{i=1}^n\phi(\mathbf{r}_i)\exp\left(\sum_{i<j} u(r_{ij})\right)\right)
+		\end{equation}
+		Now apply the product rule. For the first term, all terms are unchanged except where $i=k$, giving the first term as:
+		\begin{equation}
+		\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
+		\end{equation}
+		The second term is trickier. We can rewrite it as follows:
+		\begin{align}
+		\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{i < j}u(r_{ij})\right)\right]
+		= \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
+		\label{second term in first derivative}
+		\end{align}
+		This is calculated by using the chain-rule. To evaluate the innerfunction, we must look
+		at \\$1 \le j \le k$, $j = k$ and $j \ge k$. Begining with $1\le  j \le k$,
+		the first sum is from $1$ up the kth particle, meaning all terms differentiated before $k$ vanishes
+		and we are left with $u(r_{ik})$, thus leaving with us with:
+		\begin{align}
+		\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{k}\sum_{i = 1}^{k-1}u(r_{ij})\right)\right]
+		=
+		\prod_{i}\phi(\bold{r}_{i})\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+		\left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]
+		\end{align}
+		For $j = k$, we see that the first sum goes from and end up at kth particle, meaning
+		this sum vanishes, secondly, the second sum is evaluated at $1 \le i \le k-1$, leaving with
+		constants up to $k-1$, thus this term becomes $0$.
+		\begin{align}
+		\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
+		= 0
+		\end{align}
+		For $j > k$,the first sum goes from $k+1\le j \le n$ and the second $1 \le i \le k$.  The second sum vanishes, because all constants are differentiated away
+		except the last term $i = k$. This leaves us with:
+		\begin{align}
+		\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = k+1}^{n}\sum_{i = 1}^{k}u(r_{ij})\right)\right]
+		= \prod_{i}\phi(\bold{r}_{i})
+		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+		\left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj})\right]
+		\end{align}
+		We can now write the second term as \ref{second term in first derivative}):
+		\begin{align}\label{combined sum}
+		\prod_{i}\phi(\bold{r}_{i})
+		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+		\left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj}) +
+		\left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]\right]
+		\end{align}
+		%CHECK THIS EQUATION
+		This can be rewritten to:
+		\begin{align}
+		\prod_{i}\phi(\bold{r}_{i})
+		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+		\left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
+		\end{align}
+		FORKLAR denne delen litt. Thus the first derivative of the trial wavefunction
+		can be written as:
+		\begin{align}
+		\nabla_{k}\Psi_{T} =
+		\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
+		+ \prod_{i}\phi(\bold{r}_{i})
+		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+		\left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
+		\end{align}
+		Lastly we will calculate the second derivative of the trial function, where we
+		use the product rule and the chain rule. We will then obtain the following:
+		\begin{align*}
+		\begin{split}
+		\nabla_{k}^2\Psi_{T} =
+		\underbrace{\nabla_k^2 \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)}_{\mathrm{I}} +\\
+		\underbrace{2\left(\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]
+			\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+			\left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]\right)}_{\mathrm{II}} +
+		\\
+		\underbrace{\prod_{i}\phi(\bold{r}_{i})
+			\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+			\left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]^2}_{\mathrm{III}} +
+		\\
+		\underbrace{\prod_{i}\phi(\bold{r}_{i})
+			\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+			\left[\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj})\right]}_{\mathrm{IV}}
+		\end{split}
+		\end{align*}
+		Where the derivatives of the different parts are obtained from previous.
+		We will now divide the second derivative by the trial wavefunction, and obtain:
+		\begin{align}
+		\frac{1}{\Psi_{T}}\nabla_{k}^2\Psi_{T} =
+		\underbrace{\frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{\phi(\bold{r}_{k})})}}_{\mathrm{I}}
+		+ \underbrace{2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\sum_{j\neq k}\nabla_{k}u(r_{kj})}_{\mathrm{II}}
+		+ \underbrace{\left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2}_{\mathrm{III}} +
+		\underbrace{\left[\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj})\right]}_{\mathrm{IV}}
+		\end{align}
+		We will now carry out the differentiation in term (II), (III) and (IV). Begining with the
+		(II), by using the chain rule we can rewrite (II) as:
+		\begin{align*}
+		2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\sum_{j\neq k}\pdv{u(r_{kj})}{r_{kj}}\pdv{r_{kj}}{\bold{r}_{k}} =
+		2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
+		\end{align*}
+		Where we have used $\nabla_{k} r_{kj} = (\bold{r}_{k} - \bold{r}_{j})/r_{kj}$.
+		Looking at (III), we can write out the square into two factors. The second paranthese the summation index is replaced by a
+		dummy index $i$. Thus will look as:
+		\begin{align}
+		\left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2 = \left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)\left(\sum_{i\neq k}\nabla_{k} u(r_{ki})\right)
+		\end{align}
+		From (II) we found the derivative of this function. Thus this can be expressed as (combining also the double sum):
+		\begin{align}
+		\left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2 =
+		\sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+		\left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
+		\end{align}
+		The last part (IV), we must use the chain rule and product rule together. We will obtain
+		the following term:
+		\begin{align}
+		\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj}) =
+		\sum_{j \neq k}\nabla_{k}\left(
+		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)^2 u''(r_{kj}) + u'(r_{kj})\nabla_{k}
+		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)\right)
+		\end{align}
+		Note that this is a unit vector squared:
+		\begin{align}
+		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)^2 = 1
+		\end{align}
+		and the last part is found by using the qoutient rule. This is the divergence to the vectors, since we are evaluating for
+		specific particle k, and gradient to scalar (we must look for all combination of k particle):
+		\begin{align}
+		\nabla_{k}
+		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+		= \frac{r_{kj}\left(\nabla_{k}\cdot\bold{r}_{k}-
+			\nabla_{k}\cdot\bold{r}_{j}\right) -
+			(\bold{r}_{k}-\bold{r}_{j})\nabla_{k}r_{kj}}{r_{kj}^2}
+		\end{align}
+		This simply becomes:
+		\begin{align}
+		\nabla_{k}
+		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+		= \frac{3r_{kj}^2 - \bold{r}^2_{k} + 2(\bold{r}_{k}\cdot \bold{r}_{j}) - \bold{r}^2_{j}}{r_{kj}^3}
+		\end{align}
+		Note that $r_{kj} - \bold{r}^2_{k} + 2(\bold{r}_{k}\cdot \bold{r}_{j}) - \bold{r}^2_{j} = 0$, this leaves us with:
+		\begin{align}
+		\nabla_{k}
+		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+		= \frac{2}{r_{kj}}
+		\end{align}
+		Thus expression (IV) can be expressed as:
+		\begin{align}
+		\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj}) =
+		\sum_{j \neq k}\nabla_{k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})
+		\right)
+		\end{align}
+		Combining (I), (II), (III) and (IV), we we will get that the second derivative
+		of the trial function is:
+		\begin{align}
+		\begin{split}
+		\frac{1}{\Psi_{t}}\nabla_{k}^2\Psi_{T} =
+		\frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{\phi(\bold{r}_{k})})}
+		+
+		2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
+		+\\
+		\sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+		\left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
+		+
+		\sum_{j \neq k}\nabla_{k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
+		\end{split}
+		\end{align}
+		\section{The dimensionless Hamiltonian}
+		We aim to demonstrate that the Hamiltonian in equation \ref{eq:general_Hamiltonian} is equivalent to the Hamiltonian shown in equation \ref{eq:Hamiltonian_dimensionless} under the the coordinate transformation:
+		\begin{equation}
+		\boldsymbol{r}\rightarrow \frac{\boldsymbol{r}}{a_{ho}}=\boldsymbol{r} \sqrt{\frac{m\omega}{\hbar}} \quad E\rightarrow \frac{E}{\hbar \omega}
+		\end{equation}
+		Where $a_{ho}=(h/m\omega)^{1/2}$. Note that the Laplacian under this transformation turns into:
+		\begin{equation}
+		\nabla^2 \rightarrow \frac{\hbar}{m\omega} \nabla^2 
+		\end{equation}
+		Thus, performing this coordinate transformation gives:
+		\begin{equation}
+		H \rightarrow H =\frac{\hbar \omega}{2} \left(\sum_{i=1}^N -\nabla_i^2   + x_i^2+y_i^2+\frac{\omega_z^2}{\omega^2} z^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+		\end{equation}
+		Now use that $H\Psi_T=E\Psi_T$, and rescale the energy as $E/\hbar \omega$. This gives:
+		\begin{equation}
+		\frac{1}{\hbar \omega}H\Psi = \frac{1}{2}\sum_{i=1}^N\left(-\nabla^2_i +x_i^2+y_i^2+  \frac{\omega_z^2}{\omega^2} z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j) = \frac{E}{\hbar \omega}\Psi
+		\end{equation}
+		Relabeling the energy and defining $\gamma=\omega/\omega_z$ gives:
+		\begin{equation}
+		H=\frac{1}{2}\sum_{i=1}^N \left(-\nabla_i^2 +x_i^2+y_i^2+\gamma^2 z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+		\end{equation}
+		Which is exactly equation \ref{eq:Hamiltonian_dimensionless}.
+		\section{Finding the derivative of the local energy}
+		The local energy, $E_L$ is given by:
+		\begin{equation}
+		E_L=\langle \Psi_T | H| \Psi_T \rangle
+		\end{equation}
+		Taking the derivative of this gives:
+		\begin{equation}
+		\frac{\partial E_L}{\partial \alpha}=\langle \frac{\partial \Psi_T}{\partial \alpha}|H|\Psi_T\rangle + \langle \Psi_T |\frac{\partial H}{\partial \alpha}	|\Psi_T\rangle + \langle \Psi_T |H|\frac{\partial \Psi_T}{\partial \alpha}\rangle
+		\end{equation}
+		The Hamiltonian does not depend on the variational parameter $\alpha$. 
+	\end{appendices}
 \end{document}
