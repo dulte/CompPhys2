@@ -182,7 +182,7 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
 
     DataDump<double> r_packet("..//output//r_positions.bin");
 
-    DataDump<std::vector<double>> density_packet("..//output//density.bin");
+    DataDump<std::vector<double>> density_packet("..//output//density_non.bin");
 
 
 
@@ -199,17 +199,17 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
         rs.push_back(r);
         density.push_back(0);
 
-        for(int i = 0; i<r_num-1;i++){
-            if(Parameters::dimension ==1){
-                volume.push_back(r+r_step-r);
-            }
-            else if(Parameters::dimension == 2){
-                volume.push_back(pi*((r+r_step)*(r+r_step) - r*r));
-            }
-            else{
-                volume.push_back(4./3*pi*((r+r_step)*(r+r_step)*(r+r_step) - r*r*r));
-            }
+
+        if(Parameters::dimension ==1){
+            volume.push_back(r+r_step-r);
         }
+        else if(Parameters::dimension == 2){
+            volume.push_back(pi*((r+r_step)*(r+r_step) - r*r));
+        }
+        else{
+            volume.push_back(4./3*pi*((r+r_step)*(r+r_step)*(r+r_step) - r*r*r));
+        }
+
     }
 
 
@@ -220,6 +220,7 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
     r_packet.push_back(r_min);
     r_packet.push_back(r_max);
     r_packet.push_back((double)r_num);
+    r_packet.push_back(r_step);
 
 
     double distance_from_origo = 0;

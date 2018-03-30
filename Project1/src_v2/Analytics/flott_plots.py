@@ -22,8 +22,18 @@ rs = np.linspace(r[0],r[1],int(r[2]),endpoint=True)
 
 print(len(rs),len(rho[:len(rs)]))
 
+step = r[3]
 
-plt.plot(rs,rho[:len(rs)],label="Interacting")
-plt.plot(rs,rho_non[:len(rs)],label="Noninteracting")
+N = np.sum(rho*step)
+
+N_non = np.sum(rho_non*step)
+
+print("For interacting N = ",N)
+print("For noninteracting N = ",N_non)
+
+print(10*rho[0]*step)
+
+plt.plot(rs,10*rho[:len(rs)]*step,label="Interacting")
+plt.plot(rs,10*rho_non[:len(rs)]*step,label="Noninteracting")
 plt.legend()
 plt.show()

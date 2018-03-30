@@ -504,10 +504,10 @@ void System::quantum_force(int move){
             for(int k=0; k<N;k++){
                 if(k !=move){
                     if(distance(move,k)>a){
-                        grad_value+=2*a*(r(j,move)-(r(j,k)))/distance(move,k)*udiv(move,k);
+                        grad_value+=2*a*(r(j,move)-r(j,k))/(distance(move,k)*distance(move,k) - a*distance(move,k)) ;//distance(move,k)*udiv(move,k);
                     }
                     if(next_distance(move,k)>a){
-                        grad_value_new+=2*a*(next_r(j,move)-next_r(j,k))/next_distance(move,k)*udiv(move,k);
+                        grad_value_new+=2*a*(next_r(j,move)-next_r(j,k))/(next_distance(move,k)*next_distance(move,k) - a*next_distance(move,k));//next_distance(move,k)*udiv(move,k);
                     }
                  }
             }
