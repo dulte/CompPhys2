@@ -121,7 +121,11 @@ void System::make_move_and_update(const int move){
 
         next_r(i,move) = r(i,move) +  random_nr;
     }
-    update_next_distance(move);
+
+    if(D!=0 || a!=0){
+        update_next_distance(move);
+    }
+
 
 
 
