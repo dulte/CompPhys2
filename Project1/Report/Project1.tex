@@ -117,6 +117,27 @@
 	\Psi_T(\boldsymbol{r}_1, \boldsymbol{r}_2, ..., \boldsymbol{r}_N, \alpha, \beta)=\prod_ig(\alpha,\beta, \boldsymbol{r}_i)\prod_{i<j}f(a, |\boldsymbol{r}_i-\boldsymbol{r}_j|)
 	\end{equation}
 	This is thus the wavefunction that we will be using in equation \ref{eq:Variational_principle} to find our upper bound on the ground state energy.
+	\subsection{Analytic results in the simplest case}
+	For $\beta=1$ (spherical trap) and $a=0$ (no interaction amongst the particles), our system reduces to a simple harmonic oscillator, for which analytic results are available. For a single particle, the ground-state energy is (according to \textbf{GRIFFITHS}) given by:
+	\begin{equation}
+	E=\frac{\hbar \omega d}{2}
+	\end{equation}
+	Where $d$ is the number of dimensions. For $N$ non-interacting particles this turns into:
+	\begin{equation}\label{eq:Exact_Energy_N_particles}
+	E=\frac{N\hbar \omega d}{2}
+	\end{equation}
+	The exact ground-state wavefunction for the harmonic oscillator is (in dimensionless-form) given by:
+	\begin{equation}
+	\exp\left(-\frac{\sum_{i=1}^d x_i^2}{2}\right)
+	\end{equation}
+	For $N$ non-interacting particles this turns into:
+	\begin{equation}
+	 \prod_{i=1}^N 	\exp\left(-\frac{\sum_{i=1}^d x_i^2}{2}\right)
+	\end{equation}
+	Comparing this with our trial wavefunction in equation \ref{eq:trial_wavefunction}, shows that we should expect the ground-state energy to be achieved for:
+	\begin{equation}\label{eq:exact_alpha}
+	\alpha=0.5
+	\end{equation}
 	\subsection{Variational Monte Carlo methods}
 	Note that equation \ref{eq:Variational_principle} involves two integrals over $3N$ dimensions. This is usually not possible to evaluate analytically for large $N$, and traditional numerical methods such as gaussian quadrature are far too slow in high dimensions to be feasible. We therefore employ variational Monte Carlo methods to help in evaluting these integrals. To do this, we consider these integrals to represents stochastic quantities, and define the probability distribution as:
 	\begin{equation}
@@ -172,14 +193,16 @@
 	
 	
 	
-	\subsection{Gradient descent and conjugate gradient}
-	To reduce our search space, we use a minimization method to find an approximation to the optimal variational parameter. This minimization method is run with relatively few Monte Carlo steps, and once an approximate optimal parameter is found, we perform the analysis. We implement two different approaches:\\
-	\textbf{FINISH}\\
-	We therefore require the derivative of the local energy. We show in appendix \textbf{APPENDIX} that this is given by:
+	\subsection{Gradient descent method to find the optimal parameter $\boldsymbol{\alpha}$}
+	To reduce our search space, we use a minimization method to find an approximation to the optimal variational parameter, $\alpha$. This minimization method is run with relatively few Monte Carlo steps, and once an approximate optimal parameter is found, we perform the analysis with many Monte Carlo steps. As our parameter space is one-dimensional ($\alpha$ is the only variational parameter), we choose to implement a simple gradient descent algorithm. This is implemented as follows:
 	\begin{equation}
-	\frac{\partial E_L}{\partial \alpha}=2\left(\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}E_L[\alpha]\big\rangle-\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}\big\rangle \big\langle E_L[\alpha]\big\rangle\right)
+	\alpha_{n+1}=\alpha_n-\gamma_n \frac{\partial E_L}{\partial \alpha} (\alpha_n)
 	\end{equation}
-	
+	We choose an initial $\alpha_0$ close to the correct $\alpha$ from the non-interacting case, and then iteratively follow wherever the gradient is lower. We use an adaptive step-size, which decreases as the difference between subsequent gradients decrease (i.e. as we get closer to the minimum).  To implement this, we require the derivative of the local energy. We show in appendix \textbf{APPENDIX} that this is given by:
+	\begin{equation}
+	\frac{\partial E_L}{\partial \alpha}(\alpha_n)=2\left(\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}E_L[\alpha_n]\big\rangle-\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}\big\rangle \big\langle E_L[\alpha_n]\big\rangle\right)
+	\end{equation}
+	Where we note that both the local energy and the wavefunction depend on $\alpha$.
 	\subsection{One-body densities}
 	We are interested in investigating the probability of finding a single particle at a distance $r$ from the origin of our system. This is an important quantity, as it can be measured experimentally. We approach this through the concept of the one-body density. The one-body density is defined by:
 	\begin{equation}\label{eq:OneBodyDensity}
@@ -289,38 +312,9 @@
 	\subsection{Outlook}
 	
 	\begin{appendices}
-		\section{Finding the drift force}
-		We wish to compute:
-		\begin{equation}
-		\vec{F}=2\frac{1}{\psi_T}\nabla \psi_T
-		\end{equation}
-		\section{Finding the analytic expression for the local energy}
-		We wish to find:
-		\begin{equation}
-		E_L=\frac{1}{\Psi_T}\nabla^2 \Psi_T
-		\end{equation}
-		Where $\Psi_T$ is given by:
-		\begin{equation}
-		\exp\left[ -\alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]\prod_{i<j}f(a, |\mathbf{r}_i-\mathbf{r}_j|)
-		\end{equation}
-		Look first at $a=0$. In this case, this reduces to the harmonic oscillator potential. The local energy is then:
-		\begin{equation}
-		\exp\left[ \alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]\left(-\frac{\hbar^2}{2m_i}\nabla_i^2+V\right)\exp\left[ -\alpha \sum_{i}^n\left(x_i^2+y_i^2+z_i^2\right)\right]
-		\end{equation}
-		In the simple harmonic oscillator case, this gives:
-		\begin{equation}
-		E_L(\mathbf{r},\alpha)=-\frac{\hbar^2}{2m}\sum_{i=1}^n 2\alpha \left(2\alpha(x_i^2+y_i^2+z_i^2)-3\right)+\frac{1}{2}m\omega_{ho}^2\sum_{i=1}^n(x_i^2+y_i^2+z_i^2)
-		\end{equation}
-		\textbf{FIX FOR ONE/N PARTICLES AND LOWER DIMENSION}
-		Similarly for the drift force:
-		\begin{equation}
-		F=\frac{2\nabla \Psi_T}{\Psi_T}
-		\end{equation}
-		\begin{equation}
-		F=-2\alpha\sum_{i=1}^n(x_i+y_i+z_i)
-		\end{equation}
-		Now for the ugly part:\\
-		For one particle, $\nabla_k$:
+		\section{Analytic expression for the local energy and quantum force}
+		\paragraph{First derivative:}\\
+		For particle $k$, $\nabla_k$ is given by:
 		\begin{equation}
 		\nabla_k\Psi_{T} = \nabla_k\left(\Psi_T(\mathbf{r})=\nabla_k \prod_{i=1}^n\phi(\mathbf{r}_i)\exp\left(\sum_{i<j} u(r_{ij})\right)\right)
 		\end{equation}
@@ -380,8 +374,9 @@
 		\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
 		+ \prod_{i}\phi(\bold{r}_{i})
 		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
-		\left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
+		\left[\sum_{j \neq k}u(r_{kj})\right]
 		\end{align}
+		\paragraph{Second derivative:}
 		Lastly we will calculate the second derivative of the trial function, where we
 		use the product rule and the chain rule. We will then obtain the following:
 		\begin{align*}
@@ -471,16 +466,93 @@
 		of the trial function is:
 		\begin{align}
 		\begin{split}
-		\frac{1}{\Psi_{t}}\nabla_{k}^2\Psi_{T} =
-		\frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{\phi(\bold{r}_{k})})}
+		\frac{1}{\Psi_{T}}\nabla_{k}^2\Psi_{T} =
+		\frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{k})}
 		+
 		2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
 		+\\
 		\sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
 		\left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
 		+
-		\sum_{j \neq k}\nabla_{k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
+		\sum_{j \neq k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
 		\end{split}
+		\end{align}
+		\paragraph{Local energy:} Now that we have the second derivative of the
+		trial-function, we can write out the analytical expression for the local energy.
+		Recall that:
+		\begin{align}
+		E_{L}(\bold{r}) = \frac{1}{\Psi_{T}}H\Psi_{T} =
+		\frac{1}{\Psi_{T}}\left[\sum_{i}^{N}\left(-\frac{\hbar^{2}}{2m}\nabla^{2}_{i}
+		+ V_{ext}(\bold{r}_{i})\right) + \sum_{i < j}^{N}V_{int}(
+		\bold{r}_{i},\bold{r}_{j})\right]\psi_{T}
+		\end{align}
+		The second derivative written explicitly is:
+		\begin{align}
+		\begin{split}
+		\frac{1}{\Psi_{T}}\nabla^{2}_{k}\Psi_{T} = 4\alpha\bold{Q}_{k}^{2} - 4\alpha\bold{Q}_{k}
+		\sum_{j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
+		+\\
+		\sum_{i,j\neq k}\frac{\bold{r}_{k}\cdot\bold{r}_{k} - \bold{r}_{k}\cdot\bold{r}_{j} - \bold{r}_{k}\cdot\bold{r}_{i} + \bold{r}_{i}\cdot\bold{r}_{j}}{r_{kj}r_{ki}}u'(r_{ki})u'(r_{kj})
+		\\
+		+ \sum_{j \neq k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
+		\end{split}
+		\end{align}
+		Where $\bold{Q}_{k} = \left(x_{k}\hat{i} + y_{k}\hat{j} + \beta z_{k}\hat{k}\right)$,
+		and the first and second derivative of $u(r_{kj})$ is:
+		\begin{align}
+		u'(r_{kj}) =
+		\begin{cases}
+		\infty &, r_{kj} \le a\\
+		\frac{a}{r_{kj}^{2} - ar_{kj}} &, r_{kj} > a
+		\end{cases}
+		\label{udiv}
+		\end{align}
+		and
+		\begin{align}
+		u''(r_{kj}) =
+		\begin{cases}
+		\infty &, r_{kj} \le a\\
+		\frac{a^{2} - 2ar_{kj}}{\left(r_{kj}^{2} - ar_{kj}\right)^{2}} &, r_{kj} > a
+		\end{cases}
+		\label{udivdiv}
+		\end{align}
+		Thus the analytical local energy for a group of particle is:
+		\begin{align}
+		\begin{split}
+		E_{L} = -\frac{\hbar^{2}}{2m}\sum_{k}\left[
+		4\alpha^{2}\bold{Q}_{k}^{2} - 4\alpha\bold{Q}_{k} + \sum_{j \neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)\right.
+		\\ \left. + \sum_{i,j \neq k}\left(\frac{\bold{r}\cdot\bold{r} + \bold{r}_{j}\cdot\bold{r}_{i} - \bold{r}_{j}\cdot\bold{r}_{k} -\bold{r}_{k}\cdot\bold{r}_{i}}{r_{ki}r_{kj}}u'(r_{ki})u'(r_{kj})\right)\right.
+		\\
+		\left. + \sum_{j \neq k}\left(u''(r_{kj} + \frac{2}{r_{kj}}u'(r_{kj}))\right)\right]
+		+ \sum_{k}V_{ext}(\bold{r}_{k}) + \sum_{i < j}V_{int}(\bold{r}_{i}, \bold{r}_{j})
+		\end{split}
+		\end{align}
+		This expression includes the situation where particles interact with each other.
+		Now if we assume the particles does not interact with each other, we then have:
+		\begin{align}
+		E_{L} = \sum_{k}\left(4\alpha^{2}\bold{Q}_{k} + V_{ext}(\bold{r}_{k}) \right)
+		\end{align}
+		\paragraph{Quantum force/Drift force:}
+		The quantum/drift force is defined to be:
+		\begin{align}
+		\bold{F}_{i} = 2\frac{\nabla\Psi_{T}}{\Psi_{T}}
+		\end{align}
+		Using the first derivative we just derived above this expression will look like:
+		\begin{align}
+		\bold{F}_{i} = 2\frac{\nabla_k \phi(\bold{r}_{k})}{\phi(\bold{r}_{k})}
+		+
+		2\sum_{j \neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})
+		= -4\alpha\bold{Q}_{i} +
+		2\sum_{j \neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})
+		\end{align}
+		Where $\bold{Q}_{i} = x_{i}\hat{i} + x_{j}\hat{j} + \beta z_{k}\hat{k}$ and
+		$u'(r_{kj})$ is given in (\ref{udiv}). This is for a interacting case, since
+		the distance between two particle and the gradient $kj$'th particle appears.
+		Further notice that the quantum force can be written
+		as $3\cross N$ matrix, where $N$ is number of particles in the system.
+		For a non-interacting case, we have:
+		\begin{align}
+		\bold{F}_{i} = -4\alpha\bold{Q}_{i}
 		\end{align}
 		\section{The dimensionless Hamiltonian}
 		We aim to demonstrate that the Hamiltonian in equation \ref{eq:general_Hamiltonian} is equivalent to the Hamiltonian shown in equation \ref{eq:Hamiltonian_dimensionless} under the the coordinate transformation:
