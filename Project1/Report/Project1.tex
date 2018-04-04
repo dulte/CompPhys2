@@ -20,6 +20,7 @@
 \usepackage[noabbrev]{cleveref}
 \usepackage{wasysym}
 \usepackage{changepage}
+\usepackage{physics}
 
 
 
@@ -219,7 +220,7 @@
 	\begin{equation}\label{eq:Hamiltonian_dimensionless}
 	H=\sum_{i=1}^N\left(-\nabla_i^2 + x_i^2+y_i^2+\gamma z_i^2\right)+\sum_{i<j}V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 	\end{equation}
-	Where $\gamma=\omega_z^2$.
+	Where $\gamma=\omega_z/\omega$.
 	
 	
 	
@@ -263,32 +264,7 @@
 	
 	
 	
-	
-	
-	
-	
-	\subsection{Minimizing computation in the non-interacting case}
-	For the non-interacting case ($a=0$), certain shortcuts are possible, to save FLOPS. 
-	\subsubsection{Computing the numerical energy}
-	From the Schrödinger equation:
-	\begin{equation}
-	\hat{H}\Psi_T = \left(-\frac{1}{2}\nabla^2+V\right)\Psi_T= E\Psi_T
-	\end{equation}
-	The kinetic energy is, numerically, given by (in dimensionless form):
-	\begin{equation}
-	T=-\frac{1}{2}\nabla^2 \Psi_T
-	\end{equation}
-	This gives, for particle $i$ and component $j$:
-	\begin{equation}
-	T_{ij} \approx \frac{\Psi_T(\boldsymbol{r_1},...,\boldsymbol{r_{i,j}}+h,...,\boldsymbol{r_n})-2\Psi_T(\boldsymbol{r})+\Psi_T(\boldsymbol{r_1},...,\boldsymbol{r_{i,j}}-h,...,\boldsymbol{r_n})}{h^2}
-	\end{equation}
-	Which gives, for the simplest trialfunction ($a=0$):
-	\small
-	\begin{equation}
-	T_{ij}=-\frac{1}{2}\Psi_T\left(\frac{\exp(-\alpha_j (x_j+h)^2)}{\exp(-\alpha_j x_j^2)}-2+\frac{\exp(-\alpha_j ( x_j -h)^2)}{\exp(-\alpha_j x_j^2)}\right)\frac{1}{h^2}=-\frac{1}{2h^2}\Psi_T\left(\exp(-2\alpha_j x_j h-\alpha_jh^2)+\exp(2\alpha_j x_j h-\alpha_j h^2)-2\right)
-	\end{equation}
-	\normalsize
-	
+
 	
 	\section{Results and discussion}
 	\subsection{1b)}
@@ -552,26 +528,26 @@
 		as $3\cross N$ matrix, where $N$ is number of particles in the system.
 		For a non-interacting case, we have:
 		\begin{align}
-		\bold{F}_{i} = -4\alpha\bold{Q}_{i}
+		\boldsymbol{F}_{i} = -4\alpha\boldsymbol{Q}_{i}
 		\end{align}
 		\section{The dimensionless Hamiltonian}
 		We aim to demonstrate that the Hamiltonian in equation \ref{eq:general_Hamiltonian} is equivalent to the Hamiltonian shown in equation \ref{eq:Hamiltonian_dimensionless} under the the coordinate transformation:
 		\begin{equation}
 		\boldsymbol{r}\rightarrow \frac{\boldsymbol{r}}{a_{ho}}=\boldsymbol{r} \sqrt{\frac{m\omega}{\hbar}} \quad E\rightarrow \frac{E}{\hbar \omega}
 		\end{equation}
-		Where $a_{ho}=(h/m\omega)^{1/2}$. To show this, I multiply and divide the entire equation by $1/a_{ho}^2=(\hbar/m\omega)$. This gives:
+		Where $a_{ho}=(h/m\omega)^{1/2}$. To show this, note first that the gradient operator under this transformation transforms as:
 		\begin{equation}
-		\frac{\hbar m\omega }{\hbar m \omega}H =\frac{\hbar \omega}{2} \left(\sum_{i=1}^N \left(-\frac{\partial^2}{\partial (m\omega/\hbar) x^2}-\frac{\partial^2}{\partial (m\omega/\hbar) y^2}-\frac{\partial^2}{\partial (m\omega/\hbar) z^2}      \right)+ \frac{m\omega}{\hbar}\left(x^2+y^2+\omega_z^2 z^2\right)\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+		\nabla \rightarrow \sqrt{\frac{\hbar}{m\omega}} \nabla
 		\end{equation}
-		Renaming the $\boldsymbol{r}$ to rescaled variable gives 
+		We now introduce this coordinate transformation into our Hamiltonian. This gives:
 		\begin{equation}
-		H=\hbar \omega \frac{1}{2}\sum_{i=1}^N \left(-\nabla^2_i+x^2+y^2+ \omega_z^2 z^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+		H\rightarrow H=\sum_{i=1}^{N}\left(-\frac{\hbar^2}{2m}\frac{\omega m}{\hbar}\nabla_i^2+\frac{1}{2}m\omega^2 \frac{\hbar}{m\omega}(x_i^2+y_i^2 +\omega_z^2 z_i^2) \right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 		\end{equation}
-		Now use that $H\Psi_T=E\Psi_T$, and rescale the energy as $E/\hbar \omega$. This gives:
+		Which can be rewritten as:
 		\begin{equation}
-		\frac{1}{\hbar \omega}H\Psi = \frac{1}{2}\sum_{i=1}^N\left(-\nabla^2_i +x_i^2+y_i^2+  \omega_z^2 z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j) = \frac{E}{\hbar \omega}\Psi
+		H=\frac{\hbar \omega}{2}\sum_{i=1}^N\left(-\nabla^2 +\frac{\hbar \omega}{2}\left(x_i^2+y_i^2 + \frac{\omega_z^2}{\omega^2}z_i^2\right)\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 		\end{equation}
-		Relabeling the energy and defining $\gamma=\omega_z^2$ gives:
+		Relabeling the energy and defining $\gamma=\omega_z/\omega$ gives:
 		\begin{equation}
 		H=\frac{1}{2}\sum_{i=1}^N \left(-\nabla_i^2 +x_i^2+y_i^2+\gamma z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 		\end{equation}
