@@ -25,7 +25,7 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
     int max_iter=200;
     int max_iter_inner=10;
     int max_j=0;
-    double tol=1e-5;
+    double tol=1e-3;
 
     double gradient_10_steps_ago = 1e6;
 
@@ -87,9 +87,10 @@ double Simulation::compute_local_energy_derivative(double alpha){
     energy = 0;
     total_energy = 0;
     double local_energy_derivative=0;
+    int fast_MC_cycles = static_cast<int>(MC_cycles/100.);
 
     system->make_grid(alpha);
-    for(int i = 0;i<MC_cycles;i++){
+    for(int i = 0;i<fast_MC_cycles;i++){
         energy = 0;
         for(int move = 0;move<N;move++){
             system->make_move_and_update(move);
@@ -98,9 +99,9 @@ double Simulation::compute_local_energy_derivative(double alpha){
             total_energy += energy/N;
         }
 
-    total_energy =total_energy/MC_cycles;
-    double expectation_wavefunction_times_local_energy = system->expectation_derivative_energy/(N*MC_cycles);
-    double expectation_wavefunction_times_expectation_local_energy = system->expectation_derivative/(N*MC_cycles)*total_energy;
+    total_energy =total_energy/fast_MC_cycles;
+    double expectation_wavefunction_times_local_energy = system->expectation_derivative_energy/(N*fast_MC_cycles);
+    double expectation_wavefunction_times_expectation_local_energy = system->expectation_derivative/(N*fast_MC_cycles)*total_energy;
     local_energy_derivative = 2.0*(expectation_wavefunction_times_local_energy-expectation_wavefunction_times_expectation_local_energy);
     //local_energy_derivative=(2.0/(N*MC_cycles))*(system->expectation_derivative_energy-(2.0/(N*MC_cycles))*system->expectation_derivative*system->expectation_local_energy);
 
@@ -165,8 +166,6 @@ void Simulation::run(int rank){
 
 
 
-
-
     for(double a = alpha_min; a < alpha_max; a+=alpha_step){
 
         system->make_grid(a);
@@ -196,6 +195,48 @@ void Simulation::run(int rank){
 }
 
 
+void Simulation::run(int rank,double alpha){
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_real_distribution<double> distribution(0,N);
+
+    energy = 0;
+    double total_energy;
+    int move = 0;
+
+    std::string filename = "..//output//data";
+    filename.append(std::to_string(rank));
+    filename.append(".bin");
+
+    std::string stampname = "..//output//stamp";
+    stampname.append(std::to_string(rank));
+    stampname.append(".bin");
+
+    DataDump<double> dump(filename,stampname);
+
+    if(rank == 0){
+         dump.dump_metadata("..//output//metadata.txt");
+
+    }
+
+
+    system->make_grid(alpha);
+    dump.push_back_stamp(alpha);
+
+    for(int i = 0;i<MC_cycles;i++){
+        energy = 0;
+        move = (int)distribution(gen);
+        system->make_move_and_update(move);
+        energy += system->check_acceptance_and_return_energy(move);
+        dump.push_back(energy);
+        total_energy += energy;
+
+    }
+    std::cout << "Energy " << total_energy/(MC_cycles) << std::endl;
+    dump.dump_all();
+}
+
+
 void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min, double r_max){
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -209,7 +250,7 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
 
     DataDump<double> r_packet("..//output//r_positions.bin");
 
-    DataDump<std::vector<double>> density_packet("..//output//density_non.bin");
+    DataDump<std::vector<double>> density_packet("..//output//density.bin");
 
 
 
@@ -226,16 +267,19 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
         rs.push_back(r);
         density.push_back(0);
 
+       // for(int i = 0; i<r_num;i++){
+
 
         if(Parameters::dimension ==1){
             volume.push_back(r+r_step-r);
         }
         else if(Parameters::dimension == 2){
-            volume.push_back(pi*((r+r_step)*(r+r_step) - r*r));
+            volume.push_back(M_PI*((r+r_step)*(r+r_step) - r*r));
         }
         else{
-            volume.push_back(4./3*pi*((r+r_step)*(r+r_step)*(r+r_step) - r*r*r));
+            volume.push_back(4./3*M_PI*((r+r_step)*(r+r_step)*(r+r_step) - r*r*r));
         }
+    //}
 
     }
 
@@ -269,6 +313,7 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
         }
 
         bin = (int)r_num*distance_from_origo/r_max;
+
         density[bin] += 1./(MC_cycles*volume[bin]);
     }
 
