@@ -1,0 +1,24 @@
+- Fix Importance Sampling!!!!!!!!!!!!!!!
+- Fix Onebody!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+-tabell:
+	-Usikkerhet numerisk energi, for alpha=0.5
+	-Importance sampling med N=1,10,100,500, dim = 1,2,3, a=0.5
+	-Brute force med N=1,10,100,500, dim = 1,2,3, a=0.5
+
+	-Gradient decent med/uten interacting. Og større simulering på optimal alpha. N = 10,50,100
+	
+
+-plots:
+	-20 alphaer med og uten importance sampling, N=100,dim=3.
+	-Energi/N mot dt (dx) for importance sampling for N = 10 (evt 1,100,500), og dim = 1,2,3. Alt i samme plot
+
+	-20 alphaer med interacting, husk annen beta (evt med mindre MC_step). For N = 10,50,100
+	-10 alphaer med interacting nærmere minimum, husk annen beta (evt med mindre MC_step). For N = 10,50,100
+	
+	-OneBody density. dim = 1,3. N=10. Med og uten interacting (beta=1)
+	
+	
+
+

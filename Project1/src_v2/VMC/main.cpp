@@ -33,12 +33,12 @@ int main(int nargs, char *args[])
     Simulation * simulation = new Simulation(system);
 
     simulation->initiate();
-    double optimal_alpha = simulation->conjugate_gradient(0.2, 1.);
-    std::cout << "Correct a: " << optimal_alpha <<std::endl;
-    std::cout << "Running simulation with optimal alpha." << std::endl;
-    simulation->run(my_rank,optimal_alpha);
-    //simulation->run(my_rank);
-    //simulation->data_for_derivated();
+    //double optimal_alpha = simulation->conjugate_gradient(0.4, 1.);
+    //std::cout << "Correct a: " << optimal_alpha <<std::endl;
+    //std::cout << "Running simulation with optimal alpha." << std::endl;
+    //simulation->run(my_rank,0.5);
+    simulation->run(my_rank);
+
     //simulation->oneBodyDensity(0.5,1,0.,4.);
 
 

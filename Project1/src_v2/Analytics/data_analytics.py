@@ -98,10 +98,10 @@ class Analytics:
         else:
             alphas = self.stamps[:,0]
         f, axarr = plt.subplots(2)
-        axarr[0].plot(alphas, self.meta_average)
-        axarr[0].set_title(r"$\mu$ for different $\alpha$")
-        axarr[1].plot(alphas,np.sqrt(self.meta_error))
-        axarr[1].set_title(r"$\sigma$ for different $\alpha$")
+        axarr[0].plot(alphas, self.meta_average,".")
+        axarr[0].set_title(r"$\mu$ for different $\alpha$ and N = %d" %self.parameters["N"])
+        axarr[1].plot(alphas,np.sqrt(self.meta_error),".")
+        axarr[1].set_title(r"$\sigma$ for different $\alpha$ and N = %d" %self.parameters["N"])
         plt.show()
 
 
@@ -146,7 +146,7 @@ class SingleAlphaAnalytics:
         self.alpha = np.fromfile((self.folder + "stamp0.bin"),sep=" ")[0]
 
     def do_statistics(self):
-        
+
         print("Average: ", np.mean(self.data))
         #print("Error: ", block(self.data))
 
@@ -199,9 +199,9 @@ def block(x):
     return ans
 
 if __name__ == '__main__':
-    #an = Analytics("../output/",8,flatten=True)
+    an = Analytics("../output/",4,flatten=True)
     #print(an.data[:,:,0])
     #print(an.meta_average)
     #print(an.meta_error)
-    #an.plot_average()
-    an = SingleAlphaAnalytics("../output/",4)
+    an.plot_average()
+    #an = SingleAlphaAnalytics("../output/",4)
