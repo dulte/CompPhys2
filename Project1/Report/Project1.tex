@@ -19,6 +19,8 @@
 \usepackage{subcaption}
 \usepackage[noabbrev]{cleveref}
 \usepackage{wasysym}
+\usepackage{changepage}
+
 
 
 \renewcommand{\topfraction}{.85}
@@ -192,9 +194,9 @@
 	\subsection{A note on units}
 	The scattering-length for a typical BEC condensate atom is somewhere in the range $85<a<140a_0$, where $a_0$ is the Bohr radius. The characteristic trap length (at 0 K), however, is $a_{ho}=(\hbar/m\omega)^{1/2}\approx 10^{4}$Å$-2\cdot 10^{4}$Å. We introduce length units of $a_{ho}$ and energy units of $\hbar \omega$. We show in appendix \textbf{APPENDIX} that, using these units, the Hamiltonian can be rewritten as:
 	\begin{equation}\label{eq:Hamiltonian_dimensionless}
-	H=\sum_{i=1}^N\left(-\nabla_i^2 + x_i^2+y_i^2+\gamma^2 z_i^2\right)+\sum_{i<j}V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+	H=\sum_{i=1}^N\left(-\nabla_i^2 + x_i^2+y_i^2+\gamma z_i^2\right)+\sum_{i<j}V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 	\end{equation}
-	Where $\gamma=\omega_z/\omega$.
+	Where $\gamma=\omega_z^2$.
 	
 	
 	
@@ -266,7 +268,22 @@
 	
 	
 	\section{Results and discussion}
+	\subsection{1b)}
+	We use this as benchmarking, running only for $\alpha=0.5$. We choose to include statistical error analysis through blocking. 
+	\begin{table}[ht!]
+		 \begin{adjustwidth}{-2cm}{}
+		\begin{tabular}{cccccc}
+			N & Analytic energy, $E_a$ [$\hbar \omega$] & Numeric energy, $E_n$ [$\hbar \omega$] & Exact energy, $E$ [$\hbar \omega$]& CPU time $E_a$ [s] &CPU time $E_n$ [s]\\
+			1&$0.5$&$0.5$&$0.5$& 1.27&1.79\\
+			10&$5$&$5$&$5$& $1.25$&8.05\\
+			100&$50$&$50$&$50$&2.08&401.74\\
+			500&$250$&-&250 &43.38 &-
+		\end{tabular}
+	 \end{adjustwidth}
+	 \caption{Benchmarking of our code in the noninteracting case ($a=0$), showing the analytic energy (computed by means of equation \textbf{EQUATION}), the numeric energy and the exact energy (given by equation \textbf{EQUATION}). This is for the spherical trap ($\beta=1$) in one dimension. This was obtained using $4$ cores, each running $10^6$ Monte Carlo cycles. The simulation with the numeric energy for $N=500$ took too long to be feasible.}
+	\end{table}
 	\section{Conclusion}
+	
 	\subsection{Conclusion}
 	
 	\subsection{Outlook}
@@ -470,21 +487,21 @@
 		\begin{equation}
 		\boldsymbol{r}\rightarrow \frac{\boldsymbol{r}}{a_{ho}}=\boldsymbol{r} \sqrt{\frac{m\omega}{\hbar}} \quad E\rightarrow \frac{E}{\hbar \omega}
 		\end{equation}
-		Where $a_{ho}=(h/m\omega)^{1/2}$. Note that the Laplacian under this transformation turns into:
+		Where $a_{ho}=(h/m\omega)^{1/2}$. To show this, I multiply and divide the entire equation by $1/a_{ho}^2=(\hbar/m\omega)$. This gives:
 		\begin{equation}
-		\nabla^2 \rightarrow \frac{\hbar}{m\omega} \nabla^2 
+		\frac{\hbar m\omega }{\hbar m \omega}H =\frac{\hbar \omega}{2} \left(\sum_{i=1}^N \left(-\frac{\partial^2}{\partial (m\omega/\hbar) x^2}-\frac{\partial^2}{\partial (m\omega/\hbar) y^2}-\frac{\partial^2}{\partial (m\omega/\hbar) z^2}      \right)+ \frac{m\omega}{\hbar}\left(x^2+y^2+\omega_z^2 z^2\right)\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 		\end{equation}
-		Thus, performing this coordinate transformation gives:
+		Renaming the $\boldsymbol{r}$ to rescaled variable gives 
 		\begin{equation}
-		H \rightarrow H =\frac{\hbar \omega}{2} \left(\sum_{i=1}^N -\nabla_i^2   + x_i^2+y_i^2+\frac{\omega_z^2}{\omega^2} z^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+		H=\hbar \omega \frac{1}{2}\sum_{i=1}^N \left(-\nabla^2_i+x^2+y^2+ \omega_z^2 z^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 		\end{equation}
 		Now use that $H\Psi_T=E\Psi_T$, and rescale the energy as $E/\hbar \omega$. This gives:
 		\begin{equation}
-		\frac{1}{\hbar \omega}H\Psi = \frac{1}{2}\sum_{i=1}^N\left(-\nabla^2_i +x_i^2+y_i^2+  \frac{\omega_z^2}{\omega^2} z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j) = \frac{E}{\hbar \omega}\Psi
+		\frac{1}{\hbar \omega}H\Psi = \frac{1}{2}\sum_{i=1}^N\left(-\nabla^2_i +x_i^2+y_i^2+  \omega_z^2 z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j) = \frac{E}{\hbar \omega}\Psi
 		\end{equation}
-		Relabeling the energy and defining $\gamma=\omega/\omega_z$ gives:
+		Relabeling the energy and defining $\gamma=\omega_z^2$ gives:
 		\begin{equation}
-		H=\frac{1}{2}\sum_{i=1}^N \left(-\nabla_i^2 +x_i^2+y_i^2+\gamma^2 z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
+		H=\frac{1}{2}\sum_{i=1}^N \left(-\nabla_i^2 +x_i^2+y_i^2+\gamma z_i^2\right)+\sum_{i<j}^N V_{int}(\boldsymbol{r}_i, \boldsymbol{r}_j)
 		\end{equation}
 		Which is exactly equation \ref{eq:Hamiltonian_dimensionless}.
 		\section{Finding the derivative of the local energy}

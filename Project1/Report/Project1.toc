@@ -22,11 +22,12 @@
 \contentsline {subsection}{\numberline {3.7}Minimizing computation in the non-interacting case}{6}{subsection.3.7}
 \contentsline {subsubsection}{\numberline {3.7.1}Computing the numerical energy}{6}{subsubsection.3.7.1}
 \contentsline {section}{\numberline {4}Results and discussion}{7}{section.4}
+\contentsline {subsection}{\numberline {4.1}1b)}{7}{subsection.4.1}
 \contentsline {section}{\numberline {5}Conclusion}{7}{section.5}
 \contentsline {subsection}{\numberline {5.1}Conclusion}{7}{subsection.5.1}
 \contentsline {subsection}{\numberline {5.2}Outlook}{7}{subsection.5.2}
-\contentsline {section}{Appendices}{7}{section*.2}
+\contentsline {section}{Appendices}{7}{section*.3}
 \contentsline {section}{\numberline {A}Finding the drift force}{7}{Appendix.a.A}
-\contentsline {section}{\numberline {B}Finding the analytic expression for the local energy}{7}{Appendix.a.B}
-\contentsline {section}{\numberline {C}The dimensionless Hamiltonian}{10}{Appendix.a.C}
+\contentsline {section}{\numberline {B}Finding the analytic expression for the local energy}{8}{Appendix.a.B}
+\contentsline {section}{\numberline {C}The dimensionless Hamiltonian}{11}{Appendix.a.C}
 \contentsline {section}{\numberline {D}Finding the derivative of the local energy}{11}{Appendix.a.D}
