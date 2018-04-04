@@ -33,11 +33,13 @@ int main(int nargs, char *args[])
     Simulation * simulation = new Simulation(system);
 
     simulation->initiate();
-    //double optimal_alpha = simulation->conjugate_gradient(0.3, 1.);
+    //double optimal_alpha = simulation->conjugate_gradient(0.4, 1.);
     //std::cout << "Correct a: " << optimal_alpha <<std::endl;
+    //std::cout << "Running simulation with optimal alpha." << std::endl;
+    //simulation->run(my_rank,0.5);
     simulation->run(my_rank);
-    //simulation->data_for_derivated();
-    //simulation->oneBodyDensity(optimal_alpha,0.03,0.,6.);
+
+    //simulation->oneBodyDensity(0.5,1,0.,4.);
 
 
     double EndTime = MPI_Wtime();

@@ -1,6 +1,7 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 #include <vector>
+#include <cmath>
 #include "system.h"
 #include "Parameters/parameters.h"
 #include "DataDump/datadump.h"
@@ -13,6 +14,7 @@ public:
     Simulation(System *m_system);
     void initiate();
     void run(int rank);
+    void run(int rank,double alpha);
 
     double conjugate_gradient(double alpha_0, double b);
     double compute_local_energy_derivative(double alpha);

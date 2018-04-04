@@ -97,11 +97,19 @@ void DataDump<T>::dump_metadata(std::string m_location){
 
     metafile << "Alpha_min " << Parameters::alpha_min << "\n";
     metafile << "Alpha_max " << Parameters::alpha_max << "\n";
-    metafile << "Alpha_num " << Parameters::alpha_max << "\n";
+    metafile << "Alpha_num " << Parameters::alpha_num << "\n";
 
     metafile << "Beta " << Parameters::beta << "\n";
     metafile << "Omega " << Parameters::omega << "\n";
     metafile << "Omega_z " << Parameters::omega_z << "\n";
+
+
+    metafile << "Dimensions " << Parameters::dimension << "\n";
+    metafile << "N " << Parameters::N << "\n";
+
+    metafile << "a " << Parameters::a << "\n";
+    metafile << "D " << Parameters::D << "\n";
+    metafile << "dx " << Parameters::dx << "\n";
 
     metafile.close();
 

@@ -72,7 +72,7 @@ void System::distribute_particles_interacting(){
                 }
             }
         }
-        std::cout << "Particle " << i << " placed" << std::endl;
+        //std::cout << "Particle " << i << " placed" << std::endl;
     }
 }
 void System::distribute_particles_noninteracting(){
@@ -121,7 +121,11 @@ void System::make_move_and_update(const int move){
 
         next_r(i,move) = r(i,move) +  random_nr;
     }
-    update_next_distance(move);
+
+    if(D!=0 || a!=0){
+        update_next_distance(move);
+    }
+
 
 
 
@@ -572,7 +576,7 @@ double System::greens_function_ratio(int move)
     value = -(r.col(move) - next_r.col(move) -D*dx*quantum_force_vector_new).squaredNorm()+(next_r.col(move)-r.col(move) - D*dx*quantum_force_vector).squaredNorm();
     value /= 4*D*dx;
 
-    return exp(value)+N-1;
+    return exp(value) + N - 1;
     //return value_new/value;
 
 }
@@ -584,14 +588,15 @@ double System::calculate_energy_interacting(){
 
     double kinetic_energy = 0;
     double potential_energy = 0;
+    double omega_ratio = omega_z/omega;
     wavefunction_value=get_wavefunction();
     for(int i = 0; i<N;i++){
         for(int j = 0; j<dimension;j++){
             if (j==2){
-                potential_energy += omega_ratio*omega_ratio*r(j,i);
+                potential_energy += omega_ratio*omega_ratio*r(j,i)*r(j,i);
             }
             else{
-                potential_energy+=omega*omega*r(j,i);
+                potential_energy+=omega*omega*r(j,i)*r(j,i);
             }
 
             //std::cout<<r->coeffRef(j,i)<<std::endl;
