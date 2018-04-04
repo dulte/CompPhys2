@@ -1,0 +1,2 @@
+Average: 5.0
+Time: 1.25s
