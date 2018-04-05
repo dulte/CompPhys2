@@ -16,12 +16,11 @@
 \usepackage{titling}
 \usepackage{marvosym }
 \usepackage{physics}
+
 \usepackage{subcaption}
 \usepackage[noabbrev]{cleveref}
 \usepackage{wasysym}
 \usepackage{changepage}
-\usepackage{physics}
-
 
 
 \renewcommand{\topfraction}{.85}
@@ -133,7 +132,7 @@
 	\end{equation}
 	For $N$ non-interacting particles this turns into:
 	\begin{equation}
-	 \prod_{i=1}^N 	\exp\left(-\frac{\sum_{i=1}^d x_i^2}{2}\right)
+	\prod_{i=1}^N 	\exp\left(-\frac{\sum_{i=1}^d x_i^2}{2}\right)
 	\end{equation}
 	Comparing this with our trial wavefunction in equation \ref{eq:trial_wavefunction}, shows that we should expect the ground-state energy to be achieved for:
 	\begin{equation}\label{eq:exact_alpha}
@@ -226,6 +225,18 @@
 	
 	\subsection{Outline of the structure of our program}
 	Our program uses the \texttt{Eigen} library in \texttt{C++} to do keep track of the matrices  
+	\subsection{Proposing a new position}
+	To propose a new step, we use a different method for the brute force method versus the importance sampling method. For the brute force method, we propose a new step as:
+	\begin{equation}
+	\boldsymbol{r}^i_{\mathrm{new}}=\boldsymbol{r}^i_{\mathrm{old}}+\boldsymbol{\xi} dx
+	\end{equation}
+	Where $\boldsymbol{r}^i_{\mathrm{old}}$ is the previous position of particle $i$ and $\boldsymbol{xi}$ is a normally distributed variable with mean $0$ and standard deviation $1$. We tune the parameter $dx$ for the brute force simulation, and find that we get good results for $dx=1.5$.\\
+	\linebreak
+	For importance sampling, however, we propose a different step to keep the statistics consistent (as discussed in \textbf{REFERENCE}). The new step is then given by:
+	\begin{equation}
+	\boldsymbol{r}^i_{\mathrm{new}}=\boldsymbol{r}^i_{\mathrm{old}}+\boldsymbol{\xi} \sqrt{dt}+D\boldsymbol{F}_idt
+	\end{equation}
+	Where $F_i$ is the quantum force on particle $i$ and $D$ is the diffusion parameter, discussed in section \textbf{SECTION}. The parameter $dt$ is the same parameter used in the quantum force (equation \textbf{EQUATION}), and we find it by looking at the energy for the exactly solvable system for different $dt$.
 	\subsection{Statistical treatment of the data}
 	We wish to estimate the statistical errors of our estimate of the local energy. As subsequent values for the local energy are based on the previous values of the local energy, we are dealing with a correlated time series. The normality assumptions usually employed when generating confidence intervals therefore does not hold. Instead, we use blocking to estimate the error in our energy. A detailed mathematical treatment of this method is found in \textbf{REFERENCE}. We therefore present only the algorithm. Assume that we have $n$ observations $Q^0=\{Q_1^0,...,Q_n^0\}$ of the local energy, and we wish to estimate the variance of the local energy. The uncorrelated estimator for the standard deviation is given by:
 	\begin{equation}
@@ -242,45 +253,27 @@
 	We are interested in knowing when $\gamma^k(1)\approx 0$. This can be found by hand, simply by realizing that the transformation $Q^i \rightarrow Q^{i+1}$ described above preserves the variance of the data. It is shown in \textbf{REFERENCE} that $\gamma^k(1) \rightarrow 0$ for succesive iterations, and therefore a plot of the empirical variance as a function of iterations should eventually stabilize, giving the variance. \\
 	\linebreak
 	We use an alternative, automatic, approach to estimate when the covariance is small. This is based on comparing our results to a $\chi^2$ distribution, and is described further in \textbf{REFERENCE}.
-	\textbf{FINISH}
 	\subsection{Implementing the one-body density}\label{sec:MetOneBody}
-	To compute the one-body density defined by equation \ref{eq:OneBodyDensity}, we must compute the stated integral, using Monte Carlo integration. This is done by choosing a maximum distance from the origin $\boldsymbol{r_max}$, beyond which the probability of finding a particle is negligible. We then divide the volume from the origin to $\boldsymbol{r_{max}}$ into spherical shells with equal spacing between the radii of the shells. We then count the number of particles that are in each of the shells during each Monte Carlo cycle. We present a pseudo-code of our implementation \textbf{PSEUDO-CODE}
-	
-	\subsection{A brief note on some technicalities to save FLOPs}
-	\subsection{Benchmarks}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
+	To compute the one-body density defined by equation \ref{eq:OneBodyDensity}, we must compute the stated integral, using Monte Carlo integration. This is done by choosing a maximum distance from the origin $\boldsymbol{r_max}$, beyond which the probability of finding a particle is negligible. We then divide the volume from the origin to $\boldsymbol{r_{max}}$ into spherical shells with equal spacing between the radii of the shells. We then count the number of particles that are in each of the shells during each Monte Carlo cycle. We present a pseudo-code of our implementation \textbf{PSEUDO-CODE}	
 	
 	\section{Results and discussion}
-	\subsection{1b)}
-	We use this as benchmarking, running only for $\alpha=0.5$. We choose to include statistical error analysis through blocking. 
+	\subsection{Testing our code}
+	We test our code by running the simulations for the noninteracting case ($a=0$) and for the correct value of the variational parameter, $\alpha=0.5$. We then expect our code to reproduce the exact energy given in equation \ref{eq:Exact_Energy_N_particles}. We test this using both the analytic and the numeric energy, and time the CPU difference between them. We show the results without importance sampling in table \ref{tab:4.1_benchmark_no_Green}.
 	\begin{table}[ht!]
-		 \begin{adjustwidth}{-2cm}{}
-		\begin{tabular}{cccccc}
-			N & Analytic energy, $E_a$ [$\hbar \omega$] & Numeric energy, $E_n$ [$\hbar \omega$] & Exact energy, $E$ [$\hbar \omega$]& CPU time $E_a$ [s] &CPU time $E_n$ [s]\\
-			1&$0.5$&$0.5$&$0.5$& 1.27&1.79\\
-			10&$5$&$5$&$5$& $1.25$&8.05\\
-			100&$50$&$50$&$50$&2.08&401.74\\
-			500&$250$&-&250 &43.38 &-
-		\end{tabular}
-	 \end{adjustwidth}
-	 \caption{Benchmarking of our code in the noninteracting case ($a=0$), showing the analytic energy (computed by means of equation \textbf{EQUATION}), the numeric energy and the exact energy (given by equation \textbf{EQUATION}). This is for the spherical trap ($\beta=1$) in one dimension. This was obtained using $4$ cores, each running $10^6$ Monte Carlo cycles. The simulation with the numeric energy for $N=500$ took too long to be feasible.}
+		\begin{adjustwidth}{-2cm}{}
+			\begin{tabular}{cccccc}
+				N & Analytic energy, $E_a$ [$\hbar \omega$] & Numeric energy, $E_n$ [$\hbar \omega$] & Exact energy, $E$ [$\hbar \omega$]& CPU time $E_a$ [s] &CPU time $E_n$ [s]\\
+				1&$0.5$&$0.5$&$0.5$& 1.27&1.79\\
+				10&$5$&$5$&$5$& $1.25$&8.05\\
+				100&$50$&$50$&$50$&2.08&401.74\\
+				500&$250$&-&250 &43.38 &-
+			\end{tabular}
+		\end{adjustwidth}
+		\caption{Benchmarking of our code in the noninteracting case ($a=0$), showing the analytic energy (computed by means of equation \textbf{EQUATION}), the numeric energy and the exact energy (given by equation \ref{eq:Exact_Energy_N_particles}). This is for the spherical trap ($\beta=1$) in one dimension. This was obtained using $4$ cores, each running $10^6$ Monte Carlo cycles. The simulation with the numeric energy for $N=500$ took too long to be feasible.}\label{tab:4.1_benchmark_no_Green}
 	\end{table}
+	
+	
+	
 	\section{Conclusion}
 	
 	\subsection{Conclusion}
@@ -289,7 +282,7 @@
 	
 	\begin{appendices}
 		\section{Analytic expression for the local energy and quantum force}
-		\paragraph{First derivative:}\\
+		\paragraph{First derivative:}
 		For particle $k$, $\nabla_k$ is given by:
 		\begin{equation}
 		\nabla_k\Psi_{T} = \nabla_k\left(\Psi_T(\mathbf{r})=\nabla_k \prod_{i=1}^n\phi(\mathbf{r}_i)\exp\left(\sum_{i<j} u(r_{ij})\right)\right)
@@ -300,8 +293,8 @@
 		\end{equation}
 		The second term is trickier. We can rewrite it as follows:
 		\begin{align}
-		\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{i < j}u(r_{ij})\right)\right]
-		= \prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
+		\prod_{i}\phi(\boldsymbol{r}_{i})\nabla_{k}\left[\exp\left(\sum_{i < j}u(r_{ij})\right)\right]
+		= \prod_{i}\phi(\boldsymbol{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
 		\label{second term in first derivative}
 		\end{align}
 		This is calculated by using the chain-rule. To evaluate the innerfunction, we must look
@@ -309,29 +302,29 @@
 		the first sum is from $1$ up the kth particle, meaning all terms differentiated before $k$ vanishes
 		and we are left with $u(r_{ik})$, thus leaving with us with:
 		\begin{align}
-		\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{k}\sum_{i = 1}^{k-1}u(r_{ij})\right)\right]
+		\prod_{i}\phi(\boldsymbol{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{k}\sum_{i = 1}^{k-1}u(r_{ij})\right)\right]
 		=
-		\prod_{i}\phi(\bold{r}_{i})\exp{\left(\sum_{i<j}u(r_{ij})\right)}
+		\prod_{i}\phi(\boldsymbol{r}_{i})\exp{\left(\sum_{i<j}u(r_{ij})\right)}
 		\left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]
 		\end{align}
 		For $j = k$, we see that the first sum goes from and end up at kth particle, meaning
 		this sum vanishes, secondly, the second sum is evaluated at $1 \le i \le k-1$, leaving with
 		constants up to $k-1$, thus this term becomes $0$.
 		\begin{align}
-		\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
+		\prod_{i}\phi(\boldsymbol{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = 1}^{n}\sum_{i = 1}^{j-1}u(r_{ij})\right)\right]
 		= 0
 		\end{align}
 		For $j > k$,the first sum goes from $k+1\le j \le n$ and the second $1 \le i \le k$.  The second sum vanishes, because all constants are differentiated away
 		except the last term $i = k$. This leaves us with:
 		\begin{align}
-		\prod_{i}\phi(\bold{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = k+1}^{n}\sum_{i = 1}^{k}u(r_{ij})\right)\right]
-		= \prod_{i}\phi(\bold{r}_{i})
+		\prod_{i}\phi(\boldsymbol{r}_{i})\nabla_{k}\left[\exp\left(\sum_{j = k+1}^{n}\sum_{i = 1}^{k}u(r_{ij})\right)\right]
+		= \prod_{i}\phi(\boldsymbol{r}_{i})
 		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
 		\left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj})\right]
 		\end{align}
 		We can now write the second term as \ref{second term in first derivative}):
 		\begin{align}\label{combined sum}
-		\prod_{i}\phi(\bold{r}_{i})
+		\prod_{i}\phi(\boldsymbol{r}_{i})
 		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
 		\left[\sum_{j = k + 1}^{n}\nabla_{k}u(r_{kj}) +
 		\left[\sum_{i = 1}^{k-1}\nabla_{k}u(r_{ik})\right]\right]
@@ -339,7 +332,7 @@
 		%CHECK THIS EQUATION
 		This can be rewritten to:
 		\begin{align}
-		\prod_{i}\phi(\bold{r}_{i})
+		\prod_{i}\phi(\boldsymbol{r}_{i})
 		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
 		\left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]
 		\end{align}
@@ -348,7 +341,7 @@
 		\begin{align}
 		\nabla_{k}\Psi_{T} =
 		\nabla_k \phi(\mathbf{r}_k)\left[ \prod_{i\neq k} \phi(\mathbf{r}_i)\right]\exp\left(\sum_{i<j}u(r_{ij})\right)
-		+ \prod_{i}\phi(\bold{r}_{i})
+		+ \prod_{i}\phi(\boldsymbol{r}_{i})
 		\exp{\left(\sum_{i<j}u(r_{ij})\right)}
 		\left[\sum_{j \neq k}u(r_{kj})\right]
 		\end{align}
@@ -363,11 +356,11 @@
 			\exp{\left(\sum_{i<j}u(r_{ij})\right)}
 			\left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]\right)}_{\mathrm{II}} +
 		\\
-		\underbrace{\prod_{i}\phi(\bold{r}_{i})
+		\underbrace{\prod_{i}\phi(\boldsymbol{r}_{i})
 			\exp{\left(\sum_{i<j}u(r_{ij})\right)}
 			\left[\sum_{j \neq k}\nabla_{k}u(r_{kj})\right]^2}_{\mathrm{III}} +
 		\\
-		\underbrace{\prod_{i}\phi(\bold{r}_{i})
+		\underbrace{\prod_{i}\phi(\boldsymbol{r}_{i})
 			\exp{\left(\sum_{i<j}u(r_{ij})\right)}
 			\left[\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj})\right]}_{\mathrm{IV}}
 		\end{split}
@@ -376,18 +369,18 @@
 		We will now divide the second derivative by the trial wavefunction, and obtain:
 		\begin{align}
 		\frac{1}{\Psi_{T}}\nabla_{k}^2\Psi_{T} =
-		\underbrace{\frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{\phi(\bold{r}_{k})})}}_{\mathrm{I}}
-		+ \underbrace{2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\sum_{j\neq k}\nabla_{k}u(r_{kj})}_{\mathrm{II}}
+		\underbrace{\frac{\nabla_{k}^2\phi{(\boldsymbol{r}_{k})}}{\phi(\boldsymbol{r}_{\phi(\boldsymbol{r}_{k})})}}_{\mathrm{I}}
+		+ \underbrace{2\frac{\nabla_{k}\phi(\boldsymbol{r}_{k})}{\phi{(\boldsymbol{r}_{k})}}\sum_{j\neq k}\nabla_{k}u(r_{kj})}_{\mathrm{II}}
 		+ \underbrace{\left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2}_{\mathrm{III}} +
 		\underbrace{\left[\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj})\right]}_{\mathrm{IV}}
 		\end{align}
 		We will now carry out the differentiation in term (II), (III) and (IV). Begining with the
 		(II), by using the chain rule we can rewrite (II) as:
 		\begin{align*}
-		2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\sum_{j\neq k}\pdv{u(r_{kj})}{r_{kj}}\pdv{r_{kj}}{\bold{r}_{k}} =
-		2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
+		2\frac{\nabla_{k}\phi(\boldsymbol{r}_{k})}{\phi{(\boldsymbol{r}_{k})}}\sum_{j\neq k}\pdv{u(r_{kj})}{r_{kj}}\pdv{r_{kj}}{\boldsymbol{r}_{k}} =
+		2\frac{\nabla_{k}\phi(\boldsymbol{r}_{k})}{\phi{(\boldsymbol{r}_{k})}}\left(\sum_{j\neq k}\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}u'(r_{kj})\right)
 		\end{align*}
-		Where we have used $\nabla_{k} r_{kj} = (\bold{r}_{k} - \bold{r}_{j})/r_{kj}$.
+		Where we have used $\nabla_{k} r_{kj} = (\boldsymbol{r}_{k} - \boldsymbol{r}_{j})/r_{kj}$.
 		Looking at (III), we can write out the square into two factors. The second paranthese the summation index is replaced by a
 		dummy index $i$. Thus will look as:
 		\begin{align}
@@ -396,40 +389,40 @@
 		From (II) we found the derivative of this function. Thus this can be expressed as (combining also the double sum):
 		\begin{align}
 		\left(\sum_{j\neq k}\nabla_{k} u(r_{kj})\right)^2 =
-		\sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-		\left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
+		\sum_{i, j\neq k}\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}\right)
+		\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
 		\end{align}
 		The last part (IV), we must use the chain rule and product rule together. We will obtain
 		the following term:
 		\begin{align}
 		\sum_{j \neq k}\nabla_{k}\nabla_{k}u(r_{kj}) =
 		\sum_{j \neq k}\nabla_{k}\left(
-		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)^2 u''(r_{kj}) + u'(r_{kj})\nabla_{k}
-		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)\right)
+		\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}\right)^2 u''(r_{kj}) + u'(r_{kj})\nabla_{k}
+		\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}\right)\right)
 		\end{align}
 		Note that this is a unit vector squared:
 		\begin{align}
-		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)^2 = 1
+		\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}\right)^2 = 1
 		\end{align}
 		and the last part is found by using the qoutient rule. This is the divergence to the vectors, since we are evaluating for
 		specific particle k, and gradient to scalar (we must look for all combination of k particle):
 		\begin{align}
 		\nabla_{k}
-		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-		= \frac{r_{kj}\left(\nabla_{k}\cdot\bold{r}_{k}-
-			\nabla_{k}\cdot\bold{r}_{j}\right) -
-			(\bold{r}_{k}-\bold{r}_{j})\nabla_{k}r_{kj}}{r_{kj}^2}
+		\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}\right)
+		= \frac{r_{kj}\left(\nabla_{k}\cdot\boldsymbol{r}_{k}-
+			\nabla_{k}\cdot\boldsymbol{r}_{j}\right) -
+			(\boldsymbol{r}_{k}-\boldsymbol{r}_{j})\nabla_{k}r_{kj}}{r_{kj}^2}
 		\end{align}
 		This simply becomes:
 		\begin{align}
 		\nabla_{k}
-		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-		= \frac{3r_{kj}^2 - \bold{r}^2_{k} + 2(\bold{r}_{k}\cdot \bold{r}_{j}) - \bold{r}^2_{j}}{r_{kj}^3}
+		\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}\right)
+		= \frac{3r_{kj}^2 - \boldsymbol{r}^2_{k} + 2(\boldsymbol{r}_{k}\cdot \boldsymbol{r}_{j}) - \boldsymbol{r}^2_{j}}{r_{kj}^3}
 		\end{align}
-		Note that $r_{kj} - \bold{r}^2_{k} + 2(\bold{r}_{k}\cdot \bold{r}_{j}) - \bold{r}^2_{j} = 0$, this leaves us with:
+		Note that $r_{kj} - \boldsymbol{r}^2_{k} + 2(\boldsymbol{r}_{k}\cdot \boldsymbol{r}_{j}) - \boldsymbol{r}^2_{j} = 0$, this leaves us with:
 		\begin{align}
 		\nabla_{k}
-		\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
+		\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}\right)
 		= \frac{2}{r_{kj}}
 		\end{align}
 		Thus expression (IV) can be expressed as:
@@ -443,12 +436,12 @@
 		\begin{align}
 		\begin{split}
 		\frac{1}{\Psi_{T}}\nabla_{k}^2\Psi_{T} =
-		\frac{\nabla_{k}^2\phi{(\bold{r}_{k})}}{\phi(\bold{r}_{k})}
+		\frac{\nabla_{k}^2\phi{(\boldsymbol{r}_{k})}}{\phi(\boldsymbol{r}_{k})}
 		+
-		2\frac{\nabla_{k}\phi(\bold{r}_{k})}{\phi{(\bold{r}_{k})}}\left(\sum_{j\neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
+		2\frac{\nabla_{k}\phi(\boldsymbol{r}_{k})}{\phi{(\boldsymbol{r}_{k})}}\left(\sum_{j\neq k}\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}u'(r_{kj})\right)
 		+\\
-		\sum_{i, j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}\right)
-		\left(\frac{\bold{r}_{k} - \bold{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
+		\sum_{i, j\neq k}\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}\right)
+		\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{i}}{r_{ki}}\right)u'(r_{kj})u'(r_{ki})
 		+
 		\sum_{j \neq k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
 		\end{split}
@@ -457,23 +450,23 @@
 		trial-function, we can write out the analytical expression for the local energy.
 		Recall that:
 		\begin{align}
-		E_{L}(\bold{r}) = \frac{1}{\Psi_{T}}H\Psi_{T} =
+		E_{L}(\boldsymbol{r}) = \frac{1}{\Psi_{T}}H\Psi_{T} =
 		\frac{1}{\Psi_{T}}\left[\sum_{i}^{N}\left(-\frac{\hbar^{2}}{2m}\nabla^{2}_{i}
-		+ V_{ext}(\bold{r}_{i})\right) + \sum_{i < j}^{N}V_{int}(
-		\bold{r}_{i},\bold{r}_{j})\right]\psi_{T}
+		+ V_{ext}(\boldsymbol{r}_{i})\right) + \sum_{i < j}^{N}V_{int}(
+		\boldsymbol{r}_{i},\boldsymbol{r}_{j})\right]\psi_{T}
 		\end{align}
 		The second derivative written explicitly is:
 		\begin{align}
 		\begin{split}
-		\frac{1}{\Psi_{T}}\nabla^{2}_{k}\Psi_{T} = 4\alpha\bold{Q}_{k}^{2} - 4\alpha\bold{Q}_{k}
-		\sum_{j\neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)
+		\frac{1}{\Psi_{T}}\nabla^{2}_{k}\Psi_{T} = 4\alpha\boldsymbol{Q}_{k}^{2} - 4\alpha\boldsymbol{Q}_{k}
+		\sum_{j\neq k}\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}u'(r_{kj})\right)
 		+\\
-		\sum_{i,j\neq k}\frac{\bold{r}_{k}\cdot\bold{r}_{k} - \bold{r}_{k}\cdot\bold{r}_{j} - \bold{r}_{k}\cdot\bold{r}_{i} + \bold{r}_{i}\cdot\bold{r}_{j}}{r_{kj}r_{ki}}u'(r_{ki})u'(r_{kj})
+		\sum_{i,j\neq k}\frac{\boldsymbol{r}_{k}\cdot\boldsymbol{r}_{k} - \boldsymbol{r}_{k}\cdot\boldsymbol{r}_{j} - \boldsymbol{r}_{k}\cdot\boldsymbol{r}_{i} + \boldsymbol{r}_{i}\cdot\boldsymbol{r}_{j}}{r_{kj}r_{ki}}u'(r_{ki})u'(r_{kj})
 		\\
 		+ \sum_{j \neq k}\left(u''(r_{kj}) + \frac{2}{r_{kj}}u'(r_{kj})\right)
 		\end{split}
 		\end{align}
-		Where $\bold{Q}_{k} = \left(x_{k}\hat{i} + y_{k}\hat{j} + \beta z_{k}\hat{k}\right)$,
+		Where $\boldsymbol{Q}_{k} = \left(x_{k}\hat{i} + y_{k}\hat{j} + \beta z_{k}\hat{k}\right)$,
 		and the first and second derivative of $u(r_{kj})$ is:
 		\begin{align}
 		u'(r_{kj}) =
@@ -496,32 +489,32 @@
 		\begin{align}
 		\begin{split}
 		E_{L} = -\frac{\hbar^{2}}{2m}\sum_{k}\left[
-		4\alpha^{2}\bold{Q}_{k}^{2} - 4\alpha\bold{Q}_{k} + \sum_{j \neq k}\left(\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})\right)\right.
-		\\ \left. + \sum_{i,j \neq k}\left(\frac{\bold{r}\cdot\bold{r} + \bold{r}_{j}\cdot\bold{r}_{i} - \bold{r}_{j}\cdot\bold{r}_{k} -\bold{r}_{k}\cdot\bold{r}_{i}}{r_{ki}r_{kj}}u'(r_{ki})u'(r_{kj})\right)\right.
+		4\alpha^{2}\boldsymbol{Q}_{k}^{2} - 4\alpha\boldsymbol{Q}_{k} + \sum_{j \neq k}\left(\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}u'(r_{kj})\right)\right.
+		\\ \left. + \sum_{i,j \neq k}\left(\frac{\boldsymbol{r}\cdot\boldsymbol{r} + \boldsymbol{r}_{j}\cdot\boldsymbol{r}_{i} - \boldsymbol{r}_{j}\cdot\boldsymbol{r}_{k} -\boldsymbol{r}_{k}\cdot\boldsymbol{r}_{i}}{r_{ki}r_{kj}}u'(r_{ki})u'(r_{kj})\right)\right.
 		\\
 		\left. + \sum_{j \neq k}\left(u''(r_{kj} + \frac{2}{r_{kj}}u'(r_{kj}))\right)\right]
-		+ \sum_{k}V_{ext}(\bold{r}_{k}) + \sum_{i < j}V_{int}(\bold{r}_{i}, \bold{r}_{j})
+		+ \sum_{k}V_{ext}(\boldsymbol{r}_{k}) + \sum_{i < j}V_{int}(\boldsymbol{r}_{i}, \boldsymbol{r}_{j})
 		\end{split}
 		\end{align}
 		This expression includes the situation where particles interact with each other.
 		Now if we assume the particles does not interact with each other, we then have:
 		\begin{align}
-		E_{L} = \sum_{k}\left(4\alpha^{2}\bold{Q}_{k} + V_{ext}(\bold{r}_{k}) \right)
+		E_{L} = \sum_{k}\left(4\alpha^{2}\boldsymbol{Q}_{k} + V_{ext}(\boldsymbol{r}_{k}) \right)
 		\end{align}
 		\paragraph{Quantum force/Drift force:}
 		The quantum/drift force is defined to be:
 		\begin{align}
-		\bold{F}_{i} = 2\frac{\nabla\Psi_{T}}{\Psi_{T}}
+		\boldsymbol{F}_{i} = 2\frac{\nabla\Psi_{T}}{\Psi_{T}}
 		\end{align}
 		Using the first derivative we just derived above this expression will look like:
 		\begin{align}
-		\bold{F}_{i} = 2\frac{\nabla_k \phi(\bold{r}_{k})}{\phi(\bold{r}_{k})}
+		\boldsymbol{F}_{i} = 2\frac{\nabla_k \phi(\boldsymbol{r}_{k})}{\phi(\boldsymbol{r}_{k})}
 		+
-		2\sum_{j \neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})
-		= -4\alpha\bold{Q}_{i} +
-		2\sum_{j \neq k}\frac{\bold{r}_{k} - \bold{r}_{j}}{r_{kj}}u'(r_{kj})
+		2\sum_{j \neq k}\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}u'(r_{kj})
+		= -4\alpha\boldsymbol{Q}_{i} +
+		2\sum_{j \neq k}\frac{\boldsymbol{r}_{k} - \boldsymbol{r}_{j}}{r_{kj}}u'(r_{kj})
 		\end{align}
-		Where $\bold{Q}_{i} = x_{i}\hat{i} + x_{j}\hat{j} + \beta z_{k}\hat{k}$ and
+		Where $\boldsymbol{Q}_{i} = x_{i}\hat{i} + x_{j}\hat{j} + \beta z_{k}\hat{k}$ and
 		$u'(r_{kj})$ is given in (\ref{udiv}). This is for a interacting case, since
 		the distance between two particle and the gradient $kj$'th particle appears.
 		Further notice that the quantum force can be written
@@ -531,7 +524,7 @@
 		\boldsymbol{F}_{i} = -4\alpha\boldsymbol{Q}_{i}
 		\end{align}
 		\section{The dimensionless Hamiltonian}
-		We aim to demonstrate that the Hamiltonian in equation \ref{eq:general_Hamiltonian} is equivalent to the Hamiltonian shown in equation \ref{eq:Hamiltonian_dimensionless} under the the coordinate transformation:
+		We aim to demonstrate that the Hamiltonian in equation \ref{eq:general_Hamiltonian} is equivalent to the Hamiltonian shown in equation \ref{eq:Hamiltonian_dimensionless} under the coordinate transformation:
 		\begin{equation}
 		\boldsymbol{r}\rightarrow \frac{\boldsymbol{r}}{a_{ho}}=\boldsymbol{r} \sqrt{\frac{m\omega}{\hbar}} \quad E\rightarrow \frac{E}{\hbar \omega}
 		\end{equation}
@@ -557,10 +550,85 @@
 		\begin{equation}
 		E_L=\langle \Psi_T | H| \Psi_T \rangle
 		\end{equation}
-		Taking the derivative of this gives:
-		\begin{equation}
-		\frac{\partial E_L}{\partial \alpha}=\langle \frac{\partial \Psi_T}{\partial \alpha}|H|\Psi_T\rangle + \langle \Psi_T |\frac{\partial H}{\partial \alpha}	|\Psi_T\rangle + \langle \Psi_T |H|\frac{\partial \Psi_T}{\partial \alpha}\rangle
-		\end{equation}
-		The Hamiltonian does not depend on the variational parameter $\alpha$. 
+We now want to find the derivative of the expectation value of the local energy $\langle E_{L}\rangle$
+with respect to the variational parameter $\alpha$. Before we do that we must normalize the wavefunction:
+\begin{align}
+\ket{\Psi_{T}} = \frac{\ket{\Psi_{T}}}{\sqrt{\braket{\Psi_{T}}}}
+\end{align}
+The expectation value of the local energy is then:
+\begin{align}
+\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}E_{L}\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
+\end{align}
+Notice that can be written as:
+\begin{align}
+\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}E_{L}\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
+= \frac{1}{\braket{\Psi_{T}}}\int..\int \Psi_{T}^{*}E_{L}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+\end{align}
+Using the definition of $E_{L}$ and we know that the wavefunction is real, we get that:
+\begin{align}
+\langle E_{L} \rangle = \frac{1}{\braket{\Psi_{T}}}\int..\int \Psi_{T}^{*}\left(\frac{1}{\Psi_{T}}H\Psi_{T}\right)\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+= \frac{1}{\braket{\Psi_{T}}}\int..\int H\Psi_{T}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+\end{align}
+Thus this can be written as:
+\begin{align}
+\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
+\end{align}
+By using the product rule and differentiating this with respect to $\alpha$,
+we will get:
+\begin{align}
+\pdv{\langle E_{L} \rangle }{\alpha} = \frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
++ \bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
+\end{align}
+The first expression is:
+\begin{align}
+\frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
+=
+\frac{1}{\braket{\Psi_{T}}}\pdv{\alpha}\int..\int\Psi_{T}^{*}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+\end{align}
+Taking the derivative into the integral and apply the product rule, we will obtain:
+\begin{align}
+\frac{1}{\braket{\Psi_{T}}}\int..\int\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}
++   \Psi_{T}^{*}\pdv{H}{\alpha}\Psi_{T}
++   \Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+\end{align}
+Since the hamiltonian does not depend on $\alpha$ and the wavefunction is real. Those two expression are equal after rearranging the derivative,
+thus:
+\begin{align}
+\frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
+= \frac{2}{\braket{\Psi_{T}}}{\bra{\Psi_{T}}H\pdv{\alpha}\ket{\Psi_{T}}}
+= 2 \langle E_{L}\pdv{\Psi_{T}}{\alpha} \rangle
+\end{align}
+The second expression is:
+\begin{align}
+\bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
+= -\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\pdv{\braket{\Psi_{T}}}{\alpha}
+\end{align}
+Writing the last expression as an integral:
+\begin{align}
+-\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\pdv{\braket{\Psi_{T}}}{\alpha}
+= -\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T} +
+\Psi_{T}^{*}\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+\end{align}
+we clearly see that:
+\begin{align}
+-\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T}
++
+\Psi_{T}^{*}\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+= -2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}
+\bra{\Psi_{T}}\pdv{\alpha}\ket{\Psi_{T}}
+\end{align}
+After using the definition of the variance of the local energy and derivative of the wavefunction with respect to $\alpha$,
+This can also be written as:
+\begin{align}
+\bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
+= -2\langle E_{L} \rangle \langle \pdv{\Psi}{\alpha}\rangle
+\end{align}
+Combining the first and second expression the derivative of the local energy can
+be expressed as:
+\begin{align}
+\pdv{\langle E_{L} \rangle }{\alpha} =
+2\left(\langle E_{L}\pdv{\Psi_{T}}{\alpha} \rangle -
+\langle E_{L} \rangle \langle \pdv{\Psi}{\alpha}\rangle\right)
+\end{align} 
 	\end{appendices}
 \end{document}
