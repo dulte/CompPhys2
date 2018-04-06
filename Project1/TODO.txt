@@ -13,8 +13,8 @@
 	
 
 -plots:
-	-20 alphaer med og uten importance sampling, N=100,dim=3.
-	-Energi/N mot dt (dx) for importance sampling for N = 10 (evt 1,100,500), og dim = 1,2,3. Alt i samme plot
+	-20 alphaer med og uten importance sampling, N=100,dim=3. [Done]
+	-Energi/N mot dt (dx) for importance sampling for N = 10 (evt 1,100,500), og dim = 1,2,3. Alt i samme plot [Done]
 
 	-20 alphaer med interacting, husk annen beta (evt med mindre MC_step). For N = 10,50,100
 	-10 alphaer med interacting nærmere minimum, husk annen beta (evt med mindre MC_step). For N = 10,50,100
