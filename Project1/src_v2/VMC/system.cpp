@@ -18,6 +18,7 @@ System::System()
     distribution = std::normal_distribution<double>(0.0,1.0);
 
     h=1e-6;
+    number_accept = 0;
 
     if(Parameters::a !=0){
            //System::compute_energy_numeric = &System::calculate_energy_interacting;
@@ -39,6 +40,7 @@ System::System()
 
 void System::make_grid(double m_alpha){
     alpha = m_alpha;
+    number_accept = 0;
     //Sets all positions to a random position [-1,1]
     if(a!=0){
         distribute_particles_interacting();
@@ -163,6 +165,8 @@ double System::check_acceptance_and_return_energy(int move){
         distance.col(move) = next_distance.col(move);
         distance.row(move) = next_distance.row(move);
 
+        number_accept++;
+
     }
     else{
         next_r.col(move) = r.col(move);
@@ -214,8 +218,8 @@ double System::get_probability_ratio(int move){
     }
     if(D!=0){
         green_part = greens_function_ratio(move);
-    }
 
+    }
 
     return exp(2*(temp_value2-temp_value))*f_part*f_part*green_part;
 }
@@ -511,10 +515,10 @@ void System::quantum_force(int move){
             for(int k=0; k<N;k++){
                 if(k !=move){
                     if(distance(move,k)>a){
-                        grad_value+=2*a*(r(j,move)-r(j,k))/(distance(move,k)*distance(move,k) - a*distance(move,k)) ;//distance(move,k)*udiv(move,k);
+                        grad_value+=2*a*(r(j,move)-r(j,k))/(distance(move,k)*distance(move,k)*distance(move,k) - a*distance(move,k)*distance(move,k)) ;//distance(move,k)*udiv(move,k);
                     }
                     if(next_distance(move,k)>a){
-                        grad_value_new+=2*a*(next_r(j,move)-next_r(j,k))/(next_distance(move,k)*next_distance(move,k) - a*next_distance(move,k));//next_distance(move,k)*udiv(move,k);
+                        grad_value_new+=2*a*(next_r(j,move)-next_r(j,k))/(next_distance(move,k)*next_distance(move,k)*next_distance(move,k) - a*next_distance(move,k)*next_distance(move,k));//next_distance(move,k)*udiv(move,k);
                     }
                  }
             }
@@ -576,9 +580,7 @@ double System::greens_function_ratio(int move)
     value = -(r.col(move) - next_r.col(move) -D*dx*quantum_force_vector_new).squaredNorm()+(next_r.col(move)-r.col(move) - D*dx*quantum_force_vector).squaredNorm();
     value /= 4*D*dx;
 
-    return exp(value) + N - 1;
-    //return value_new/value;
-
+    return exp(value);
 }
 
 

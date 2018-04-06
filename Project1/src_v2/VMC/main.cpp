@@ -16,12 +16,6 @@ int main(int nargs, char *args[])
     MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
 
     double StartTime = MPI_Wtime();
-
-    if(my_rank == 0){
-
-        cout << "MC steps, particles: " << Parameters::MC_cycles << ", " << Parameters::N << endl;
-    }
-
     Eigen::initParallel();
     //Reads the parameter file
     Parameters::read_parameters("../input/parameters.txt");
@@ -36,8 +30,8 @@ int main(int nargs, char *args[])
     //double optimal_alpha = simulation->conjugate_gradient(0.4, 1.);
     //std::cout << "Correct a: " << optimal_alpha <<std::endl;
     //std::cout << "Running simulation with optimal alpha." << std::endl;
-    //simulation->run(my_rank,0.5);
-    simulation->run(my_rank);
+    simulation->run(my_rank,0.45);//0.499296);
+    //simulation->run(my_rank);
 
     //simulation->oneBodyDensity(0.5,1,0.,4.);
 

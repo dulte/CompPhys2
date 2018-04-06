@@ -4,7 +4,9 @@
 
 -tabell:
 	-Usikkerhet numerisk energi, for alpha=0.5
+
 	-Importance sampling med N=1,10,100,500, dim = 1,2,3, a=0.5
+
 	-Brute force med N=1,10,100,500, dim = 1,2,3, a=0.5
 
 	-Gradient decent med/uten interacting. Og større simulering på optimal alpha. N = 10,50,100

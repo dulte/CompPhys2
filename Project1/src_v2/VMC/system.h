@@ -46,6 +46,7 @@ public:
     double get_probability_ratio(int move);
     double get_probability();
     double get_local_energy();
+    int number_accept;
 
 //private:
     //Saves all the variables from the parameters to save time
