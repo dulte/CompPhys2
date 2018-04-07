@@ -61,11 +61,11 @@
 	\end{abstract}
 	\tableofcontents
 	\section{Introduction}
-	Confined quantum mechanical systems have received considerable attention in the literature, as they have many possible novel applications, ranging from qubits to energy storage. The existence of Bose-Einstein condensation in gases of certain alkali atoms, has sparked the interest in confined bosonic systems in particular (se e.g. \cite{Nilsen2005}). \\
+	Confined quantum mechanical systems have received considerable attention in the literature, as they have many possible novel applications, ranging from qubits to energy storage. The existence of Bose-Einstein condensation in gases of certain alkali atoms, has sparked the interest in confined bosonic systems in particular (see e.g. \cite{Nilsen2005}). \\
 	\linebreak
-	We present an investigation into a system of bosons trapped in a harmonic oscillator well. We model our bosons as spheres with radius $a$, and investigate systems both with and without a repulsive interaction preventing them from moving through one another. We then use a variational Monte Carlo simulation to estimate the ground-state energy of our system.\\
+	We present an investigation into a system of bosons trapped in a harmonic oscillator well, based on the work by \cite{DuBois2001}. We model our bosons as spheres with radius $a$, and investigate systems both with and without a repulsive interaction preventing them from moving through one another. We then use a variational Monte Carlo simulation to estimate the ground-state energy of our system.\\
 	\linebreak
-	 We seek to understand how the ground-state energy of the system depends on various parameters such as the number of particles in the system, the shape of the trap and the way we sample in our variational Monte Carlo method. We also investigate metods for quickly determining an approximation to the optimal variational parameter. Finally, we present a brief discussion of onebody densities in our system. We follow closely the approach used by \cite{DuBois2001}.
+	 We seek to understand how the ground-state energy of the system depends on various parameters such as the number of particles in the system, the shape of the trap and the way we sample in our variational Monte Carlo method. We also investigate metods for quickly determining an approximation to the optimal variational parameter. Finally, we present a brief discussion of onebody densities in our system.
 	\section{Theoretical model}
 	We investigate bosons in a potential trap. The Hamiltonian of such a system for $N$ bosons is in general given by:
 	\begin{equation} \label{eq:general_Hamiltonian}
@@ -256,6 +256,17 @@
 	\boldsymbol{r}^i_{\mathrm{new}}=\boldsymbol{r}^i_{\mathrm{old}}+\boldsymbol{\xi} \sqrt{dt}+D\boldsymbol{F}_idt
 	\end{equation}
 	Where $F_i$ is the quantum force on particle $i$ and $D$ is the diffusion parameter, discussed in section \ref{sec:Metropolis_Hasting_Sampling}. The parameter $dt$ is the same parameter used in the Greens function (equation \ref{eq:Greens_Function}), and we find it by looking at the energy for the exactly solvable system for different $dt$.
+	\subsection{Finding the optimal step size}\label{sec:finding_optimal_step_size}
+	For the brute-force Monte Carlo sampling, we must estimate an optimal step size, $d x$, with which to move our step. For the Monte Carlo simulation with importance sampling, we must similarly estimate the parameter $d t$. These step sizes should ensure that:
+	\begin{itemize}
+		\item The simulation quickly converges to the correct energy
+		\item The variance quickly stabilizes
+	\end{itemize}
+	To find these properties, we look at how the variance and the mean of the local energy (across every Monte Carlo sample) varies as we increase the number of Monte Carlo cycles. We investigate various values of $dx$ (respectively $dt$). For each of these values, we ensure that we manage to hit an energy minimum at $\alpha=0.5$ in the noninteracting case.\\
+	\linebreak
+	We measure the variance in the standard way (i.e. not using blocking), as blocking requires the number of steps to be a power of $2$. We do this for the noninteracting system, using $\alpha=0.45$ (as the exact $\alpha$ gives essentially $0$ variance). \\
+	\linebreak
+	We then choose the $dx$ (respectively $dt$) that ensure that the variance and the mean quickly stabilize.\\
 	\subsection{Statistical treatment of the data}
 	We wish to estimate the statistical errors of our estimate of the local energy. As subsequent values for the local energy are based on the previous values of the local energy, we are dealing with a correlated time series. The normality assumptions usually employed when generating confidence intervals therefore does not hold. Instead, we use blocking to estimate the error in our energy. A detailed mathematical treatment of this method is found in \cite{Jonsson2018}. We therefore present only the algorithm. Assume that we have $n$ observations $Q^0=\{Q_1^0,...,Q_n^0\}$ of the local energy, and we wish to estimate the variance of the local energy. The uncorrelated estimator for the standard deviation is given by:
 	\begin{equation}
@@ -275,22 +286,106 @@
 	\subsection{Implementing the one-body density}\label{sec:MetOneBody}
 	To compute the one-body density defined by equation \ref{eq:OneBodyDensity}, we must compute the stated integral, using Monte Carlo integration. This is done by choosing a maximum distance from the origin $\boldsymbol{r_max}$, beyond which the probability of finding a particle is negligible. We then divide the volume from the origin to $\boldsymbol{r_{max}}$ into spherical shells with equal spacing between the radii of the shells. We then count the number of particles that are in each of the shells during each Monte Carlo cycle. We present a pseudo-code of our implementation \textbf{PSEUDO-CODE}	
 	
-	\section{Results and discussion}
+	\section{Results}
+	\subsection{Finding the optimal step size}
+We plot the mean and the variance for various steps sizes, as discussed in section \ref{sec:finding_optimal_step_size}. This gives the plot shown in figure \ref{fig:find_dx_noimportance} for the brute force sampling.
+	\begin{figure}[ht!]
+		\centering
+			\centering
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.8\linewidth]{../Results/EvoMean.pdf}
+				\caption{Mean energy}
+			\end{subfigure}%
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.8\linewidth]{../Results/EvoStd.pdf}
+				\caption{Standard deviation of the energy}
+			\end{subfigure}
+			\caption{Mean energy and standard deviation of the energy as a function of Monte Carlo cycles for various step sizes, $dx$. This was done without importance sampling in three dimensions, using $N=100$, $a=0$ (noninteracting), $\alpha=0.45$, $\omega_z=1$, $\beta=1$,}\label{fig:find_dx_noimportance}
+	\end{figure}
+	As discussed further in section \textbf{SECTION}, we choose $dx=0.5$ as our parameter for the brute-force case.\\
+	\linebreak
+	We produce a similar plot for the case with importance sampling. This gives the plots shown in figure \ref{fig:find_dx_importance}.
+		\begin{figure}[ht!]
+			\centering
+			\centering
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.8\linewidth]{../Results/EvoMeanIS.pdf}
+				\caption{Mean energy}
+			\end{subfigure}%
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.8\linewidth]{../Results/EvoStdIS.pdf}
+				\caption{Standard deviation of the energy}
+			\end{subfigure}
+			\caption{Mean energy and standard deviation of the energy as a function of Monte Carlo cycles for various step sizes, $dx$. This was done with importance sampling in three dimensions, using $N=100$, $a=0$ (noninteracting), $\alpha=0.45$, $\omega_z=1$, $\beta=1$,}\label{fig:find_dx_importance}
+		\end{figure}
+	As explained in section \textbf{SECTION}, we choose $dt=0.05$.
 	\subsection{Testing our code}
-	We test our code by running the simulations for the noninteracting case ($a=0$) and for the correct value of the variational parameter, $\alpha=0.5$. We then expect our code to reproduce the exact energy given in equation \ref{eq:Exact_Energy_N_particles}. We test this using both the analytic and the numeric energy, and time the CPU difference between them. We show the results without importance sampling in table \ref{tab:4.1_benchmark_no_Green}.
+	We test our code by running the simulations for the noninteracting case ($a=0$) and for the correct value of the variational parameter, $\alpha=0.5$. We then expect our code to reproduce the exact energy given in equation \ref{eq:Exact_Energy_N_particles}. We test this using both the analytic and the numeric energy, and time the CPU difference between them.  We compute the uncertainty using the blocking method, as described in section\textbf{SECTION}. We show the results without importance sampling in table \ref{tab:4.1_benchmark_no_Green} (1D), table \ref{tab:4.1_benchmark_no_Green_2D} (2D)  and table \ref{tab:4.1_benchmark_no_Green_3D} (3D).
 	\begin{table}[ht!]
 		\begin{adjustwidth}{-2cm}{}
 			\begin{tabular}{cccccc}
 				N & Analytic energy, $E_a$ [$\hbar \omega$] & Numeric energy, $E_n$ [$\hbar \omega$] & Exact energy, $E$ [$\hbar \omega$]& CPU time $E_a$ [s] &CPU time $E_n$ [s]\\
-				1&$0.5$&$0.5$&$0.5$& 1.27&1.79\\
-				10&$5$&$5$&$5$& $1.25$&8.05\\
-				100&$50$&$50$&$50$&2.08&401.74\\
-				500&$250$&-&250 &43.38 &-
+				1&$0.5$&$0.5$&$0.5$& 1.41&2.03\\
+				10&$5$&$5.00000\pm 1\cdot 10^{-5}$&$5$& $1.47$&9.13\\
+				100&$50$&$50.000\pm 0.001$&$50$&2.42&446.83\\
+				500&$250$&-&250 &51.02 &-
 			\end{tabular}
 		\end{adjustwidth}
-		\caption{Benchmarking of our code in the noninteracting case ($a=0$), showing the analytic energy (computed by means of equation \ref{eq:Local_energy_all}), the numeric energy and the exact energy (given by equation \ref{eq:Exact_Energy_N_particles}). This is for the spherical trap ($\beta=1$) in one dimension. This was obtained using $4$ cores, each running $10^6$ Monte Carlo cycles. The simulation with the numeric energy for $N=500$ took too long to be feasible.}\label{tab:4.1_benchmark_no_Green}
+		\caption{Benchmarking of our code in the noninteracting case ($a=0$), in one dimension, showing the analytic energy (computed by means of equation \ref{eq:Local_energy_all}), the numeric energy and the exact energy (given by equation \ref{eq:Exact_Energy_N_particles}). This is for the spherical trap ($\omega_z=\beta=1$) in one dimension. This was obtained using $4$ cores, each running $2^{20}$ Monte Carlo cycles. The simulation with the numeric energy for $N=500$ took too long to be feasible. Wherever no uncertainty is specified, blocking gave an error of $0$. This is with brute force sampling.}\label{tab:4.1_benchmark_no_Green}
 	\end{table}
-	
+	\begin{table}[ht!]
+		\begin{adjustwidth}{-2cm}{}
+			\begin{tabular}{cccccc}
+				N & Analytic energy, $E_a$ [$\hbar \omega$] & Numeric energy, $E_n$ [$\hbar \omega$] & Exact energy, $E$ [$\hbar \omega$]& CPU time $E_a$ [s] &CPU time $E_n$ [s]\\
+				1&$1$&$1$&$1$& 1.32&2.27\\
+				10&$10$&$10.00000\pm 3\cdot 10^{-5}$&$10$& $1.49$&15.11\\
+				100&$100$&$100.000\pm 0.003$&$50$&2.65&810.2\\
+				500&$500$&- &$500$&49.2 &-
+			\end{tabular}
+		\end{adjustwidth}
+		\caption{Same table as table \ref{tab:4.1_benchmark_no_Green}, but in 2 dimensions}\label{tab:4.1_benchmark_no_Green_2D}
+	\end{table}
+		\begin{table}[ht!]
+			\begin{adjustwidth}{-2cm}{}
+				\begin{tabular}{cccccc}
+					N & Analytic energy, $E_a$ [$\hbar \omega$] & Numeric energy, $E_n$ [$\hbar \omega$] & Exact energy, $E$ [$\hbar \omega$]& CPU time $E_a$ [s] &CPU time $E_n$ [s]\\
+					1&$1.5$&$1.5$&$1.5$& 1.56&2.85\\
+					10&$15$&$15.00000\pm 6\cdot 10^{-5}$&$15$& $1.91$&29.89\\
+					100&$150$&$149.997\pm 0.005$&$150$&3.92&1791.83\\
+					500&$750$&- &$750$&54.36 &-
+				\end{tabular}
+			\end{adjustwidth}
+			\caption{Same table as table \ref{tab:4.1_benchmark_no_Green}, but in 3 dimensions}\label{tab:4.1_benchmark_no_Green_3D}
+		\end{table}
+		We do a similar analysis with importance sampling. This gives table \textbf{TABLES}
+		 \begin{table}[ht!]
+			\begin{adjustwidth}{-2cm}{}
+				\begin{tabular}{cccccc}
+					N & Analytic energy, $E_a$ [$\hbar \omega$] & Numeric energy, $E_n$ [$\hbar \omega$] & Exact energy, $E$ [$\hbar \omega$]& CPU time $E_a$ [s] &CPU time $E_n$ [s]\\
+					1&$0.5$&$0.5$&$0.5$& 1.83&2.36\\
+					10&$5$&$5.00000\pm 2\cdot 10^{-5}$&$5$& $2.03$&9.59\\
+					100&$50$&$49.997\pm 0.001$&$50$&4.92&441.62\\
+					500&$250$&-&250 &56.83 &-
+				\end{tabular}
+			\end{adjustwidth}
+			\caption{Benchmarking of our code in the noninteracting case ($a=0$), in one dimension, showing the analytic energy (computed by means of equation \ref{eq:Local_energy_all}), the numeric energy and the exact energy (given by equation \ref{eq:Exact_Energy_N_particles}). This is for the spherical trap ($\omega=\omega_z=\beta=1$) in one dimension. This was obtained using $4$ cores, each running $2^{20}$ Monte Carlo cycles. The simulation with the numeric energy for $N=500$ took too long to be feasible. Wherever no uncertainty is specified, blocking gave an error of $0$. This is with importance sampling.}\label{tab:4.1_benchmark_Green}
+		\end{table}
+		 \begin{table}[ht!]
+		 	\begin{adjustwidth}{-2cm}{}
+		 		\begin{tabular}{cccccc}
+		 			N & Analytic energy, $E_a$ [$\hbar \omega$] & Numeric energy, $E_n$ [$\hbar \omega$] & Exact energy, $E$ [$\hbar \omega$]& CPU time $E_a$ [s] &CPU time $E_n$ [s]\\
+		 			1&$1$&$1$&$1$& 1.87&2.80\\
+		 			10&$10$&$10.00004\pm 3\cdot 10^{-5}$&$10$& $2.16$&16.86\\
+		 			100&$100$&$49.997\pm 0.001$&$100$&58.17&441.62\\
+		 			500&$250$&-&250 &56.83 &-
+		 		\end{tabular}
+		 	\end{adjustwidth}
+		 	\caption{Same as table \ref{tab:4.1_benchmark_Green} but in 2 dimensions.}\label{tab:4.1_benchmark_Green_2D}
+		 \end{table}
 	\subsection{Energy as a function of $\boldsymbol{\alpha}$}
 	To investigate how our solution varies with $\alpha$, we plot the local energy as a function of the variational parameter $\alpha$. We do this for the spherical harmonic oscillator ($\beta=1$) with no interaction ($a=0$), with $N=100$ and $2^{20}$ Monte Carlo cycles per core. We also compute the error in each case, using the blocking method. This gives the plot shown in figure \ref{fig:Average_EL_N=100_brute_force}.
 	\begin{figure}[ht!]
@@ -305,6 +400,19 @@
 			\caption{Local energy for various values of $\alpha$, for $a=0$, $\beta=1$, $\omega_z=1$, $N=100$, 3 dimensions, $2^{20}$ Monte Carlo cycles and importance sampling.}\label{fig:Average_EL_N=100_importance}
 		\end{figure}
 	We see that the error is larger when including importance sampling than when excluding it. 
+	\subsection{Results from the fully interacting system}
+	We now run the fully interacting system. We choose the parameters used by \cite{Nilsen2005}, and an $\alpha$ value found by the gradient descent. We do not use importance sampling, as it took too long. We use the analytic expression for the local energy, given in equation \ref{eq:Local_energy_all}. This gives the values shown in table \ref{tab:fully_interacting_system}.
+	\begin{table}[ht!]
+		\centering
+		\begin{tabular}{cccc}
+			N & Local energy, $E_L$ [$\hbar \omega$] & CPU time [s]\\
+			\hline
+			10 & $24.271458\pm 2\cdot 10^{-6}$ & 35.10\\
+			50 & $123.859\pm 0.001$ & 4338.12\\
+			100 & $253.12 \pm 0.06$ & 31442.4\\
+		\end{tabular}
+		\caption{Local energy in 3 dimensions for the fully interacting system. We use the parameters used by \cite{Nilsen2005}, i.e. $a=0.0043$, $\omega_z=\beta=2.82843$, $\omega=1$. We use brute force sampling and the optimal $\alpha=0.499296$ found by our gradient descent method. }\label{tab:fully_interacting_system}
+	\end{table}
 	\section{Discussion}
 	
 	\section{Conclusion}
@@ -612,6 +720,7 @@ we will get:
 \begin{align}
 \pdv{\langle E_{L} \rangle }{\alpha} = \frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
 + \bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
+\label{proddiff}
 \end{align}
 The first expression is:
 \begin{align}
@@ -625,14 +734,61 @@ Taking the derivative into the integral and apply the product rule, we will obta
 +   \Psi_{T}^{*}\pdv{H}{\alpha}\Psi_{T}
 +   \Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
 \end{align}
-Since the hamiltonian does not depend on $\alpha$ and the wavefunction is real. Those two expression are equal after rearranging the derivative,
-thus:
+Since the hamiltonian does not depend on $\alpha$ we have:
 \begin{align}
-\frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
-= \frac{2}{\braket{\Psi_{T}}}{\bra{\Psi_{T}}H\pdv{\alpha}\ket{\Psi_{T}}}
+\frac{1}{\braket{\Psi_{T}}}\int..\int\underbrace{\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}}_{I}
++   \underbrace{\Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}}_{II}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+\end{align}
+We now wish to include the local energy in the integral, to do this we must
+do some algebra. Consider the first expression ($I$):
+\begin{align}
+\frac{1}{\braket{\Psi_{T}}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+\end{align}
+By dividing and multiplying with $\Psi_{T}^{*}$ and $\Psi_{T}$ on the left and right for the
+hamiltonian operator, we can write $I$ as:
+\begin{align}
+\begin{split}
+\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\frac{\Psi_{T}}{\Psi_{T}}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+=
+\\
+\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{|\Psi_{T}|^{2}}{\Psi_{T}}\pdv{\Psi_{T}^{*}}{\alpha}E_{L}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+\\
+= \langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}\rangle
+\label{result1}
+\end{split}
+\end{align}
+Expression (II) is more trickier to handle, since we know that the hamiltionian
+operator is hermitian and the wavefunction is real, we know that:
+\begin{align}
+\bra{a}H\ket{b}^{*} = \bra{b}H\ket{a}
+\end{align}
+We will now write expression (I) and (II) in Dirac notation. Expression (I) will
+look like:
+\begin{align}
+\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+= \bra{\Psi_{T}}\frac{1}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}H\ket{\Psi_{T}}
+\label{dirac1}
+\end{align}
+Expression (II) will look like:
+\begin{align}
+\frac{1}{\braket{\Psi_{T}}}\int..\int\Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\frac{\Psi_{T}}{\Psi_{T}}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+= \bra{\Psi_{T}}H\pdv{\Psi_{T}}{\alpha}\frac{1}{\Psi_{T}}\ket{\Psi_{T}}
+\label{dirac2}
+\end{align}
+Notice that (\ref{dirac1}) and (\ref{dirac2}) are just the conjugate of each oher, thus:
+\begin{align}
+\bra{\Psi_{T}}H\pdv{\Psi_{T}}{\alpha}\frac{1}{\Psi_{T}}\ket{\Psi_{T}}^{*}
+=
+\bra{\Psi_{T}}\frac{1}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}H\ket{\Psi_{T}}
+\end{align}
+Since (\ref{dirac1}) is equal to (\ref{result1}) then (\ref{dirac1}) must also equal the result from
+(\ref{result1}). Thus:
+\begin{align}
+\frac{1}{\braket{\Psi_{T}}}\int..\int\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}
++   \Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
 = 2 \langle E_{L}\pdv{\Psi_{T}}{\alpha} \rangle
 \end{align}
-The second expression is:
+Now differentiating the second expression in (\ref{proddiff}):
 \begin{align}
 \bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
 = -\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\pdv{\braket{\Psi_{T}}}{\alpha}
@@ -648,11 +804,17 @@ we clearly see that:
 -\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T}
 +
 \Psi_{T}^{*}\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-= -2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}
-\bra{\Psi_{T}}\pdv{\alpha}\ket{\Psi_{T}}
+=
+-2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
 \end{align}
-After using the definition of the variance of the local energy and derivative of the wavefunction with respect to $\alpha$,
+We will now divide with $\frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}$,
+use the definition of the expectation value of the local energy and derivative of the wavefunction with respect to $\alpha$,
 This can also be written as:
+\begin{align}
+-2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \Psi_{T}^{*}\Psi_{T}\left(\frac{1}{\Psi_{T}}\pdv{\Psi_{T}^{*}}{\alpha}\right)\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+= -2\langle E_{L} \rangle \langle \pdv{\Psi}{\alpha}\rangle
+\end{align}
+thus:
 \begin{align}
 \bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
 = -2\langle E_{L} \rangle \langle \pdv{\Psi}{\alpha}\rangle
@@ -663,6 +825,6 @@ be expressed as:
 \pdv{\langle E_{L} \rangle }{\alpha} =
 2\left(\langle E_{L}\pdv{\Psi_{T}}{\alpha} \rangle -
 \langle E_{L} \rangle \langle \pdv{\Psi}{\alpha}\rangle\right)
-\end{align} 
+\end{align}
 	\end{appendices}
 \end{document}
