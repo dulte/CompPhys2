@@ -3,12 +3,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
 from time import time
+import seaborn as sns
+import pandas as pd
+
+
+def read_parameters(folder):
+    parameters = {}
+    with open(folder+"metadata.txt") as f:
+        for line in f:
+            words = line.split()
+            if len(words) == 0:
+                continue
+            if words[0][0] == "#":
+                continue
+            parameters[words[0]] = eval(words[1])
+
+    return parameters
 
 class Analytics:
     def __init__(self,folder,num_proc=1,flatten=False):
         self.folder = folder
         self.num_proc = num_proc
-        self.read_parameters(folder)
+        self.parameters = read_parameters(folder)
 
         self.read_stamp_data()
         self.read_data(flatten)
@@ -16,18 +32,7 @@ class Analytics:
         self.do_statistics(flatten)
 
 
-    def read_parameters(self,folder):
-        parameters = {}
-        with open(folder+"metadata.txt") as f:
-            for line in f:
-                words = line.split()
-                if len(words) == 0:
-                    continue
-                if words[0][0] == "#":
-                    continue
-                parameters[words[0]] = eval(words[1])
 
-        self.parameters = parameters
 
     def read_stamp_data(self):
         #Most of this is reduntant, since all the simulations use the same alpahs
@@ -93,15 +98,28 @@ class Analytics:
                 self.meta_error = np.copy(self.errors)
 
     def plot_average(self):
+        sns.set_style("darkgrid")
         if self.num_proc != 1:
             alphas = self.stamps[:,0]
         else:
             alphas = self.stamps[:,0]
-        f, axarr = plt.subplots(2)
-        axarr[0].plot(alphas, self.meta_average,".")
-        axarr[0].set_title(r"$\mu$ for different $\alpha$ and N = %d" %self.parameters["N"])
-        axarr[1].plot(alphas,np.sqrt(self.meta_error),".")
-        axarr[1].set_title(r"$\sigma$ for different $\alpha$ and N = %d" %self.parameters["N"])
+        # f, axarr = plt.subplots(2)
+        # axarr[0].plot(alphas, self.meta_average,".")
+        # axarr[0].set_title(r"$\mu$ for different $\alpha$ and N = %d" %self.parameters["N"])
+        # axarr[1].plot(alphas,np.sqrt(self.meta_error),".")
+        # axarr[1].set_title(r"$\sigma$ for different $\alpha$ and N = %d" %self.parameters["N"])
+        # plt.show()
+
+
+        title_text = r"Average $E_L$ for Various $\alpha$ for N = {}".format(self.parameters["N"])
+        if(self.parameters["D"] != 0):
+            title_text += " with Importance Sampling."
+
+        plt.errorbar(alphas, self.meta_average,fmt='b.',yerr=np.sqrt(self.meta_error),ecolor='r')
+        plt.title(title_text,fontsize=15)
+        plt.xlabel(r"$\alpha$",fontsize=20)
+        plt.ylabel(r"$E_L [\hbar \omega]$",fontsize=20)
+        plt.ylim(148,170)
         plt.show()
 
 
@@ -109,7 +127,7 @@ class SingleAlphaAnalytics:
     def __init__(self,folder,num_proc=1):
         self.folder = folder
         self.num_proc = num_proc
-        self.read_parameters(folder)
+        self.parameters = read_parameters(folder)
 
         self.read_stamp_data()
         self.read_data()
@@ -127,32 +145,55 @@ class SingleAlphaAnalytics:
             self.data = np.fromfile(self.folder + "data0.bin",sep=" ")
 
 
-
-    def read_parameters(self,folder):
-        parameters = {}
-        with open(folder+"metadata.txt") as f:
-            for line in f:
-                words = line.split()
-                if len(words) == 0:
-                    continue
-                if words[0][0] == "#":
-                    continue
-                parameters[words[0]] = eval(words[1])
-
-        self.parameters = parameters
-
-
     def read_stamp_data(self):
         self.alpha = np.fromfile((self.folder + "stamp0.bin"),sep=" ")[0]
 
     def do_statistics(self):
 
         print("Average: ", np.mean(self.data))
-        #print("Error: ", block(self.data))
+        print("Error: ", np.sqrt(block(self.data)))
 
         with open(self.folder + "benchmark.txt","w+") as f:
             f.write("Average: "+ str(np.mean(self.data)) + "\n")
-            #f.write("Error: "+ str(block(self.data)) + "\n")
+            f.write("Error: "+ str(np.sqrt(block(self.data))) + "\n")
+
+
+
+class getVariance:
+    def __init__(self,folder):
+        self.folder = folder
+        self.parameters = read_parameters(folder)
+        self.list_of_dx = [0.0005,0.001,0.005,0.01,0.05,0.1]
+        self.file_names = ["data00005.bin","data0001.bin","data0005.bin","data001.bin",\
+                "data005.bin","data01.bin"]
+        #self.list_of_dx = [0.05,0.1,0.5,1]
+        #self.file_names = ["data005.bin","data01.bin","data05.bin","data1.bin"]
+
+        self.data = self.data = np.zeros((self.parameters["MC_cycle"],len(self.list_of_dx)))
+        self.read_data()
+        self.plot_variance()
+
+    def read_data(self):
+        for index,f in enumerate(self.file_names):
+            self.data[:,index] = np.fromfile(self.folder + f,sep=" ")
+
+
+    def plot_variance(self):
+        sns.set_style("darkgrid")
+
+        for i,dx in enumerate(self.list_of_dx):
+            length = int(self.data.shape[0]/2**10)
+            self.variance = np.zeros(length-1)
+            iterations = np.linspace(0,self.data.shape[0],length-1,endpoint=True)
+            for j in range(length-1):
+                print(i,j)
+                self.variance[j] = np.std(self.data[0:(j+1)*2**10,i])
+            plt.plot(iterations,self.variance,label="dx = %g"%dx)
+        plt.title("Evolving Error with Importance Sampling",fontsize=15)
+        plt.xlabel(r"Iterations",fontsize=20)
+        plt.ylabel(r"Error",fontsize=20)
+        plt.legend(loc=4)
+        plt.show()
 
 
 
@@ -199,9 +240,9 @@ def block(x):
     return ans
 
 if __name__ == '__main__':
-    an = Analytics("../output/",4,flatten=True)
-    #print(an.data[:,:,0])
-    #print(an.meta_average)
-    #print(an.meta_error)
-    an.plot_average()
-    #an = SingleAlphaAnalytics("../output/",4)
+    #an = Analytics("../output/",4,flatten=True)
+    #an.plot_average()
+    #exit()
+    an = SingleAlphaAnalytics("../output/",4)
+
+    #an = getVariance("../output/varIS/")
