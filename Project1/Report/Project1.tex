@@ -291,7 +291,8 @@
 		\rho(r_i)\approx \frac{N_i}{4\pi r_i^2 \Delta r}
 		\end{equation}
 		Where $N_i$ is the number of particles in the spherical shell with radius $r_i$ to $r_i+\Delta r$. Thus, to compute the onebody density, we run our Monte Carlo simulation and check in which shell the particle that we move at every step is located. We also check numerically that the normalization is correct.
-	
+	\subsection{Parallelizing our code}
+	We note that our algorithms are embarrassingly parallel, as they do not need to communicate between one another to span a large portion of the parameter space. We therefore run 4 cores simultaneously, producing 4 times as much data. This data is simply appended \textbf{ASK DANIEL} in the blocking, giving $4$ times more data, and thus better estimates of the mean and the standard deviation.
 	\section{Results}
 	\subsection{Finding the optimal step size}
 We plot the mean and the variance for various steps sizes, as discussed in section \ref{sec:finding_optimal_step_size}. This gives the plot shown in figure \ref{fig:find_dx_noimportance} for the brute force sampling.
@@ -310,7 +311,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 			\end{subfigure}
 			\caption{Mean energy and standard deviation of the energy as a function of Monte Carlo cycles for various step sizes, $dx$. This was done without importance sampling in three dimensions, using $N=100$, $a=0$ (noninteracting), $\alpha=0.45$, $\omega_z=1$, $\beta=1$,}\label{fig:find_dx_noimportance}
 	\end{figure}
-	As discussed further in section \textbf{SECTION}, we choose $dx=0.5$ as our parameter for the brute-force case.\\
+	As discussed further in section \ref{sec:Disc_optimal_step_size_brute_force}, we choose $dx=0.5$ as our parameter for the brute-force case.\\
 	\linebreak
 	We produce a similar plot for the case with importance sampling. This gives the plots shown in figure \ref{fig:find_dx_importance}.
 		\begin{figure}[ht!]
@@ -328,7 +329,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 			\end{subfigure}
 			\caption{Mean energy and standard deviation of the energy as a function of Monte Carlo cycles for various step sizes, $dx$. This was done with importance sampling in three dimensions, using $N=100$, $a=0$ (noninteracting), $\alpha=0.45$, $\omega_z=1$, $\beta=1$,}\label{fig:find_dx_importance}
 		\end{figure}
-	As explained in section \textbf{SECTION}, we choose $dt=0.05$.
+	As explained in section \ref{sec:Disc_importance_sampling_step_size}, we choose $dt=0.05$.
 	\subsection{Testing our code}
 	We test our code by running the simulations for the noninteracting case ($a=0$) and for the correct value of the variational parameter, $\alpha=0.5$. We then expect our code to reproduce the exact energy given in equation \ref{eq:Exact_Energy_N_particles}. We test this using both the analytic and the numeric energy, and time the CPU difference between them.  We compute the uncertainty using the blocking method, as described in section \ref{sec:Blocking}. We show the results without importance sampling in table \ref{tab:4.1_benchmark_no_Green} (1D), table \ref{tab:4.1_benchmark_no_Green_2D} (2D)  and table \ref{tab:4.1_benchmark_no_Green_3D} (3D).
 	\begin{table}[ht!]
@@ -410,7 +411,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 		 	\end{adjustwidth}
 		 	\caption{Same as table \ref{tab:4.1_benchmark_Green} but in 3 dimensions.}\label{tab:4.1_benchmark_Green_3D}
 		 \end{table}
-	As discussed further in section \textbf{SECTION}, we opt to not use importance sampling in the interacting case.
+	As discussed further in section \ref{sec:Disc_energy_as_a_function_of_alpha} , we opt to not use importance sampling in the interacting case.
 	\subsection{Energy as a function of $\boldsymbol{\alpha}$}
 	To investigate how our solution varies with $\alpha$, we plot the local energy as a function of the variational parameter $\alpha$. We first do this for the spherical harmonic oscillator ($\beta=1$) with no interaction ($a=0$), with $N=100$ and $2^{20}$ Monte Carlo cycles per core (running with $4$ cores). We also compute the error in each case, using the blocking method. This gives the plot shown in figure \ref{fig:Average_EL_N=100_brute_force} (brute-force sampling) and figure \ref{fig:Average_EL_N=100_importance} (importance sampling).
 	\begin{figure}[ht!]
@@ -436,7 +437,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 				\includegraphics[scale=0.8]{../Results/E_v_alpha_gradient_noninteracting.pdf}
 				\caption{Gradient descent for finding the optimal $\alpha$ in the noninteracting case ($a=0$), with $N=10$, $\omega=\omega_z=\beta=1$, 3 dimensions and brute-force sampling. We use a minimum step size, $\epsilon=10^{-6}$, and an accept whenever the gradient is less than $10^{-6}$.}\label{fig:gradient_descent_noninteracting}
 			\end{figure}
-	The method finds $\alpha=0.5$ in few time steps. We do a similar analysis for the interacting case with $N=10,50$ and $100$. This is shown in figure \ref{fig:gradient_descent_interactingN10} (N=10), figure \ref{fig:gradient_descent_interactingN50} (N=50).
+	The method finds $\alpha=0.5$ in few time steps. We do a similar analysis for the interacting case with $N=10,50$ and $100$. This is shown in figure \ref{fig:gradient_descent_interactingN10} (N=10), figure \ref{fig:gradient_descent_interactingN50} (N=50) and figure \ref{fig:gradient_descent_interactingN100} (N=100).
 		\begin{figure}[ht!]
 			\centering
 			\centering
@@ -468,6 +469,22 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 					\caption{Same as figure \ref{fig:gradient_descent_interactingN10} but with $N=50$. }\label{fig:gradient_descent_interactingN50}
 				\end{figure}
 		
+		\begin{figure}[ht!]
+			\centering
+			\centering
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.8\linewidth]{../Results/E_v_alpha_gradientN100.pdf}
+				\caption{Gradient descent}
+			\end{subfigure}%
+			\begin{subfigure}{.5\textwidth}
+				\centering
+				\includegraphics[width=.8\linewidth]{../Results/E_v_alpha_gradientN100Zoom.pdf}
+				\caption{Zoomed in version}
+			\end{subfigure}
+			\caption{Same as figure \ref{fig:gradient_descent_interactingN10} but with $N=100$. }\label{fig:gradient_descent_interactingN100}
+		\end{figure}
+		
 			\begin{table}[ht!]
 				\centering
 				\begin{tabular}{cccc}
@@ -475,7 +492,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 					\hline
 					10 & $0.499037$\\
 					50 &$0.494033$\\ 
-					100 & 
+					100 & $0.474419$
 				\end{tabular}
 				\caption{Values for the variational parameter $\alpha$ for various $N$. This was estimated in 3 dimensions, with $a=0.0043$, $\omega=1$, $\omega_z=\beta=2.82843$ and using brute force sampling with $2^{20}/100$ timesteps. We stopped the gradient descent method once it became stable, but after a minimum of $40$ iterations.}\label{tab:correct_alpha_interacting}
 		\end{table}
@@ -488,7 +505,8 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 			\hline
 			10 & $24.14259\pm 9\cdot 10^{-5}$ & 78.4679\\
 			50 & $123.859\pm 0.001$ & 4338.12\\
-			100 & $253.12 \pm 0.06$ & 31442.4\\
+			100 & $253.7\pm 0.1$ &31734.3\\
+			%100 & $253.12 \pm 0.06$ & 31442.4\\
 		\end{tabular}
 		\caption{Local energy in 3 dimensions for the fully interacting system. We use the parameters used by \cite{Nilsen2005}, i.e. $a=0.0043$, $\omega_z=\beta=2.82843$, $\omega=1$. We use brute force sampling, and the parameters $\alpha$ found by our gradient descent method, shown in table \ref{tab:correct_alpha_interacting}.}\label{tab:fully_interacting_system}
 	\end{table}
@@ -497,11 +515,37 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 		\begin{figure}[ht!]
 			\centering
 			\includegraphics[scale=0.8]{../Results/onbody.pdf}
-			\caption{Radial onebody density for noninteracting ($a=0$) and interacting ($a=0.0043$), using $\omega_z=\omega=\beta=1$, $N=10$ particles in $3$ dimensions and using brute force sampling.}\label{fig:results_onebody}
+			\caption{Radial onebody density for noninteracting ($a=0$) and interacting ($a=0.0043$), using $\omega_z=\omega=\beta=1$, $N=10$ particles in $3$ dimensions, using brute force sampling.}\label{fig:results_onebody}
 		\end{figure}
 	\section{Discussion}
-	
-	\section{Conclusion}
+	\subsection{The optimal step size}
+	\subsubsection{The brute force sampling}\label{sec:Disc_optimal_step_size_brute_force}
+	Looking at figure \ref{fig:find_dx_noimportance}, we notice that the error stabilizes quickest for $dx=0.5$ and $dx=1$. Notice that this erorr is \textit{not} estimated using blocking. Therefore, the absolute value of the error is misleading, and we only consider the trend. On a related note, we see that the mean also stabilizes equally quickly in both cases. We therefore choose the $dx$ that gives the highest acceptance ratio, as this minimizes the wasted CPU cycles. This is the case for $dx=0.5$, which explains our choice of step size for the brute-force sampling.
+	\subsubsection{Importance sampling}\label{sec:Disc_importance_sampling_step_size}
+	The exact same argumentation as in the previous section for figure \ref{fig:find_dx_importance} shows that the error (again \textit{not} corrected for correlations), stabilizes quickest for $dt=0.05$ and $dt=0.1$, and similarly for the mean. Again, we choose the timestep that gives the highest acceptance ratio, which gives $dt=0.05$.
+	\subsection{Testing of our code}\label{sec:Desc_testing_code}
+	Looking at table \ref{tab:4.1_benchmark_no_Green}, \ref{tab:4.1_benchmark_no_Green_2D} and \ref{tab:4.1_benchmark_Green_3D}, we see that the numeric and the analytic energy both reproduce the exact energy, within the uncertainty.  However, the analytic energy runs significantly faster, and has an error of $0$ in the minimum. This justifies using the exact energy for the rest of our simulations.\\
+	\linebreak
+	The tables showing the benchmarking with importance sampling (table \ref{tab:4.1_benchmark_Green}, \ref{tab:4.1_benchmark_Green_2D} and \ref{tab:4.1_benchmark_Green_3D}) tell a similar story, though the importance sampling is generally somewhat slower (at least for large enough $N$).\\
+	\linebreak
+	We also note that the CPU time used by our algorithm suddenly soars when using $N=500$. This is most likely due to the fact that the overhead due to the parallelization at this point becomes insignificant, relative to the time used in the code, so that the code scales strongly with $N$.
+	\subsection{The energy as a function of $\boldsymbol{\alpha}$}\label{sec:Disc_energy_as_a_function_of_alpha}
+	We show how the energy varies as a function of $\alpha$ with brute-force sampling in figure \ref{fig:Average_EL_N=100_brute_force} and for importance sampling in figure \ref{fig:Average_EL_N=100_importance}. We note that we manage to hit a minimum at the expected point with both methods, and that this minimum has the correct value in both cases. This suggests that our method is working as expected.\\
+	\linebreak
+	 Comparing this with the interacting case, shown for $10$ particles in figure \ref{fig:EL_alpha_N10_interacting}, we see that we get a similar shape - a minimum near $\alpha=0.5$, with a steady increase in energy beyond that point. We also note that the error is relatively small. Comparing figure the noninteracting case, we see that importance sampling does not significantly improve the error bound, suggesting that we use sufficiently many steps to attain a stable variance.\\
+	 \linebreak
+	 We therefore decide to implement brute force sampling in the rest of this project, as it is significantly faster, and does not appear to come at a large cost to accuracy. Whilst it would be possible to use importance sampling with fewer steps, we were unable to get satisfactory results using this method. We therefore use exclusively brute-force sampling for the interacting case.
+	 \subsection{Results from the fully interacting system}\label{sec:Disc_Results_from_full}
+	 We show how the gradient descent evolves for $N=10$ in the fully interacting system in figure \ref{fig:gradient_descent_interactingN10}. After $40$ iterations, the gradient was less than $10^{-5}$, the convergence was fairly stable, and the optimal $\alpha$ did not change much. We therefore adopt $\alpha = 0.499037$, as stated in table \ref{tab:correct_alpha_interacting} as an acceptable value for $\alpha$.\\
+	 \linebreak
+	 A similar analysis is done for $N=50$ in figure \ref{fig:gradient_descent_interactingN50}. Also in this case, the gradient descent method gave a small gradient after $40$ iterations (on the order of $10^{-5}$), and the convergence was relatively stable. Furthermore, the optimal $\alpha$ did not change much. We therefore adapt the value $\alpha=0.494033$ quoted in table \ref{tab:correct_alpha_interacting} as our estimate for $\alpha$.\\
+	 \linebreak
+	 The convergence for $N=100$ was very weak. The gradient stayed above $10^{-3}$ throughout the $40$ iterations, and it varied quite wildly between successive iterations. Furthermore, it was highly sensitive to the starting conditions. Starting with an initial guess of $\alpha=0.3$ gives the $\alpha=0.474419$ shown in table \ref{tab:correct_alpha_interacting}. However, starting with $\alpha=0.49$, gives (after $40$ iterations), $\alpha=0.493261$. Running with this $\alpha$ gives \textbf{ENERGY}. Similarly, running with the same $\alpha$ as for $N=10$ (i.e. $\alpha=0.499037$) gives a local energy of $E_L=253.12 \pm 0.06\ \mathrm{\hbar \omega}$, which thus is slightly lower than for the optimal $\alpha$ found by the gradient descent method. This suggests that the energy is relatively flat close to the minimum. We therefore choose $\alpha=$\textbf{INPUT} as our correct value of $\alpha$, as this has the lowest energy.
+	 
+	 \subsection{The onebody density}\label{sec:Disc_onebody}
+	 
+	 
+	 \section{Conclusion}
 	
 	\subsection{Conclusion}
 	
@@ -892,7 +936,7 @@ Since (\ref{dirac1}) is equal to (\ref{result1}) then (\ref{dirac1}) must also e
 \begin{align}
 \frac{1}{\braket{\Psi_{T}}}\int..\int\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}
 +   \Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-= 2 \langle E_{L}\pdv{\Psi_{T}}{\alpha} \rangle
+= 2 \langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha} \rangle
 \end{align}
 Now differentiating the second expression in (\ref{proddiff}):
 \begin{align}
@@ -918,19 +962,19 @@ use the definition of the expectation value of the local energy and derivative o
 This can also be written as:
 \begin{align}
 -2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \Psi_{T}^{*}\Psi_{T}\left(\frac{1}{\Psi_{T}}\pdv{\Psi_{T}^{*}}{\alpha}\right)\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-= -2\langle E_{L} \rangle \langle \pdv{\Psi}{\alpha}\rangle
+= -2\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle
 \end{align}
 thus:
 \begin{align}
 \bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
-= -2\langle E_{L} \rangle \langle \pdv{\Psi}{\alpha}\rangle
+= -2\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle
 \end{align}
 Combining the first and second expression the derivative of the local energy can
 be expressed as:
 \begin{align}
 \pdv{\langle E_{L} \rangle }{\alpha} =
-2\left(\langle E_{L}\pdv{\Psi_{T}}{\alpha} \rangle -
-\langle E_{L} \rangle \langle \pdv{\Psi}{\alpha}\rangle\right)
+2\left(\langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha} \rangle -
+\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle\right)
 \end{align}
 	\end{appendices}
 \end{document}
