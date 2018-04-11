@@ -5,7 +5,6 @@
 #include "system.h"
 #include "Parameters/parameters.h"
 #include "DataDump/datadump.h"
-//#include "MTLS.h"
 
 
 class Simulation
@@ -16,9 +15,8 @@ public:
     void run(int rank);
     void run(int rank,double alpha);
 
-    double conjugate_gradient(double alpha_0, double b);
+    double gradient_descent(double alpha_0);
     double compute_local_energy_derivative(double alpha);
-    void data_for_derivated();
     void oneBodyDensity(double optimal_alpha, double r_step, double r_min, double r_max);
 private:
     System *system;
