@@ -1,5 +1,6 @@
 # FYS4411 - Computational physics II: Quantum mechanical systems
-Computational Physics II with [Gunnar Lange](https://github.com/gunnarlan), [Aram Salihi](https://github.com/einrone) and [Daniel Heinesen](https://github.com/dulte)
+Computational Physics II with [Daniel Heinesen](https://github.com/dulte), [Gunnar Lange](https://github.com/gunnarlan) and [Aram Salihi](https://github.com/einrone)
+
 # Content
 1. [Project 1 - Bosonic System](https://github.com/dulte/FYS4411/tree/master/Project1)
 	1. [Report](https://github.com/dulte/FYS4411/blob/master/Project1/Report/Project1.pdf)
