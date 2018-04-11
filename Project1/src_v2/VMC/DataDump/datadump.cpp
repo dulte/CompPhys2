@@ -1,17 +1,13 @@
 #include "datadump.h"
 
-
-
 /*
-template<class T>
-DataDump<T>::DataDump(std::string m_location, std::string stamp_location)
-    :DataDump(m_location)
-{
-    stampfile->open(stamp_location,std::ofstream::out);
-    include_stamp = true;
-}*/
+This class is made to make it easy to dump data. By now this class uses a template
+which will accept either double, int or a vector of doubles.
 
+This class is used by simply making an instance which take the name of the file
+you want to contain the data. The constructor can also take the
 
+*/
 
 template<class T>
 void DataDump<T>::push_back(T data_point){
@@ -118,7 +114,6 @@ void DataDump<T>::dump_metadata(std::string m_location){
 template class DataDump<double>;
 template class DataDump<int>;
 template class DataDump<std::string>;
-//template class DataDump<std::vector<int>>;
 template class DataDump<std::vector<double>>;
 
 

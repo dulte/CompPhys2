@@ -27,6 +27,8 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
     int max_j=0;
     double tol=1e-5;
 
+    double step_length = 1;
+
     double gradient_10_steps_ago = 1e6;
 
     gradient_k_prev=compute_local_energy_derivative(x_k);
@@ -37,7 +39,7 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
     while(i<max_iter){
 
 
-        std::cout << "Gradient: "<<gradient_k<<std::endl;
+        std::cout << "Gradient: "<<gradient_k<< " Energy: " << local_energy_current << " Alpha: " << x_k << std::endl;
         s_k=alpha_k*p_k;
         x_k = x_k_prev + s_k;
 
@@ -59,7 +61,7 @@ double Simulation::conjugate_gradient(double alpha_0, double b){
 
 
         if(fabs(gradient_k - gradient_k_prev) > 1e-10){
-            alpha_k = (x_k - x_k_prev)/(gradient_k - gradient_k_prev);
+            alpha_k = step_length*(x_k - x_k_prev)/(gradient_k - gradient_k_prev);
         }
         else{
             std::cout << "Eeeeh" << std::endl;
@@ -202,6 +204,7 @@ void Simulation::run(int rank){
             data.push_back(total_energy/(MC_cycles));
         }
         std::cout << "Energy " << total_energy/(MC_cycles) << std::endl;
+        std::cout << "Acceptance rate: " << (double)system->number_accept/double(MC_cycles) << std::endl;
         total_energy = 0;
     }
     dump.dump_all();
@@ -269,6 +272,8 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
 
     DataDump<std::vector<double>> density_packet("..//output//density.bin");
 
+    DataDump<double> volume_factor_packet("..//output//volume.bin");
+
 
 
 
@@ -287,20 +292,22 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
        // for(int i = 0; i<r_num;i++){
 
 
-        if(Parameters::dimension ==1){
+        /*if(Parameters::dimension ==1){
             volume.push_back(r+r_step-r);
         }
         else if(Parameters::dimension == 2){
             volume.push_back(M_PI*((r+r_step)*(r+r_step) - r*r));
         }
         else{
-            volume.push_back(4./3*M_PI*((r+r_step)*(r+r_step)*(r+r_step) - r*r*r));
-        }
+            //std::cout << "3 dim" << std::endl;
+            volume.push_back((4./3)*M_PI*((r+r_step)*(r+r_step)*(r+r_step) - r*r*r));
+        }*/
     //}
 
+        volume.push_back(4*M_PI*(r+r_step)*(r+r_step)*r_step);
+        volume_factor_packet.push_back(4*M_PI*(r+r_step)*(r+r_step)*r_step);
+
     }
-
-
 
 
 
@@ -339,5 +346,5 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
 
     r_packet.dump_all();
     density_packet.dump_all();
-
+    volume_factor_packet.dump_all();
 }

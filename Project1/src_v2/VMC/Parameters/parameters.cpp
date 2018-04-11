@@ -1,6 +1,21 @@
 #include "parameters.h"
 
 
+/*
+Loads the parameters from a parameter txt file. This class is static, so that the parameters only need to be loaded
+once. The parameters in then retrieved by using Parameters::name_of_variables.
+
+In the txt file the parameters are given simply as
+
+parameter_name parameter_value #Comment
+
+'#' works as a marker for comments (a simple space between the value and comment may work
+but use # to be safe.
+
+The parameter name has to coinside with the names in this class. If unknow name is found in the
+file, or a parameter if not set in the file, an error will be given.
+*/
+
 void Parameters::read_parameters(std::string location){
     std::ifstream infile;
     std::string line;
@@ -152,6 +167,9 @@ void Parameters::read_parameters(std::string location){
 
 
 }
+
+
+
 bool Parameters::MC_cycles_set=false;
 bool Parameters::dimension_set=false;
 bool Parameters::N_set=false;
