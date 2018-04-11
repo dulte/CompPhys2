@@ -35,7 +35,7 @@ int main(int nargs, char *args[])
 
     //Code for using gradient decent to find the optimal alpha, and gets the energy for that alpha
 
-    double optimal_alpha = simulation->conjugate_gradient(0.4, 1.);
+    double optimal_alpha = simulation->gradient_descent(0.4);
     /*std::cout << "Correct a: " << optimal_alpha <<std::endl;
     std::cout << "Running simulation with optimal alpha." << std::endl;
     simulation->run(my_rank,0.494033);//0.499296);*/
