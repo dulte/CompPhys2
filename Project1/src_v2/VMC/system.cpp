@@ -175,8 +175,8 @@ double System::check_acceptance_and_return_energy(int move){
 
     }
 
-    return calculate_energy_interacting();
-    //return get_local_energy();
+    //return calculate_energy_interacting();
+    return get_local_energy();
 
 }
 
