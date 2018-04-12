@@ -308,12 +308,12 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 			\centering
 			\begin{subfigure}{.5\textwidth}
 				\centering
-				\includegraphics[width=.8\linewidth]{../Results/EvoMean.pdf}
+				\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_step_size/EvoMean.pdf}
 				\caption{Mean energy}
 			\end{subfigure}%
 			\begin{subfigure}{.5\textwidth}
 				\centering
-				\includegraphics[width=.8\linewidth]{../Results/EvoStd.pdf}
+				\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_step_size/EvoStd.pdf}
 				\caption{Standard deviation of the energy}
 			\end{subfigure}
 			\caption{Mean energy and standard deviation of the energy as a function of Monte Carlo cycles for various step sizes, $dx$. This was done without importance sampling in three dimensions, using $N=100$, $a=0$ (noninteracting), $\alpha=0.45$, $\omega_z=1$, $\beta=1$, $\omega=1$}\label{fig:find_dx_noimportance}
@@ -326,12 +326,12 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 			\centering
 			\begin{subfigure}{.5\textwidth}
 				\centering
-				\includegraphics[width=.8\linewidth]{../Results/EvoMeanIS.pdf}
+				\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_step_size/EvoMeanIS.pdf}
 				\caption{Mean energy}
 			\end{subfigure}%
 			\begin{subfigure}{.5\textwidth}
 				\centering
-				\includegraphics[width=.8\linewidth]{../Results/EvoStdIS.pdf}
+				\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_step_size/EvoStdIS.pdf}
 				\caption{Standard deviation of the energy}
 			\end{subfigure}
 			\caption{Mean energy and standard deviation of the energy as a function of Monte Carlo cycles for various step sizes, $dx$. This was done with importance sampling in three dimensions, using $N=100$, $a=0$ (noninteracting), $\alpha=0.45$, $\omega_z=1$, $\beta=1$, $\omega=1$}\label{fig:find_dx_importance}
@@ -426,12 +426,12 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 			\centering
 				\begin{subfigure}{1\textwidth}
 					\centering
-					\includegraphics[width=.8\linewidth]{../Results/N100ax20/EvAlphaN100.pdf}
+					\includegraphics[width=.8\linewidth]{../Results/Energy_as_a_function_of_alpha/EvAlphaN100.pdf}
 					\caption{Brute-force sampling}\label{fig:Average_EL_N=100_brute_force}
 				\end{subfigure}
 				\begin{subfigure}{1\textwidth}
 					\centering
-					\includegraphics[width=.8\linewidth]{../Results/N100ax20/EvAlphaN100IS.pdf}
+					\includegraphics[width=.8\linewidth]{../Results/Energy_as_a_function_of_alpha/EvAlphaN100IS.pdf}
 					\caption{Importance sampling}\label{fig:Average_EL_N=100_importance}
 				\end{subfigure}
 			\caption{Local energy for various values of $\alpha$, for $a=0$, $\beta=1$, $\omega=\omega_z=1$, $N=100$ in 3 dimensions using $2^{20}$ Monte Carlo cycles per core. This is done with both brute force and importance sampling.}
@@ -440,7 +440,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 	We do a similar analysis for $N=10$ in the interacting case\footnote{Any higher $N$ was far too slow.}. This gives the plot shown in figure \ref{fig:EL_alpha_N10_interacting} for brute-force sampling.
 			\begin{figure}[ht!]
 				\centering
-				\includegraphics[scale=0.8]{../Results/Alpha_v_EL_Interacting_N10.pdf}
+				\includegraphics[scale=0.8]{../Results/Energy_as_a_function_of_alpha/Alpha_v_EL_Interacting_N10.pdf}
 				\caption{Local energy for various values of $\alpha$, for $a=0.0043$, $\omega=1$, $\omega_z=\beta=2.82843$, $N=10$, 3 dimensions, $2^{20}$ Monte Carlo cycles per core, with 4 cores, and brute force sampling. The error bars are too small to be visible.}\label{fig:EL_alpha_N10_interacting}
 			\end{figure}
 	\subsection{Finding the optimal $\boldsymbol{\alpha}$}
@@ -448,19 +448,19 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 	\pagebreak
 			\begin{figure}[ht!]
 				\centering
-				\includegraphics[scale=0.8]{../Results/E_v_alpha_gradient_noninteracting.pdf}
+				\includegraphics[scale=0.8]{../Results/Finding_the_optimal_alpha/E_v_alpha_gradient_noninteracting.pdf}
 				\caption{Gradient descent for finding the optimal $\alpha$ in the noninteracting case ($a=0$), with $N=10$, $\omega=\omega_z=\beta=1$, 3 dimensions and brute-force sampling. We use a minimum step size, $\epsilon=10^{-6}$, and an accept whenever the gradient is less than $10^{-6}$.}\label{fig:gradient_descent_noninteracting}
 			\end{figure}
 		\begin{figure}[ht!]
 			\centering
 			\begin{subfigure}{.5\textwidth}
 				\centering
-				\includegraphics[width=.8\linewidth]{../Results/E_v_alpha_gradient.pdf}
+				\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_alpha/E_v_alpha_gradient.pdf}
 				\caption{Gradient descent}
 			\end{subfigure}%
 			\begin{subfigure}{.5\textwidth}
 				\centering
-				\includegraphics[width=.8\linewidth]{../Results/E_v_alpha_gradient_zoom.pdf}
+				\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_alpha/E_v_alpha_gradient_zoom.pdf}
 				\caption{Zoomed in version}
 			\end{subfigure}
 			\caption{Gradient descent for finding the optimal $\alpha$ in the interacting case ($a=0.0043$), with $N=10$, $\omega=1$, $\omega_z=\beta=2.82843$, 3 dimensions and brute-force sampling. We use a minimum step size, $\epsilon=10^{-6}$, and an accept whenever the gradient is less than $10^{-6}$. We show also a zoomed-in version of the same plot.}\label{fig:gradient_descent_interactingN10}
@@ -470,12 +470,12 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 					\centering
 					\begin{subfigure}{.5\textwidth}
 						\centering
-						\includegraphics[width=.8\linewidth]{../Results/E_v_alpha_gradientN50.pdf}
+						\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_alpha/E_v_alpha_gradientN50.pdf}
 						\caption{Gradient descent}
 					\end{subfigure}%
 					\begin{subfigure}{.5\textwidth}
 						\centering
-						\includegraphics[width=.8\linewidth]{../Results/E_v_alpha_gradientN50Zoom.pdf}
+						\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_alpha/E_v_alpha_gradientN50Zoom.pdf}
 						\caption{Zoomed in version}
 					\end{subfigure}
 					\caption{Same as figure \ref{fig:gradient_descent_interactingN10} but with $N=50$. }\label{fig:gradient_descent_interactingN50}
@@ -485,12 +485,12 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 			\centering
 			\begin{subfigure}{.5\textwidth}
 				\centering
-				\includegraphics[width=.8\linewidth]{../Results/E_v_alpha_gradientN100.pdf}
+				\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_alpha/E_v_alpha_gradientN100.pdf}
 				\caption{Gradient descent}
 			\end{subfigure}%
 			\begin{subfigure}{.5\textwidth}
 				\centering
-				\includegraphics[width=.8\linewidth]{../Results/E_v_alpha_gradientN100Zoom.pdf}
+				\includegraphics[width=.8\linewidth]{../Results/Finding_the_optimal_alpha/E_v_alpha_gradientN100Zoom.pdf}
 				\caption{Zoomed in version}
 			\end{subfigure}
 			\caption{Same as figure \ref{fig:gradient_descent_interactingN10} but with $N=100$. }\label{fig:gradient_descent_interactingN100}
@@ -528,7 +528,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 	We plot the onebody density for the interacting and noninteracting case in figure \ref{fig:results_onebody} below. We find that the mean of this distribution is at $r=1.123$.
 		\begin{figure}[ht!]
 			\centering
-			\includegraphics[scale=0.8]{../Results/onbody.pdf}
+			\includegraphics[scale=0.8]{../Results/Onebody_density/onebody.pdf}
 			\caption{Radial onebody density for noninteracting ($a=0$) and interacting ($a=0.0043$), using $\omega_z=\omega=\beta=1$, $N=10$ particles in $3$ dimensions, with brute force sampling, running $2^{20}$ Monte Carlo steps.}\label{fig:results_onebody}
 		\end{figure}
 	\section{Discussion}
@@ -562,7 +562,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 	  We expect the distribution to be shifted slightly to the right in the interacting case, as the bosons no longer have to opportunity to be as closely together. This is not immediately obvious from figure \ref{fig:results_onebody}. We therefore rerun the same algorithm, but let $a=0.1$ (i.e. a much larger repulsive potential). The result of this is shown in figure \ref{fig:disc_onebody}. In this case, the repulsive interaction has a much larger effect, shifting the entire probability distribution outwards. This is in agreement with our intuitive picture of the probability distribution.
 	 \begin{figure}[ht!]
 	 	\centering
-	 	\includegraphics[scale=0.8]{../Results/onbodyHighAlpha.pdf}
+	 	\includegraphics[scale=0.8]{../Results/Onebody_density/onebodyHighAlpha.pdf}
 	 	\caption{Same as figure \ref{fig:results_onebody}, but with $a=0.1$.}\label{fig:disc_onebody}
 	 \end{figure}
 	 \pagebreak
