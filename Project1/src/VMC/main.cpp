@@ -42,10 +42,10 @@ int main(int nargs, char *args[])
 
 
     //Runs the simulation for the alpha interval defined in the Parameters class
-    simulation->run(my_rank);
+    //simulation->run(my_rank);
 
     //Finds the onebody density for a given alpha
-    //simulation->oneBodyDensity(0.5,0.05,0.,6.);
+    simulation->oneBodyDensity(0.5,0.05,0.,6.);
 
 
 

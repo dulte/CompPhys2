@@ -147,6 +147,7 @@ void Simulation::run(int rank){
     stampname.append(std::to_string(rank));
     stampname.append(".bin");
 
+    //First filename holdes the main data(energy), while the second filename holdes the stamp(Alphas)
     DataDump<double> dump(filename,stampname);
 
 
