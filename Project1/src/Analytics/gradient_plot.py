@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""
+Plots the results from the gradient descent.
+"""
+
 gradient = np.fromfile("../output/gradient_data.bin",sep=" ")
 alpha = np.fromfile("../output/gradient_stamp.bin",sep=" ")
 

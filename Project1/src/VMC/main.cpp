@@ -35,17 +35,17 @@ int main(int nargs, char *args[])
 
     //Code for using gradient decent to find the optimal alpha, and gets the energy for that alpha
 
-    double optimal_alpha = simulation->gradient_descent(0.4);
+    //double optimal_alpha = simulation->gradient_descent(0.4);
     /*std::cout << "Correct a: " << optimal_alpha <<std::endl;
-    std::cout << "Running simulation with optimal alpha." << std::endl;
-    simulation->run(my_rank,0.494033);//0.499296);*/
+    std::cout << "Running simulation with optimal alpha." << std::endl;*/
+    //simulation->run(my_rank,0.494033);//0.499296);
 
 
     //Runs the simulation for the alpha interval defined in the Parameters class
     //simulation->run(my_rank);
 
     //Finds the onebody density for a given alpha
-    //simulation->oneBodyDensity(0.5,0.05,0.,6.);
+    simulation->oneBodyDensity(0.5,0.05,0.,6.);
 
 
 
