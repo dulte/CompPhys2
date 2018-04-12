@@ -1,6 +1,9 @@
 #include "system.h"
 
-
+/*
+This code runs the heavy-duty computational parts,
+including updating the wavefunction and the energy.
+*/
 System::System()
 {
 
@@ -17,11 +20,11 @@ System::System()
     gen = std::mt19937_64(rd());
     distribution = std::normal_distribution<double>(0.0,1.0);
 
-    h=1e-6;
+    h=1e-6; //Step size for numerical derivative
     number_accept = 0;
 
     if(Parameters::a !=0){
-
+	   //We use some function pointers to avoid some if statements in the functions
            System::wavefunction_function_pointer=&System::update_wavefunction_interacting;
            System::compute_local_energy=&System::get_local_energy_interacting;
 
@@ -39,6 +42,11 @@ System::System()
 }
 
 void System::make_grid(double m_alpha){
+    /*
+    This function initializes everything
+    to prepare for a simulation with variational
+    parameter m_alpha.
+    */
     alpha = m_alpha;
     number_accept = 0;
     //Sets all positions to a random position [-1,1]
@@ -55,6 +63,11 @@ void System::make_grid(double m_alpha){
 }
 
 void System::distribute_particles_interacting(){
+    /*
+    This function distributes the particles
+    in the interacting case, ensuring that none
+    of them start out closer than a from one another.
+    */
     bool safe_distance = false;
     for(int i = 0;i<N;i++){
         safe_distance = false;
@@ -77,6 +90,11 @@ void System::distribute_particles_interacting(){
     }
 }
 void System::distribute_particles_noninteracting(){
+   /*
+   This distribution is easier than the one above,
+   as we do not need to take a minimum distance
+   into account.
+   */
     for(int i = 0;i<N;i++){
         for(int j = 0;j<dimension;j++){
             if(D!=0){
@@ -89,8 +107,11 @@ void System::distribute_particles_noninteracting(){
 }
 
 
-//Updates the distances between the particles
 void System::update(){
+    /*
+    Updates the distance
+    maxtrix after a new move
+    */
     double temp_value = 0;
     for(int i = 0; i<N;i++){
         for(int j = 0;j<i;j++){
@@ -102,13 +123,16 @@ void System::update(){
 
     next_distance = distance;
     if(D!=0){
-        quantum_force(0);
+        quantum_force(0); //Re-initialize quantum force
     }
     update_expectation();
 }
 
 void System::make_move_and_update(const int move){
-    //Makes a random move
+    /*
+    Takes a random move as input and 
+    proposes the new step.
+    */
     if(D!=0){
         quantum_force(move);
     }
@@ -133,6 +157,10 @@ void System::make_move_and_update(const int move){
 }
 
 void System::update_next_distance(int move){
+    /*
+    Updates the next_distance matrix for
+    to use in importance samplinf.
+    */
     double dist = 0;
     for(int i = 0;i<N;i++){
         dist = (next_r.col(i)- next_r.col(move)).norm();
@@ -144,6 +172,9 @@ void System::update_next_distance(int move){
 }
 
 void System::update_expectation(){
+    /*
+    Used for the gradient descent method
+    */
     expectation_derivative=0;
     expectation_derivative_energy=0;
     expectation_local_energy=0;
@@ -153,6 +184,12 @@ void System::update_expectation(){
 }
 
 double System::check_acceptance_and_return_energy(int move){
+    /*
+    Performs the Metropolis test
+    and updates the energy
+    */
+
+
     //Random value [0,1]
     double temp_value = (double)rand()/RAND_MAX;
 
@@ -181,6 +218,9 @@ double System::check_acceptance_and_return_energy(int move){
 
 
 double System::phi_exponant(const Eigen::VectorXd &r){
+    /*
+    Smart way to update wavefunction
+    */
     temp_value = 0;
 
     for(int i = 0;i<dimension;i++){
@@ -198,6 +238,9 @@ double System::phi_exponant(const Eigen::VectorXd &r){
 
 
 double System::f(double dist){
+    /*
+    Computes Jastrow factor
+    */
     double function;
     if(dist <= a){
         function = 0;
@@ -210,14 +253,19 @@ double System::f(double dist){
 }
 
 double System::get_probability_ratio(int move){
+    /*
+    Smart way to compute probability ratio, 
+    which accounts for interacting and importance sampling
+    */
+
     double temp_value = phi_exponant(r.col(move)); //Stores the probability before move
     double temp_value2 = phi_exponant(next_r.col(move)); //Stores the probability of move
     double f_part = 1;
     double green_part = 1;
-    if(a!=0){
+    if(a!=0){ //Interacting if needed
         f_part *= update_wavefunction_interacting_f(move);
     }
-    if(D!=0){
+    if(D!=0){ //Importance sampling if needed
         green_part = greens_function_ratio(move);
 
     }
@@ -226,6 +274,9 @@ double System::get_probability_ratio(int move){
 }
 
 double System::get_wavefunction(){
+    /*
+    Computes the wavefunction (complete)
+    */
     double temp_value = 0; //Stores the exponants of phi
     double f_part = 1;
     Eigen::VectorXd temp_r;
@@ -247,17 +298,26 @@ void System::update_wavefunction(const int move){
 }
 
 void System::update_wavefunction_noninteracting(const int move){
+    /*
+    Smart way to update wavefunction given move
+    */
     wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)));
 
 }
 
 void System::update_wavefunction_interacting(const int move){
+    /*
+    Smart way to update wavefunction given move
+    */
     wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)))*update_wavefunction_interacting_f(move);
 
 }
 
 
 double System::update_wavefunction_interacting_f(const int move){
+    /*
+    Returns the ratio of the jastrow Factor
+    */
     double second_factor_of_psi=1;
     for(int i = 0; i < N; i++){
             if(i != move){
