@@ -60,8 +60,8 @@
 	\maketitle
 	\begin{abstract}
 	\begin{center}
-	We present an investigation into hard-sphere bosons trapped in a harmonic-oscillator like trap, using the same set-up as \cite{DuBois2001}. This system is investigated using a variational Monte Carlo approach, with both the Metropolis and the Metropolis-Hastings algorithm. This is done both with and without an interaction potential between the bosons, and the results are compared to the analytic results and results found by a previous study, found in \cite{Kristiansen2016}, with the error being estimated using blocking. We are able to excellently reproduce the analytic results in the noninteracting case. In the interacting case, in an elliptical harmonic oscillator potential, we find an excellent agreement for 10 particles (0.23\% deviation) but a somewhat poorer agreement for 50 and 100 particles (1.52\% and 2.72\% deviation respectively).
-	Finally, we also plot the onebody density for 10 particles both with and without interaction, and find that it qualitatively fits our picture of the system. The onebody density in the noninteracting case also reproduces the exact answer to within $0.5\%$. All scripts and some of the data used for this project are available at our \href{https://github.com/dulte/FYS4411/}{GIT repository.}\footnote{\url{https://github.com/dulte/FYS4411/}}
+	We present an investigation into hard-sphere bosons trapped in a harmonic-oscillator like trap, using the same set-up as \cite{DuBois2001}. This system is investigated using a variational Monte Carlo approach, with both the Metropolis and the Metropolis-Hastings algorithm. This is done both with and without an interaction potential between the bosons, and the results are compared to the analytic results and results found by a previous study (\cite{Kristiansen2016}), with the error being estimated using blocking. We are able to excellently reproduce the analytic results in the noninteracting case. In the interacting case, in an elliptical harmonic oscillator potential, we find an excellent agreement for 10 particles (0.23\% deviation) but a somewhat poorer agreement for 50 and 100 particles (1.52\% and 2.72\% deviation respectively).
+	Finally, we also plot the onebody density for 10 particles both with and without interaction, and find that it qualitatively fits our picture of the system. The onebody density in the noninteracting case also reproduces the exact answer to within $0.5\%$. All scripts and benchmarks used for this project are available at our \href{https://github.com/dulte/FYS4411/}{GIT repository.}\footnote{\url{https://github.com/dulte/FYS4411/}}
 \end{center}
 	\end{abstract}
 	\newpage
@@ -226,8 +226,8 @@
 	\frac{\partial E_L}{\partial \alpha}(\alpha_n)=2\left(\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}E_L[\alpha_n]\big\rangle-\big\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha}\big\rangle \big\langle E_L[\alpha_n]\big\rangle\right)
 	\end{equation}
 	Where we note that both the local energy and the wavefunction depend on $\alpha$.
-	\subsection{One-body densities}
-	We are interested in investigating the probability of finding a single particle at a distance $r$ from the origin of our system. This is an important quantity, as it can be measured experimentally. We approach this through the concept of the one-body density. The one-body density is defined by:
+	\subsection{Onebody densities}
+	We are interested in investigating the probability of finding a single particle at a distance $r$ from the origin of our system. This is an important quantity, as it can be measured experimentally. We approach this through the concept of the onebody density. The onebody density is defined by:
 	\begin{equation}\label{eq:OneBodyDensity}
 	\rho(\boldsymbol{r_1})=\int d\boldsymbol{r_2}...d\boldsymbol{r_N}|\Psi_T(\boldsymbol{r_1},\boldsymbol{r_2},...,\boldsymbol{r_N})|^2
 	\end{equation}
@@ -296,7 +296,7 @@
 	\linebreak
 	We use an alternative, automatic, approach to estimate when the covariance is small. This is based on comparing our results to a $\chi^2$ distribution, and is described further in \cite{Jonsson2018}.
 	\subsection{Implementing the onebody density}\label{sec:MetOneBody}
-	To compute the one-body density defined by equation \ref{eq:OneBodyDensity}, we must compute the integral in that equation. We show in appendix \ref{ap:approximte_onebody_density} that, if we only consider the radial distribution of the onebody density, this integral can be discretized as:
+	To compute the onebody density defined by equation \ref{eq:OneBodyDensity}, we must compute the integral in that equation. We show in appendix \ref{ap:approximte_onebody_density} that, if we only consider the radial distribution of the onebody density, this integral can be discretized as:
 	\begin{equation}\label{eq:normalize_volume_us}
 		\rho(r_i)\approx \frac{N_i}{4\pi r_i^2 \Delta r}
 		\end{equation}
