@@ -1,2 +1,0 @@
-Average: 250.0
-Time: 43.38s

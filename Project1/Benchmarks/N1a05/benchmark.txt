@@ -1,6 +1,0 @@
-Analytic:
-Average: 0.5
-Time: 1.27s
-Numeric:
-Average: 0.5
-Time: 1.79s
