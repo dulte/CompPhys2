@@ -57,4 +57,4 @@ The last program calculate the local energy and error(by blocking) for given alp
 ```
 python3 data_analytics.py
 ```
-Note: When using the **data_analytics.py**, use *MC_cycles*number of process = 2^n* for some integrer *n>0*. This is because blocking needs a data with such a length.
+Note: When using the **data_analytics.py**, use that *MC_cycles* times *number of process* is on the form *2^n*, for some integrer *n>0*. This is because blocking needs a data with such a length.
