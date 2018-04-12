@@ -139,6 +139,7 @@ void Simulation::run(int rank){
     double total_energy;
     int move = 0;
 
+    //Makes filenames containing the rank of the process
     std::string filename = "..//output//data";
     filename.append(std::to_string(rank));
     filename.append(".bin");
@@ -160,6 +161,8 @@ void Simulation::run(int rank){
 
     for(double a = alpha_min; a < alpha_max; a+=alpha_step){
 
+
+        //Makes a new system with the given alpha
         system->make_grid(a);
         dump.push_back_stamp(a);
         std::cout << "a: " << a << std::endl;
@@ -201,6 +204,7 @@ void Simulation::run(int rank,double alpha){
     double total_energy;
     int move = 0;
 
+    //Makes filenames containing the rank of the process
     std::string filename = "..//output//data";
     filename.append(std::to_string(rank));
     filename.append(".bin");
@@ -233,7 +237,11 @@ void Simulation::run(int rank,double alpha){
     dump.dump_all();
 }
 
-
+/*
+ This function calculates the onebody density by simulating the system, and
+ seeing at which raduis from the origin the newly moved particled is. In the python script,
+ the number of particles is ajusted for.
+*/
 void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min, double r_max){
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -242,26 +250,19 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
     int move = 1;
     double distance_from_origo = 0;
     int bin = 0;
-
-
-
-
-
-    DataDump<double> r_packet("..//output//r_positions.bin");
-
-    DataDump<std::vector<double>> density_packet("..//output//density.bin");
-
-    DataDump<double> volume_factor_packet("..//output//volume.bin");
-
-
-
     int r_num = (int)(r_max - r_min)/(r_step);
-
-    std::cout << r_num << " " << (r_max - r_min)/(r_step) << std::endl;
 
     std::vector<double> density;
     std::vector<double> rs;
     std::vector<double> volume;
+
+    DataDump<double> r_packet("..//output//r_positions.bin");
+    DataDump<std::vector<double>> density_packet("..//output//density.bin");
+    DataDump<double> volume_factor_packet("..//output//volume.bin");
+
+
+
+
     for(double r = r_min;r<=r_max;r+=r_step){
         rs.push_back(r);
         density.push_back(0);
@@ -270,10 +271,7 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
         //Makes the volume element
         volume.push_back(4*M_PI*(r+r_step)*(r+r_step)*r_step);
         volume_factor_packet.push_back(4*M_PI*(r+r_step)*(r+r_step)*r_step);
-
     }
-
-
 
 
     r_packet.push_back(r_min);
@@ -282,14 +280,16 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
     r_packet.push_back(r_step);
 
 
-
-
     system->make_grid(optimal_alpha);
 
     for(int i = 0;i<MC_cycles;i++){
+
+        //Makes a move, and check its acceptance
         move = static_cast<int>(distribution(gen));
         system->make_move_and_update(move);
         system->check_acceptance_and_return_energy(move);
+
+        //Calculates the distance from the origo
         distance_from_origo = system->r.col(move).norm();
 
         if(distance_from_origo > r_max){
@@ -297,9 +297,10 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
             exit(1);
         }
 
+        //Calulates the bin where the particles is, and updates the density array
         bin = (int)r_num*distance_from_origo/r_max;
-
         density[bin] += 1./(MC_cycles*volume[bin]);
+
     }
 
     density_packet.push_back(density);
