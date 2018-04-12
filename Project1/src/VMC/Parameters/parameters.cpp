@@ -100,6 +100,11 @@ void Parameters::read_parameters(std::string location){
             D=variable;
             D_set=true;
         }
+        else if(name == "numerical"){
+            numerical=variable;
+            numerical_set=true;
+        }
+
 
         else{
             std::cout << "Unknonw Variable found: " << name << std::endl;
@@ -164,6 +169,10 @@ void Parameters::read_parameters(std::string location){
         std::cout << "D not set!" << std::endl;
         exit(EXIT_FAILURE);
     }
+    else if(!numerical_set){
+        std::cout << "numerical not set!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
 
 }
@@ -182,6 +191,7 @@ bool Parameters::omega_z_set=false;
 bool Parameters::a_set=false;
 bool Parameters::dx_set=false;
 bool Parameters::D_set=false;
+bool Parameters::numerical=false;
 
 int Parameters::MC_cycles = 0;
 int Parameters::dimension=0;
@@ -195,6 +205,7 @@ double Parameters::omega_z = 0;
 double Parameters::a = 0;
 double Parameters::dx=0;
 double Parameters::D=0;
+bool Parameters::numerical_set=false;
 
 
 
