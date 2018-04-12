@@ -341,7 +341,7 @@ double System::get_local_energy(){
     return (this->*compute_local_energy)();
 }
 
-
+//Returns the local energy. Does also compute the derivative of E_L used in the gradien descent.
 double System::get_local_energy_noninteracting(){
         double total_energy = 0;
         double temp_value = 0;
@@ -389,17 +389,18 @@ double System::get_local_energy_noninteracting(){
 
     return temp_value;
 }
-
+//u' . This assumes the distance between particles is more than a because of the placement.
 double System::udiv(int idx1,int idx2){
     return a/(distance(idx1,idx2)*distance(idx1,idx2) - a*distance(idx1,idx2));;
     }
 
+//u''
 double System::udivdiv(int idx1,int idx2){
     return (a*a - 2*a*distance(idx1,idx2))/(
                 (distance(idx1,idx2)*distance(idx1,idx2)-
                  a*distance(idx1,idx2))*(distance(idx1,idx2)*distance(idx1,idx2)-a*distance(idx1,idx2)));}
 
-
+//Returns the horrible local energy for interacting... Does also compute the derivative of E_L
 double System::get_local_energy_interacting(){
     double sec_fac = 0;
     double trd_fac = 0;
@@ -491,6 +492,7 @@ double System::get_local_energy_interacting(){
     return temp_value;
 }
 
+//Computes the quantum force
 void System::quantum_force(int move){
     double grad_value = 0;
     double grad_value_new = 0;
@@ -528,7 +530,7 @@ void System::quantum_force(int move){
 
 }
 
-
+//Returns the ratio of the green functions
 double System::greens_function_ratio(int move)
 {
     double value=0;
@@ -542,6 +544,7 @@ double System::greens_function_ratio(int move)
 }
 
 
+//Calculates the energy numerically. Does NOT calculate the derivative of E_L
 double System::calculate_energy_numerically(){
     double wavefunction_value_plus = 0;
     double wavefunction_value_minus = 0;
