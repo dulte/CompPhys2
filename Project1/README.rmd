@@ -1,12 +1,12 @@
 # Project 1
 
-Solving Interacting Quantum System in Harmonic Oscillator Potential.
+Solving a system of bosons in a Harmonic Oscillator Potential, with and without interaction.
 
 ## Content
 ### 1: [Src](https://github.com/dulte/FYS4411/tree/master/Project1/src)
-This part contains the sorce code for the solver. All the choices for the different systems are made in the parameters file (TODO). Data about the local energies are dumped in an output folder (in case this folder does not exist, just make it, and everything should work).
+This part contains the sorce code for the solver. All the choices for the different systems are made in the parameters file. Data about the local energies are dumped in an output folder (in case this folder does not exist, make it and everything should work).
 
-This is a diagram of the class hierarchy (TODO)
+There 
 
 
 ### 2 Analytics

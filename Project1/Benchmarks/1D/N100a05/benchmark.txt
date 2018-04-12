@@ -1,6 +1,6 @@
 Analytic:
 Average: 50.0
-Time: 2.08s
+Time: 2.42s
 Numerical:
 Average:  50.000712922275
-Time: 401.736s
+Time: 446.83s
