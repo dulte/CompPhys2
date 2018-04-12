@@ -89,12 +89,16 @@ double Simulation::compute_local_energy_derivative(double alpha){
     total_energy = 0;
     int move = 0;
     double local_energy_derivative=0;
+
+    //This lowers the number of MC step by a factor 100.
+    //This is done because we dont need as many steps, and to make this go faster.
     int fast_MC_cycles = static_cast<int>(MC_cycles/100.);
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
     std::uniform_real_distribution<double> distribution(0,N);
 
+    //A simple simulation for the given alpha
     system->make_grid(alpha);
     for(int i = 0;i<fast_MC_cycles;i++){
         energy = 0;
