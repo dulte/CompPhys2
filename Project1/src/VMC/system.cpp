@@ -173,9 +173,13 @@ double System::check_acceptance_and_return_energy(int move){
         next_distance.row(move) = distance.row(move);
 
     }
+    if(is_numerical){
+        return calculate_energy_numerically();
+    }
+    else{
+        return get_local_energy();
+    }
 
-    //return calculate_energy_numerically();
-    return get_local_energy();
 
 }
 
