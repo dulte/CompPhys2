@@ -53,12 +53,16 @@
 \lstset{breaklines}
 \title{FYS4411 - Project 1\\
 	Variational Monte Carlo}
-\author{Daniel Heinesen, Gunnar Lange \& Aram Salihi}
+\author{Daniel Heinesen$^1$, Gunnar Lange$^2$ \& Aram Salihi$^2$\\
+	\small $^1$Department of Theoretical Astrophysics, University of Oslo, N-0316 Oslo, Norway\\
+	\small $^2$Department of Physics, University of Oslo, N-0316 Oslo, Norway}
 \begin{document}
 	\maketitle
 	\begin{abstract}
-	We present an investigation into hard-sphere bosons trapped in a harmonic-oscillator like trap, using the same set-up as \cite{DuBois2001}. This system is investigated using a variational Monte Carlo approach, with both the Metropolis and the Metropolis-Hastings algorithm. This is done both with and without an interaction potential between the bosons, and the results are compared to the analytic results and results found by a previous study (\cite{Kristiansen2016}), with the error being estimated using blocking. We are able to excellently reproduce the analytic results in the noninteracting case. In the interacting case, in an elliptical harmonic oscillator potential, we find an excellent agreement for 10 particles (0.23\% deviation) but a somewhat poorer agreement for 50 and 100 particles (1.52\% and 2.72\% deviation respectively).
+	\begin{center}
+	We present an investigation into hard-sphere bosons trapped in a harmonic-oscillator like trap, using the same set-up as \cite{DuBois2001}. This system is investigated using a variational Monte Carlo approach, with both the Metropolis and the Metropolis-Hastings algorithm. This is done both with and without an interaction potential between the bosons, and the results are compared to the analytic results and results found by a previous study, found in \cite{Kristiansen2016}, with the error being estimated using blocking. We are able to excellently reproduce the analytic results in the noninteracting case. In the interacting case, in an elliptical harmonic oscillator potential, we find an excellent agreement for 10 particles (0.23\% deviation) but a somewhat poorer agreement for 50 and 100 particles (1.52\% and 2.72\% deviation respectively).
 	Finally, we also plot the onebody density for 10 particles both with and without interaction, and find that it qualitatively fits our picture of the system. The onebody density in the noninteracting case also reproduces the exact answer to within $0.5\%$. All scripts and some of the data used for this project are available at our \href{https://github.com/dulte/FYS4411/}{GIT repository.}\footnote{\url{https://github.com/dulte/FYS4411/}}
+\end{center}
 	\end{abstract}
 	\newpage
 	\tableofcontents
@@ -293,7 +297,7 @@
 	We use an alternative, automatic, approach to estimate when the covariance is small. This is based on comparing our results to a $\chi^2$ distribution, and is described further in \cite{Jonsson2018}.
 	\subsection{Implementing the onebody density}\label{sec:MetOneBody}
 	To compute the one-body density defined by equation \ref{eq:OneBodyDensity}, we must compute the integral in that equation. We show in appendix \ref{ap:approximte_onebody_density} that, if we only consider the radial distribution of the onebody density, this integral can be discretized as:
-	\begin{equation}
+	\begin{equation}\label{eq:normalize_volume_us}
 		\rho(r_i)\approx \frac{N_i}{4\pi r_i^2 \Delta r}
 		\end{equation}
 		Where $N_i$ is the number of particles in the spherical shell with radius $r_i$ to $r_i+\Delta r$. Thus, to compute the onebody density, we run our Monte Carlo simulation and check in which shell the particle that we move at every step is located. We also check numerically that the normalization is correct (i.e. that the area under the curve equals the total number of particles).
@@ -559,27 +563,43 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 	 \subsection{The onebody density}\label{sec:Disc_onebody}
 	 We show the radial onebody density in figure \ref{fig:results_onebody}. Interpreting this as the probability to find a particle at a certain distance from the origin, shows that the probability is highest a little way out from the origin, and rapidly drops to zero far from the origin. This corresponds to our intuition in the noninteracting system, as we place our bosons a certain distance from the origin initially, and as they do not interact, the spherical potential should lead to a distribution closes to the origin. We also note that the mean of our distribution is at $1.123$, whereas we expected the mean to be at $2/\sqrt{2}\approx 1.128$ (according to appendix \ref{ap:Expectation_value_onebody}). These values are within $0.5\%$ of one another, and are thus in excellent agreement.\\
 	 \linebreak
-	  We expect the distribution to be shifted slightly to the right in the interacting case, as the bosons no longer have to opportunity to be as closely together. This is not immediately obvious from figure \ref{fig:results_onebody}. We therefore rerun the same algorithm, but let $a=0.1$ (i.e. a much larger repulsive potential). The result of this is shown in figure \ref{fig:disc_onebody}. In this case, the repulsive interaction has a much larger effect, shifting the entire probability distribution outwards. This is in agreement with our intuitive picture of the probability distribution.
+	  We expect the distribution to be shifted slightly to the right in the interacting case, as the bosons no longer have to opportunity to be as closely together. This is not immediately obvious from figure \ref{fig:results_onebody}. We therefore rerun the same algorithm, but let $a=0.1$ (i.e. a much larger repulsive potential). The result of this is shown in figure \ref{fig:disc_onebody}. In this case, the repulsive interaction has a much larger effect, shifting the entire probability distribution outwards. This is in agreement with our intuitive picture of the probability distribution.\\
 	 \begin{figure}[ht!]
 	 	\centering
 	 	\includegraphics[scale=0.8]{../Results/Onebody_density/onebodyHighAlpha.pdf}
 	 	\caption{Same as figure \ref{fig:results_onebody}, but with $a=0.1$.}\label{fig:disc_onebody}
 	 \end{figure}
-	 \pagebreak
+	 \newpage
+	 \noindent
+	 It was suggested to us by Alfred Alocias Mariadason\footnote{Department of Physics, University of Oslo, N-0316 Oslo, Norway}, that one could also normalize the onebody density by the volume of the spherical shell, i.e:
+	 \begin{equation}\label{eq:normalize_volume_alocias}
+	 V_i=\frac{4}{3}\pi (r_i^3-r_{i-1}^3)
+	 \end{equation} 
+	 As this makes more intuitive sense. The probability distribution with this normalization is shown in figure \ref{fig:disc_onebody_alocias}. This figure, however, does not make much intuitive sense, as the maximum is almost exactly at the origin, and has a very different shape then figure \ref{fig:results_onebody}. As the distribution in figure \ref{fig:results_onebody} reproduced the expected value of our distribution (according to appendix \ref{ap:Expectation_value_onebody}), we choose to implement the normalization given by equation \ref{eq:normalize_volume_us}.
+	 	 \begin{figure}[ht!]
+	 	 	\centering
+	 	 	\includegraphics[scale=0.8]{../Results/Onebody_density/onebodyFullVolume.pdf}
+	 	 	\caption{Same as figure \ref{fig:results_onebody}, but instead of normalizing the volumes according to equation \ref{eq:normalize_volume_us}, we normalize according to equation \ref{eq:normalize_volume_alocias}.}\label{fig:disc_onebody_alocias}
+	 	 \end{figure}
+	 	 \pagebreak
 	 \section{Conclusion}
 	\subsection{Conclusion}
-	We have investigated a system of bosons in a harmonic-oscillator type trap with and without interaction. This investigation is done by using a parallelized variational Monte Carlo code. We choose a class of trial wavefunctions that are in agreement with our physical intuition of the system, and for which we can compute an exact expression for the local energy.\\
+	We have investigated a system of bosons in a harmonic-oscillator type trap with and without interaction. This investigation is done by using a parallelized variational Monte Carlo code. We choose a class of trial wavefunctions that are in agreement with our physical intuition of the system, and for which we can compute an exact expression for the local energy. We estimate the errors using blocking\\
 	\linebreak
-	We find an excellent agreement with analytic results in the noninteracting case, as we are able to reproduce the expected energies, and our variational method gives a minimum energy at the expected value of the variational parameter. We perform a similar analysis in the interacting case. Here, the results are less unequivocal. We are able to attain results that seem reasonable for 10 and 50 bosons, but the results for 100 bosons are somewhat doubtful, as our minimization method was unable to correctly probe the relatively flat energy landscape for $N=100$.  
+	We find an excellent agreement with analytic results in the noninteracting case, as we are able to reproduce the expected energies, and our variational method gives a minimum energy at the expected value of the variational parameter. We perform a similar analysis in the interacting case. Here, the results are less unequivocal. We are able to attain results that seem reasonable for 10 bosons (within $0.23$\% of our expected value) and 50 bosons (1.52\% discrepancy) but the results for 100 bosons are somewhat more doubtful (2.72\% discrepancy). This is most likely due to a relatively  flat energy landscape around the minimum,, which our minimization method was unable to correctly probe.\\
+	\linebreak
+	Finally, we also investigated the onebody density, which is interpreted as the probability to find the particle at a certain distance $r$ from the origin. We find that this onebody density reproduces the mean value of the probability distribution in the noninteracting case within $0.5\%$. In the interacting case, the difference is barely visible at our chosen strength of the interaction potential (i.e. radii of the bosons). However, increasing this  radius, however, shows that the probability distribution shifts outwards (i.e. the average distance from the origin is larger) when interaction is included, as expected.
 	
 	\subsection{Outlook}
 	There is significant future work still to be done. It would be particularly interesting to implement a better minimization method (such as conjugate gradient) to more closely investigate the energy landscape around $\alpha=0.5$ in the interacting system with $100$ particles.\\
 	\linebreak
 	It would also be very interesting to investigate this system for a larger number of particles, to see how the energy changes. Another extension of these results would be to replace bosons by fermions, to see how the energy changes.\\
 	\linebreak
-	Finally, an additional point of interest would be to check whether or not the onebody density in the noninteracting case actually corresponds to the exact answer. This answer may be calculated, but we have not done so here, for a lack of time.
+	Finally, an additional point of interest would be to check whether or not the onebody density in the noninteracting case actually corresponds to the exact answer. This answer may be calculated, but we have not done so here, for a lack of time.\\
+	\linebreak
 	\bibliographystyle{apalike}
 	\bibliography{Project1}
+	\pagebreak
 	\begin{appendices}
 		\section{Analytic expression for the local energy and quantum force}\label{ap:analytic_expression_for_the_local_energy_and_quantum_force}
 		\paragraph{First derivative:}
