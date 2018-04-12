@@ -8,6 +8,11 @@ import pandas as pd
 
 
 def read_parameters(folder):
+    """
+    Take the folder where the parameter file is found, and returns
+    a dictionary with the name of the variables as keys,
+    and the value of parameter as the value.
+    """
     parameters = {}
     with open(folder+"metadata.txt") as f:
         for line in f:
@@ -21,7 +26,21 @@ def read_parameters(folder):
     return parameters
 
 class Analytics:
-    def __init__(self,folder,num_proc=1,flatten=False):
+    """
+    This class does the main work of the Statistics.
+    Given a folder where the data is found, it will load them into arrays.
+    The flatten parameter decides if the data from the different cores are
+    placed squentially in the data array and processed as one long data array,
+    or side by side and process individually. Flatten = True is the default.
+
+    It is important that the number of processes are correct. If to number
+    given to the class is lower than the actual number used, not all the data
+    is used. But if the number is higher, the program will crash!
+
+
+    """
+
+    def __init__(self,folder,num_proc=1,flatten=True):
         self.folder = folder
         self.num_proc = num_proc
         self.parameters = read_parameters(folder)
@@ -31,10 +50,15 @@ class Analytics:
 
         self.do_statistics(flatten)
 
+        self.plot_average()
+
 
 
 
     def read_stamp_data(self):
+        """
+        Reads the alpha values used for simulations
+        """
         #Most of this is reduntant, since all the simulations use the same alpahs
         #But it is added just in case
         self.num_alphas = len(np.fromfile((self.folder + "stamp0.bin"),sep=" "))
@@ -70,6 +94,10 @@ class Analytics:
 
 
     def do_statistics(self,flatten=False):
+        """
+        This does the blocking on the data. This is done way to complicated,
+        but works very well.
+        """
         if flatten:
             self.meta_average = np.zeros(self.num_alphas)
             self.meta_error = np.zeros(self.num_alphas)
@@ -104,6 +132,10 @@ class Analytics:
                 self.meta_error = np.copy(self.errors)
 
     def plot_average(self):
+        """
+        Plots the average per alpha as a errorbar plot, together with
+        the error of each average.
+        """
         sns.set_style("darkgrid")
         if self.num_proc != 1:
             alphas = self.stamps[:,0]
@@ -122,6 +154,11 @@ class Analytics:
 
 
 class SingleAlphaAnalytics:
+    """
+    Does the same as the above class, but only for one value of alpha.
+    And instead of plotting the result, it simply prints the average and
+    error.
+    """
     def __init__(self,folder,num_proc=1):
         self.folder = folder
         self.num_proc = num_proc
@@ -158,6 +195,11 @@ class SingleAlphaAnalytics:
 
 
 class getVariance:
+    """
+    Is is an ad hoc made class to get the Evolving variance of different data,
+    with different dx(dt). This is in no way standarized, so to get it to work
+    the data has to be in files with the same names as in the init.
+    """
     def __init__(self,folder):
         self.folder = folder
         self.parameters = read_parameters(folder)
@@ -197,6 +239,11 @@ class getVariance:
 
 
 def block(x):
+    """
+    The blocking function made by Marius. It is made so to give an error if
+    the number if MC cycles times the number of processes are not on the form
+    2^n.
+    """
     # preliminaries
     n = len(x);
     if abs(np.log2(n) - int(np.log2(n))) > 1e-5:
@@ -238,9 +285,12 @@ def block(x):
     return ans
 
 if __name__ == '__main__':
-    an = Analytics("../output/",1,flatten=True)
-    an.plot_average()
 
+    """Used to analyze a range of alphas"""
+    an = Analytics("../output/",1,flatten=True)
+
+    """Used to analyze a single alpha"""
     #an = SingleAlphaAnalytics("../output/",4)
 
+    """Used to get the variance"""
     #an = getVariance("../output/varIS/")
