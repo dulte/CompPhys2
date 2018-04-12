@@ -823,6 +823,145 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 		\begin{align}
 		\boldsymbol{F}_{i} = -4\alpha\boldsymbol{Q}_{i}
 		\end{align}
+		\section{Finding the derivative of the local energy}\label{ap:derivative_of_local_energy}
+		The local energy, $E_L$ is given by:
+		\begin{equation}
+		E_L=\langle \Psi_T | H| \Psi_T \rangle
+		\end{equation}
+		We now want to find the derivative of the expectation value of the local energy $\langle E_{L}\rangle$
+		with respect to the variational parameter $\alpha$. Before we do that we must normalize the wavefunction:
+		\begin{align}
+		\ket{\Psi_{T}} = \frac{\ket{\Psi_{T}}}{\sqrt{\braket{\Psi_{T}}}}
+		\end{align}
+		The expectation value of the local energy is then:
+		\begin{align}
+		\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}E_{L}\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
+		\end{align}
+		Notice that can be written as:
+		\begin{align}
+		\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}E_{L}\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
+		= \frac{1}{\braket{\Psi_{T}}}\int..\int \Psi_{T}^{*}E_{L}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\end{align}
+		Using the definition of $E_{L}$ and we know that the wavefunction is real, we get that:
+		\begin{align}
+		\langle E_{L} \rangle = \frac{1}{\braket{\Psi_{T}}}\int..\int \Psi_{T}^{*}\left(\frac{1}{\Psi_{T}}H\Psi_{T}\right)\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		= \frac{1}{\braket{\Psi_{T}}}\int..\int H\Psi_{T}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\end{align}
+		Thus this can be written as:
+		\begin{align}
+		\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
+		\end{align}
+		By using the product rule and differentiating this with respect to $\alpha$,
+		we will get:
+		\begin{align}
+		\pdv{\langle E_{L} \rangle }{\alpha} = \frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
+		+ \bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
+		\label{proddiff}
+		\end{align}
+		The first expression is:
+		\begin{align}
+		\frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
+		=
+		\frac{1}{\braket{\Psi_{T}}}\pdv{\alpha}\int..\int\Psi_{T}^{*}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\end{align}
+		Taking the derivative into the integral and apply the product rule, we will obtain:
+		\begin{align}
+		\frac{1}{\braket{\Psi_{T}}}\int..\int\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}
+		+   \Psi_{T}^{*}\pdv{H}{\alpha}\Psi_{T}
+		+   \Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\end{align}
+		Since the hamiltonian does not depend on $\alpha$ we have:
+		\begin{align}
+		\frac{1}{\braket{\Psi_{T}}}\int..\int\underbrace{\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}}_{I}
+		+   \underbrace{\Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}}_{II}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\end{align}
+		We now wish to include the local energy in the integral, to do this we must
+		do some algebra. Consider the first expression ($I$):
+		\begin{align}
+		\frac{1}{\braket{\Psi_{T}}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\end{align}
+		By dividing and multiplying with $\Psi_{T}^{*}$ and $\Psi_{T}$ on the left and right for the
+		hamiltonian operator, we can write $I$ as:
+		\begin{align}
+		\begin{split}
+		\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\frac{\Psi_{T}}{\Psi_{T}}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		=
+		\\
+		\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{|\Psi_{T}|^{2}}{\Psi_{T}}\pdv{\Psi_{T}^{*}}{\alpha}E_{L}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\\
+		= \langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}\rangle
+		\label{result1}
+		\end{split}
+		\end{align}
+		Expression (II) is more trickier to handle, since we know that the hamiltionian
+		operator is hermitian and the wavefunction is real, we know that:
+		\begin{align}
+		\bra{a}H\ket{b}^{*} = \bra{b}H\ket{a}
+		\end{align}
+		We will now write expression (I) and (II) in Dirac notation. Expression (I) will
+		look like:
+		\begin{align}
+		\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		= \bra{\Psi_{T}}\frac{1}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}H\ket{\Psi_{T}}
+		\label{dirac1}
+		\end{align}
+		Expression (II) will look like:
+		\begin{align}
+		\frac{1}{\braket{\Psi_{T}}}\int..\int\Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\frac{\Psi_{T}}{\Psi_{T}}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		= \bra{\Psi_{T}}H\pdv{\Psi_{T}}{\alpha}\frac{1}{\Psi_{T}}\ket{\Psi_{T}}
+		\label{dirac2}
+		\end{align}
+		Notice that (\ref{dirac1}) and (\ref{dirac2}) are just the conjugate of each oher, thus:
+		\begin{align}
+		\bra{\Psi_{T}}H\pdv{\Psi_{T}}{\alpha}\frac{1}{\Psi_{T}}\ket{\Psi_{T}}^{*}
+		=
+		\bra{\Psi_{T}}\frac{1}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}H\ket{\Psi_{T}}
+		\end{align}
+		Since (\ref{dirac1}) is equal to (\ref{result1}) then (\ref{dirac1}) must also equal the result from
+		(\ref{result1}). Thus:
+		\begin{align}
+		\frac{1}{\braket{\Psi_{T}}}\int..\int\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}
+		+   \Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		= 2 \langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha} \rangle
+		\end{align}
+		Now differentiating the second expression in (\ref{proddiff}):
+		\begin{align}
+		\bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
+		= -\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\pdv{\braket{\Psi_{T}}}{\alpha}
+		\end{align}
+		Writing the last expression as an integral:
+		\begin{align}
+		-\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\pdv{\braket{\Psi_{T}}}{\alpha}
+		= -\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T} +
+		\Psi_{T}^{*}\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\end{align}
+		we clearly see that:
+		\begin{align}
+		-\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T}
+		+
+		\Psi_{T}^{*}\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		=
+		-2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		\end{align}
+		We will now divide with $\frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}$,
+		use the definition of the expectation value of the local energy and derivative of the wavefunction with respect to $\alpha$,
+		This can also be written as:
+		\begin{align}
+		-2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \Psi_{T}^{*}\Psi_{T}\left(\frac{1}{\Psi_{T}}\pdv{\Psi_{T}^{*}}{\alpha}\right)\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
+		= -2\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle
+		\end{align}
+		thus:
+		\begin{align}
+		\bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
+		= -2\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle
+		\end{align}
+		Combining the first and second expression the derivative of the local energy can
+		be expressed as:
+		\begin{align}
+		\pdv{\langle E_{L} \rangle }{\alpha} =
+		2\left(\langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha} \rangle -
+		\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle\right)
+		\end{align}
 		\section{The dimensionless Hamiltonian}\label{ap:dimensionless_hamiltonian}
 		We aim to demonstrate that the Hamiltonian in equation \ref{eq:general_Hamiltonian} is equivalent to the Hamiltonian shown in equation \ref{eq:Hamiltonian_dimensionless} under the coordinate transformation:
 		\begin{equation}
@@ -885,144 +1024,5 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 		\begin{equation}
 		\langle r \rangle =\pi^{-3/2}\int_0^{2\pi}\int_0^{\pi} \int_0^{\infty}d\phi d\theta dr\ r^3\sin \theta \exp (-r^2)=\frac{2}{\sqrt{\pi}}\approx 1.128
 		\end{equation}
-		\section{Finding the derivative of the local energy}\label{ap:derivative_of_local_energy}
-		The local energy, $E_L$ is given by:
-		\begin{equation}
-		E_L=\langle \Psi_T | H| \Psi_T \rangle
-		\end{equation}
-We now want to find the derivative of the expectation value of the local energy $\langle E_{L}\rangle$
-with respect to the variational parameter $\alpha$. Before we do that we must normalize the wavefunction:
-\begin{align}
-\ket{\Psi_{T}} = \frac{\ket{\Psi_{T}}}{\sqrt{\braket{\Psi_{T}}}}
-\end{align}
-The expectation value of the local energy is then:
-\begin{align}
-\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}E_{L}\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
-\end{align}
-Notice that can be written as:
-\begin{align}
-\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}E_{L}\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
-= \frac{1}{\braket{\Psi_{T}}}\int..\int \Psi_{T}^{*}E_{L}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\end{align}
-Using the definition of $E_{L}$ and we know that the wavefunction is real, we get that:
-\begin{align}
-\langle E_{L} \rangle = \frac{1}{\braket{\Psi_{T}}}\int..\int \Psi_{T}^{*}\left(\frac{1}{\Psi_{T}}H\Psi_{T}\right)\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-= \frac{1}{\braket{\Psi_{T}}}\int..\int H\Psi_{T}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\end{align}
-Thus this can be written as:
-\begin{align}
-\langle E_{L} \rangle = \frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}}
-\end{align}
-By using the product rule and differentiating this with respect to $\alpha$,
-we will get:
-\begin{align}
-\pdv{\langle E_{L} \rangle }{\alpha} = \frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
-+ \bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
-\label{proddiff}
-\end{align}
-The first expression is:
-\begin{align}
-\frac{1}{\braket{\Psi_{T}}}\pdv{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\alpha}
-=
-\frac{1}{\braket{\Psi_{T}}}\pdv{\alpha}\int..\int\Psi_{T}^{*}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\end{align}
-Taking the derivative into the integral and apply the product rule, we will obtain:
-\begin{align}
-\frac{1}{\braket{\Psi_{T}}}\int..\int\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}
-+   \Psi_{T}^{*}\pdv{H}{\alpha}\Psi_{T}
-+   \Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\end{align}
-Since the hamiltonian does not depend on $\alpha$ we have:
-\begin{align}
-\frac{1}{\braket{\Psi_{T}}}\int..\int\underbrace{\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}}_{I}
-+   \underbrace{\Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}}_{II}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\end{align}
-We now wish to include the local energy in the integral, to do this we must
-do some algebra. Consider the first expression ($I$):
-\begin{align}
-\frac{1}{\braket{\Psi_{T}}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\end{align}
-By dividing and multiplying with $\Psi_{T}^{*}$ and $\Psi_{T}$ on the left and right for the
-hamiltonian operator, we can write $I$ as:
-\begin{align}
-\begin{split}
-\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\frac{\Psi_{T}}{\Psi_{T}}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-=
-\\
-\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{|\Psi_{T}|^{2}}{\Psi_{T}}\pdv{\Psi_{T}^{*}}{\alpha}E_{L}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\\
-= \langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}\rangle
-\label{result1}
-\end{split}
-\end{align}
-Expression (II) is more trickier to handle, since we know that the hamiltionian
-operator is hermitian and the wavefunction is real, we know that:
-\begin{align}
-\bra{a}H\ket{b}^{*} = \bra{b}H\ket{a}
-\end{align}
-We will now write expression (I) and (II) in Dirac notation. Expression (I) will
-look like:
-\begin{align}
-\frac{1}{\braket{\Psi_{T}}}\int..\int \frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-= \bra{\Psi_{T}}\frac{1}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}H\ket{\Psi_{T}}
-\label{dirac1}
-\end{align}
-Expression (II) will look like:
-\begin{align}
-\frac{1}{\braket{\Psi_{T}}}\int..\int\Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\frac{\Psi_{T}}{\Psi_{T}}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-= \bra{\Psi_{T}}H\pdv{\Psi_{T}}{\alpha}\frac{1}{\Psi_{T}}\ket{\Psi_{T}}
-\label{dirac2}
-\end{align}
-Notice that (\ref{dirac1}) and (\ref{dirac2}) are just the conjugate of each oher, thus:
-\begin{align}
-\bra{\Psi_{T}}H\pdv{\Psi_{T}}{\alpha}\frac{1}{\Psi_{T}}\ket{\Psi_{T}}^{*}
-=
-\bra{\Psi_{T}}\frac{1}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha}H\ket{\Psi_{T}}
-\end{align}
-Since (\ref{dirac1}) is equal to (\ref{result1}) then (\ref{dirac1}) must also equal the result from
-(\ref{result1}). Thus:
-\begin{align}
-\frac{1}{\braket{\Psi_{T}}}\int..\int\pdv{\Psi_{T}^{*}}{\alpha}H\Psi_{T}
-+   \Psi_{T}^{*}H\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-= 2 \langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha} \rangle
-\end{align}
-Now differentiating the second expression in (\ref{proddiff}):
-\begin{align}
-\bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
-= -\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\pdv{\braket{\Psi_{T}}}{\alpha}
-\end{align}
-Writing the last expression as an integral:
-\begin{align}
--\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\pdv{\braket{\Psi_{T}}}{\alpha}
-= -\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T} +
-\Psi_{T}^{*}\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\end{align}
-we clearly see that:
-\begin{align}
--\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T}
-+
-\Psi_{T}^{*}\pdv{\Psi_{T}}{\alpha}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-=
--2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \pdv{\Psi_{T}^{*}}{\alpha}\Psi_{T}\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-\end{align}
-We will now divide with $\frac{\Psi_{T}^{*}}{\Psi_{T}^{*}}$,
-use the definition of the expectation value of the local energy and derivative of the wavefunction with respect to $\alpha$,
-This can also be written as:
-\begin{align}
--2\frac{\bra{\Psi_{T}}H\ket{\Psi_{T}}}{\braket{\Psi_{T}}^{2}}\int..\int \Psi_{T}^{*}\Psi_{T}\left(\frac{1}{\Psi_{T}}\pdv{\Psi_{T}^{*}}{\alpha}\right)\dd{\bold{r}_{1}}..\dd{\bold{r}_{N}}
-= -2\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle
-\end{align}
-thus:
-\begin{align}
-\bra{\Psi_{T}}H\ket{\Psi_{T}}\pdv{\alpha}\left(\frac{1}{\braket{\Psi_{T}}}\right)
-= -2\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle
-\end{align}
-Combining the first and second expression the derivative of the local energy can
-be expressed as:
-\begin{align}
-\pdv{\langle E_{L} \rangle }{\alpha} =
-2\left(\langle \frac{E_{L}}{\Psi_{T}}\pdv{\Psi_{T}}{\alpha} \rangle -
-\langle E_{L} \rangle \langle \frac{1}{\Psi_{T}}\pdv{\Psi}{\alpha}\rangle\right)
-\end{align}
 	\end{appendices}
 \end{document}

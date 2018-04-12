@@ -1,0 +1,15 @@
+# Project 1/src
+
+This folder contains the source code for our project.
+
+## Content
+
+### 1: Analytics
+This folder contains the Python scripts used to analyze the output of our data.
+
+### 2: VMC
+This folder contains our main C++ code.
+
+### 2: input
+This folder contains our parameter file, that can be updated to 
+change the parameters in our script.
