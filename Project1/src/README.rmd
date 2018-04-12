@@ -13,3 +13,18 @@ This folder contains our main C++ code.
 ### 3: input
 This folder contains our parameter file, that can be updated to 
 change the parameters in our script.
+
+## Use
+### Setting the input
+
+### Running the Simulation
+The program is compiled through QT, by opening the pro file in the QT editor and compiling. Before compiling one has to choose what to simulate. In **main** one will find the different types of simulate: Simulation of alphas in a given interval, simulation of a single alpha, finding of the optimal alpha using gradient descent, and the calculation of the onebody density. The instruction of which lines to comment/uncomment to run which type of simulation if found in **main**.
+
+To run the program, one can either run it from the QT editor, or through the terminal. When using the editor the program will run on 1 processor. By using the terminal, one can choose to run the program with more processes by
+
+```
+mpirun -np x VMC
+```
+where *x* is the number of processes used.
+
+### Analysis
