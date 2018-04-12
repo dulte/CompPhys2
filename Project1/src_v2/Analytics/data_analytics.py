@@ -73,9 +73,15 @@ class Analytics:
         if flatten:
             self.meta_average = np.zeros(self.num_alphas)
             self.meta_error = np.zeros(self.num_alphas)
-            for index,a in enumerate(self.stamps[:,0]):
-                self.meta_average[index] = np.mean(self.data[index,:])
-                self.meta_error[index] = block(self.data[index,:])
+            if self.num_proc != 1:
+                for index,a in enumerate(self.stamps[:,0]):
+                    self.meta_average[index] = np.mean(self.data[index,:])
+                    self.meta_error[index] = block(self.data[index,:])
+            else:
+                for index,a in enumerate(self.stamps):
+                    self.meta_average[index] = np.mean(self.data[index,:])
+                    self.meta_error[index] = block(self.data[index,:])
+
         else:
             self.meta_average = np.zeros(self.num_alphas)
             self.meta_error = np.zeros(self.num_alphas)
@@ -102,14 +108,7 @@ class Analytics:
         if self.num_proc != 1:
             alphas = self.stamps[:,0]
         else:
-            alphas = self.stamps[:,0]
-        # f, axarr = plt.subplots(2)
-        # axarr[0].plot(alphas, self.meta_average,".")
-        # axarr[0].set_title(r"$\mu$ for different $\alpha$ and N = %d" %self.parameters["N"])
-        # axarr[1].plot(alphas,np.sqrt(self.meta_error),".")
-        # axarr[1].set_title(r"$\sigma$ for different $\alpha$ and N = %d" %self.parameters["N"])
-        # plt.show()
-
+            alphas = self.stamps
 
         title_text = r"Average $E_L$ for Various $\alpha$ for N = {}".format(self.parameters["N"])
         if(self.parameters["D"] != 0):
@@ -119,7 +118,6 @@ class Analytics:
         plt.title(title_text,fontsize=15)
         plt.xlabel(r"$\alpha$",fontsize=20)
         plt.ylabel(r"$E_L [\hbar \omega]$",fontsize=20)
-        plt.ylim(148,170)
         plt.show()
 
 
@@ -240,9 +238,9 @@ def block(x):
     return ans
 
 if __name__ == '__main__':
-    #an = Analytics("../output/",4,flatten=True)
-    #an.plot_average()
-    #exit()
-    an = SingleAlphaAnalytics("../output/",4)
+    an = Analytics("../output/",1,flatten=True)
+    an.plot_average()
+
+    #an = SingleAlphaAnalytics("../output/",4)
 
     #an = getVariance("../output/varIS/")

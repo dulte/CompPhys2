@@ -38,10 +38,16 @@ System::System()
 
 }
 
+
+/*
+This function makes the system for a given alpha.
+This includes distributes the particles, calling the update function
+and setting the wavefunction value.
+*/
 void System::make_grid(double m_alpha){
     alpha = m_alpha;
     number_accept = 0;
-    //Sets all positions to a random position [-1,1]
+
     if(a!=0){
         distribute_particles_interacting();
     }
@@ -54,6 +60,15 @@ void System::make_grid(double m_alpha){
     wavefunction_value=get_wavefunction();
 }
 
+
+
+/*
+For interacting particles, it is important to make sure that
+non of the particles are initiated within a raduis a from one another.
+This is done by checking if the radius of a newly placed particles is within this
+radius. And if this is the case, the particle is placed again in a new possition.
+This is done until every particles has a radius greater than a to every other particle.
+*/
 void System::distribute_particles_interacting(){
     bool safe_distance = false;
     for(int i = 0;i<N;i++){
@@ -76,6 +91,8 @@ void System::distribute_particles_interacting(){
         }
     }
 }
+
+
 void System::distribute_particles_noninteracting(){
     for(int i = 0;i<N;i++){
         for(int j = 0;j<dimension;j++){
@@ -89,7 +106,7 @@ void System::distribute_particles_noninteracting(){
 }
 
 
-//Updates the distances between the particles
+//Updates the distances between the particles and quantum force at the start of the simulation
 void System::update(){
     double temp_value = 0;
     for(int i = 0; i<N;i++){
@@ -108,11 +125,13 @@ void System::update(){
 }
 
 void System::make_move_and_update(const int move){
-    //Makes a random move
+    //Updates the quantum force only if importance sampling is used
     if(D!=0){
         quantum_force(move);
     }
     double random_nr = 0;
+
+    //Makes a move
     for(int i = 0; i<dimension; i++){
         if(D!=0){
             random_nr = sqrt(dx)*distribution(gen) + quantum_force_vector(i)*dx*D;
@@ -123,6 +142,8 @@ void System::make_move_and_update(const int move){
         next_r(i,move) = r(i,move) +  random_nr;
     }
 
+
+    //If the distance between particles are needed, the distance matrix is updated.
     if(D!=0 || a!=0){
         update_next_distance(move);
     }
@@ -136,13 +157,14 @@ void System::update_next_distance(int move){
     double dist = 0;
     for(int i = 0;i<N;i++){
         dist = (next_r.col(i)- next_r.col(move)).norm();
-
         next_distance(i,move) = dist;
         next_distance(move,i) = dist;
     }
 
 }
 
+
+//Sets all the variables needed for dEL/dalpha to their default value
 void System::update_expectation(){
     expectation_derivative=0;
     expectation_derivative_energy=0;
@@ -167,6 +189,7 @@ double System::check_acceptance_and_return_energy(int move){
         number_accept++;
 
     }
+    //Else: no move is taken, and next_r is set back to the same as r
     else{
         next_r.col(move) = r.col(move);
         next_distance.col(move) = distance.col(move);
@@ -174,12 +197,17 @@ double System::check_acceptance_and_return_energy(int move){
 
     }
 
-    //return calculate_energy_numerically();
-    return get_local_energy();
+    if(numerical){
+        return calculate_energy_numerically();
+    }
+    else{
+        return get_local_energy();
+    }
+
 
 }
 
-
+//Calculates only the exponent of phi. This is done to make later calculations easier.
 double System::phi_exponant(const Eigen::VectorXd &r){
     temp_value = 0;
 
@@ -196,7 +224,7 @@ double System::phi_exponant(const Eigen::VectorXd &r){
 }
 
 
-
+//Jastrow Factor
 double System::f(double dist){
     double function;
     if(dist <= a){
@@ -209,11 +237,15 @@ double System::f(double dist){
     return function;
 }
 
+
+//Returns the probability ratio. It is calculated in a smart way(?)
 double System::get_probability_ratio(int move){
     double temp_value = phi_exponant(r.col(move)); //Stores the probability before move
     double temp_value2 = phi_exponant(next_r.col(move)); //Stores the probability of move
     double f_part = 1;
     double green_part = 1;
+
+    //Includes the Jastrow factor and/or Greens function ratio if needed.
     if(a!=0){
         f_part *= update_wavefunction_interacting_f(move);
     }
@@ -225,6 +257,8 @@ double System::get_probability_ratio(int move){
     return exp(2*(temp_value2-temp_value))*f_part*f_part*green_part;
 }
 
+
+//Calculates the wavefunction
 double System::get_wavefunction(){
     double temp_value = 0; //Stores the exponants of phi
     double f_part = 1;
@@ -242,10 +276,14 @@ double System::get_wavefunction(){
     return exp(temp_value)*f_part;
 }
 
+
+
 void System::update_wavefunction(const int move){
     return (this->*wavefunction_function_pointer)(move);
 }
 
+//The two functions below updates the wavefunction instead of recalculating it
+//This is done in, what we think is a smart way.
 void System::update_wavefunction_noninteracting(const int move){
     wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)));
 
@@ -256,7 +294,7 @@ void System::update_wavefunction_interacting(const int move){
 
 }
 
-
+//returns the ratio of the Jastrow factors
 double System::update_wavefunction_interacting_f(const int move){
     double second_factor_of_psi=1;
     for(int i = 0; i < N; i++){
@@ -278,6 +316,8 @@ double System::get_local_energy(){
 }
 
 
+//Calculates the local energy for the noninteracting system.
+//This will also calculate the derivative of the local energy
 double System::get_local_energy_noninteracting(){
         double total_energy = 0;
         double temp_value = 0;
@@ -326,16 +366,22 @@ double System::get_local_energy_noninteracting(){
     return temp_value;
 }
 
+//Returns u'. We assume here that no particles manages to come closer than a (because of the initial positioning  of the particles.)
 double System::udiv(int idx1,int idx2){
     return a/(distance(idx1,idx2)*distance(idx1,idx2) - a*distance(idx1,idx2));;
     }
 
+
+//Returns u''
 double System::udivdiv(int idx1,int idx2){
     return (a*a - 2*a*distance(idx1,idx2))/(
                 (distance(idx1,idx2)*distance(idx1,idx2)-
                  a*distance(idx1,idx2))*(distance(idx1,idx2)*distance(idx1,idx2)-a*distance(idx1,idx2)));}
 
 
+
+//Calculates the horrible local energy for the interacting system.
+//This will also calculate the derivative of the local energy
 double System::get_local_energy_interacting(){
     double sec_fac = 0;
     double trd_fac = 0;
@@ -427,12 +473,11 @@ double System::get_local_energy_interacting(){
     return temp_value;
 }
 
+
+//Calculates the quantum force
 void System::quantum_force(int move){
     double grad_value = 0;
     double grad_value_new = 0;
-
-
-
 
     for(int j=0; j<dimension;j++){
 
@@ -464,7 +509,7 @@ void System::quantum_force(int move){
 
 }
 
-
+//Returns the ratio of the greens functions
 double System::greens_function_ratio(int move)
 {
     double value=0;
@@ -477,7 +522,8 @@ double System::greens_function_ratio(int move)
     return exp(value);
 }
 
-
+//Calculates the local energy numerically.
+//This will NOT calculate the derivative of the local energy
 double System::calculate_energy_numerically(){
     double wavefunction_value_plus = 0;
     double wavefunction_value_minus = 0;

@@ -4,6 +4,7 @@
 Simulation::Simulation(System *m_system)
 {
     system = m_system;
+
 }
 
 
@@ -148,7 +149,7 @@ void Simulation::run(int rank){
 
     DataDump<double> dump(filename,stampname);
 
-    DataDump<double> data("..//output//data.bin");
+
     if(rank == 0){
          dump.dump_metadata("..//output//metadata.txt");
 
@@ -178,18 +179,12 @@ void Simulation::run(int rank){
             total_energy += energy;
 
         }
-        if(rank == 0){
-            data.push_back(total_energy/(MC_cycles));
-        }
 
         std::cout << "Energy " << total_energy/(MC_cycles) << std::endl;
         std::cout << "Acceptance rate: " << (double)system->number_accept/double(MC_cycles) << std::endl;
         total_energy = 0;
     }
     dump.dump_all();
-    if(rank == 0){
-        data.dump_all();
-    }
 
 }
 

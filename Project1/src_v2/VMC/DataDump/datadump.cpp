@@ -122,6 +122,8 @@ void DataDump<T>::dump_metadata(std::string m_location){
     metafile << "D " << Parameters::D << "\n";
     metafile << "dx " << Parameters::dx << "\n";
 
+    metafile << "numerical " << Parameters::numerical << "\n";
+
     metafile.close();
 
 }

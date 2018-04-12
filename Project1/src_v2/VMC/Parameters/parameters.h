@@ -47,6 +47,9 @@ public:
     static double D;
     static bool D_set;
 
+    static bool numerical;
+    static bool numerical_set;
+
 
 };
 
