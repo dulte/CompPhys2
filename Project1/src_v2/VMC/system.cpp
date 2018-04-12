@@ -21,13 +21,13 @@ System::System()
     number_accept = 0;
 
     if(Parameters::a !=0){
-           //System::compute_energy_numeric = &System::calculate_energy_interacting;
+
            System::wavefunction_function_pointer=&System::update_wavefunction_interacting;
            System::compute_local_energy=&System::get_local_energy_interacting;
 
        }
      else{
-           //System::compute_energy_numeric = &System::calculate_energy_interacting;//FIX
+
            System::wavefunction_function_pointer=&System::update_wavefunction_noninteracting;
            System::compute_local_energy=&System::get_local_energy_noninteracting;
 
@@ -63,7 +63,7 @@ void System::distribute_particles_interacting(){
                 if(D!=0){
                     r(j,i) = distribution(gen)*sqrt(dx);
                 }else{
-                    r(j,i) = 2*((double)rand()/RAND_MAX - 0.5);
+                    r(j,i) = 2*(static_cast<double>(rand())/RAND_MAX - 0.5);
                 }
             }
             safe_distance = true;
@@ -74,7 +74,6 @@ void System::distribute_particles_interacting(){
                 }
             }
         }
-        //std::cout << "Particle " << i << " placed" << std::endl;
     }
 }
 void System::distribute_particles_noninteracting(){
@@ -83,7 +82,7 @@ void System::distribute_particles_noninteracting(){
             if(D!=0){
                 r(j,i) = distribution(gen)*sqrt(dx);
             }else{
-                r(j,i) = 2*((double)rand()/RAND_MAX - 0.5);
+                r(j,i) = 2*(static_cast<double>(rand())/RAND_MAX - 0.5);
             }
         }
     }
@@ -118,7 +117,7 @@ void System::make_move_and_update(const int move){
         if(D!=0){
             random_nr = sqrt(dx)*distribution(gen) + quantum_force_vector(i)*dx*D;
         }else{
-            random_nr = dx*2*((double)rand()/RAND_MAX - 0.5);
+            random_nr = dx*2*(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
 
         next_r(i,move) = r(i,move) +  random_nr;
@@ -175,7 +174,7 @@ double System::check_acceptance_and_return_energy(int move){
 
     }
 
-    //return calculate_energy_interacting();
+    //return calculate_energy_numerically();
     return get_local_energy();
 
 }
@@ -195,6 +194,8 @@ double System::phi_exponant(const Eigen::VectorXd &r){
     }
     return -alpha*temp_value;
 }
+
+
 
 double System::f(double dist){
     double function;
@@ -280,8 +281,6 @@ double System::get_local_energy(){
 double System::get_local_energy_noninteracting(){
         double total_energy = 0;
         double temp_value = 0;
-        //temp_r = Eigen::VectorXd::Zero(dimension);
-        //r_temp = Eigen::VectorXd::Zero(dimension);
         double factor1_noB = -2*(dimension)*alpha*N ;
         double factor1_B = -2*alpha*(dimension - 1)*N -  2*alpha*beta*N;
         double factor2 = 4*alpha*alpha;
@@ -316,49 +315,25 @@ double System::get_local_energy_noninteracting(){
         }
 
         wavefunction_derivative_value*=-1;
-        //temp_value = 0;
+
         temp_value=-0.5*total_energy+ pot_factor*r_i_annen;
         expectation_local_energy+=temp_value;
         expectation_local_energy_squared+=temp_value*temp_value;
         expectation_derivative+=wavefunction_derivative_value;
         expectation_derivative_energy+=(wavefunction_derivative_value)*temp_value;
-        //std::cout<<temp_value<<std::endl;
-
-
 
 
     return temp_value;
 }
 
 double System::udiv(int idx1,int idx2){
-    double du_dphi;
-    if(distance(idx1,idx2) <= a){
-        du_dphi = 1e15;
-        std::cout << "Help it happend!!!" << std::endl;
-        exit(1);
-    }
-    if(distance(idx1,idx2) > a){
-        du_dphi = a/(distance(idx1,idx2)*distance(idx1,idx2) - a*distance(idx1,idx2));
-
-    }
-    return du_dphi;
+    return a/(distance(idx1,idx2)*distance(idx1,idx2) - a*distance(idx1,idx2));;
     }
 
 double System::udivdiv(int idx1,int idx2){
-    double du2_dphi2;
-    double temp_r = distance(idx1,idx2);
-    if(distance(idx1,idx2) <= a){
-        du2_dphi2 = 1e15;
-
-    }
-    if(distance(idx1,idx2) > a){
-        du2_dphi2 = (a*a - 2*a*distance(idx1,idx2))/(
-                    (distance(idx1,idx2)*distance(idx1,idx2)-
-                     a*distance(idx1,idx2))*(distance(idx1,idx2)*distance(idx1,idx2)-a*distance(idx1,idx2)));
-        //du2_dphi2 = -(a/((temp_r-a)*(temp_r-a))*a/(temp_r*temp_r) + 2*a/(temp_r*temp_r*temp_r - a*temp_r*temp_r));
-    }
-    return du2_dphi2;
-}
+    return (a*a - 2*a*distance(idx1,idx2))/(
+                (distance(idx1,idx2)*distance(idx1,idx2)-
+                 a*distance(idx1,idx2))*(distance(idx1,idx2)*distance(idx1,idx2)-a*distance(idx1,idx2)));}
 
 
 double System::get_local_energy_interacting(){
@@ -396,53 +371,6 @@ double System::get_local_energy_interacting(){
         }
     }
 
-    /*
-    for(int idx1 = 0; idx1 < N; idx1++ ){
-        for(int idx2 = 0; idx2 < N; idx2++){
-            for(int dim = 0; dim < dimension; dim++){
-                if(dim == 2){
-
-                    if(idx1 != idx2){
-                        sec_fac += 2*udiv(idx1,idx2)*beta*beta*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
-                                                     /distance(idx1,idx2)));
-                        frt_fac += udivdiv(idx1,idx2) + 2*udiv(idx1,idx2)/distance(idx1,idx2);
-
-                    }
-                }
-                else{
-                    if(idx1 != idx2){
-
-                        sec_fac += 2*udiv(idx1,idx2)*(((r(dim,idx1)*r(dim,idx1) -r(dim,idx1)*r(dim,idx2))
-                                                     /distance(idx1,idx2)));
-
-                        frt_fac += udivdiv(idx1,idx2) + 2*udiv(idx1,idx2)/distance(idx1,idx2);
-
-                    }
-
-                }
-            }
-        }
-    }
-
-
-    for(int idx11 = 0; idx11 < N; idx11++){
-        for(int idx22 = 0; idx22 < N; idx22++){
-            for(int idx33 = 0; idx33 < N; idx33++){
-                for(int d = 0; d < dimension; d++){
-                    if( idx11 != idx22 && idx11 !=idx33){
-                        trd_fac += udiv(idx11,idx33)*udiv(idx11,idx22)*(r(d,idx11)*r(d,idx11)
-                                                                        - r(d,idx11)*r(d,idx22)
-                                                                        -r(d,idx11)*r(d,idx33)
-                                                                        +r(d,idx22)*r(d,idx33))/(distance(idx11,idx22)*distance(idx11,idx33));
-                    }
-                }
-
-            }
-        }
-    }
-
-
-    */
 
     for(int k = 0;k<N;k++){
         temp_r = r.col(k);
@@ -481,9 +409,6 @@ double System::get_local_energy_interacting(){
         }
     }
 
-    /*
-    sec_fac = -2*alpha*sec_fac;
-    */
     if(dimension >= 3){
         total_energy = factor1_B + factor2*temp_value + sec_fac + trd_fac + frt_fac;
     }
@@ -543,39 +468,8 @@ void System::quantum_force(int move){
 double System::greens_function_ratio(int move)
 {
     double value=0;
-    double value_new=0;
-    double exponent = 0;
-    double exponent_new = 0;
-    double exponent_factor=D*dx;
-
-    //temp_r = Eigen::VectorXd::Zero(dimension);
 
     quantum_force(move);
-    /*
-    for(int i=0; i<N; i++){
-        if(i==move){
-            temp_r = next_r.col(move);
-         }
-         else{
-             temp_r = r.col(move);
-         }
-         for(int k=0;k<dimension;k++){
-                exponent += ((r(k,i)-temp_r(k))-exponent_factor*quantum_force_matrix(i,k))*((r(k,i)-temp_r(k))-exponent_factor*quantum_force_matrix(i,k));
-                exponent_new += ((temp_r(k)-r(k,i))-exponent_factor*quantum_force_matrix_new(i,k))*((temp_r(k)-r(k,i))-exponent_factor*quantum_force_matrix_new(i,k));
-
-         }
-
-        exponent=exponent/(4.0*exponent_factor);
-        exponent_new=exponent_new/(4.0*exponent_factor);
-        value+=exp(-exponent);
-        value_new+=exp(-exponent_new);
-
-    }*/
-/*
-    for(int k=0;k<dimension;k++){
-        value += 0.5*(quantum_force_vector(k) - quantum_force_vector_new(k))*(D*dx*0.5*(quantum_force_vector(k)-quantum_force_vector_new(k)) - next_r(k,move) + r(k,move));
-
-    }*/
 
     value = -(r.col(move) - next_r.col(move) -D*dx*quantum_force_vector_new).squaredNorm()+(next_r.col(move)-r.col(move) - D*dx*quantum_force_vector).squaredNorm();
     value /= 4*D*dx;
@@ -584,7 +478,7 @@ double System::greens_function_ratio(int move)
 }
 
 
-double System::calculate_energy_interacting(){
+double System::calculate_energy_numerically(){
     double wavefunction_value_plus = 0;
     double wavefunction_value_minus = 0;
 
@@ -601,20 +495,16 @@ double System::calculate_energy_interacting(){
                 potential_energy+=omega*omega*r(j,i)*r(j,i);
             }
 
-            //std::cout<<r->coeffRef(j,i)<<std::endl;
+
             r(j,i)+=h;
             wavefunction_value_plus=get_wavefunction();
             r(j,i)-=2*h;
             wavefunction_value_minus=get_wavefunction();
             r(j,i)+=h;
             kinetic_energy -= (wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value)/h/h/wavefunction_value;
-            //std::cout<<r->coeffRef(j,i)<<std::endl;
+
         }
-        //kinetic_energy += 2*dimension*alpha-4*alpha*alpha*r->col(i).squaredNorm();
-
     }
-    //std::cout<<wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value<<std::endl;
-
     return (0.5*potential_energy+0.5*(kinetic_energy));
 }
 

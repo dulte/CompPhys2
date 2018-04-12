@@ -6,97 +6,83 @@ Simulation::Simulation(System *m_system)
     system = m_system;
 }
 
-double Simulation::conjugate_gradient(double alpha_0, double b){
+
+//Does the gradient descent. Somewhat unstable. And fails to reach the tolarence from high N interacting.
+double Simulation::gradient_descent(double alpha_0){
     double p_k=0;
-    double B_k=b;
-    double x_k=alpha_0;
-    double x_k_prev=alpha_0;
-    double gradient_k=compute_local_energy_derivative(x_k);
+    double alpha_k=alpha_0;
+    double alpha_k_prev=alpha_0;
+    double gradient_k=compute_local_energy_derivative(alpha_k);
     double local_energy_current=total_energy;
     double s_k=0;
     double gradient_k_prev=0;
-    double y_k=0;
-    double alpha_k=0.01;
-    double alpha_i=1;
-    double r=1e-4;
-    double temp=0;
+    double step=0.01;
     int i=0;
-    int j=1;
     int max_iter=500;
-    int max_iter_inner=10;
-    int max_j=0;
     double tol=1e-5;
 
     double step_length = 1;
 
-    double gradient_10_steps_ago = 1e6;
 
-    gradient_k_prev=compute_local_energy_derivative(x_k);
-    //x_k += alpha_k*gradient_k_prev;
+    gradient_k_prev=compute_local_energy_derivative(alpha_k);
     p_k = -gradient_k_prev;
 
 
     while(i<max_iter){
 
 
-        std::cout << "Gradient: "<<gradient_k<< " Energy: " << local_energy_current << " Alpha: " << x_k << std::endl;
-        s_k=alpha_k*p_k;
-        x_k = x_k_prev + s_k;
+        std::cout << "Gradient: "<<gradient_k<< " Energy: " << local_energy_current << " Alpha: " << alpha_k << std::endl;
+        s_k=step*p_k;
+        alpha_k = alpha_k_prev + s_k;
 
-        if(fabs(x_k)>1e5 || fabs(gradient_k)>1e10 || gradient_k != gradient_k){
+
+        /*
+        Sometimes gradien descent becomes unstable and runs off. This resets the
+        calculation of this happens. Dont be afraid of it...
+        */
+        if(fabs(alpha_k)>1e5 || fabs(gradient_k)>1e10 || gradient_k != gradient_k){
             std::cout << "Reset" << std::endl;
-            x_k = alpha_0;
-            gradient_k_prev=compute_local_energy_derivative(x_k);
+            alpha_k = alpha_0;
+            gradient_k_prev=compute_local_energy_derivative(alpha_k);
             p_k = -gradient_k_prev;
-            alpha_k = 0.01;
-            x_k += p_k*alpha_k;
-            gradient_k=compute_local_energy_derivative(x_k);
+            step = 0.01;
+            alpha_k += p_k*step;
+            gradient_k=compute_local_energy_derivative(alpha_k);
             local_energy_current = 0;
             i = 0;
         }
 
+        gradient_k=compute_local_energy_derivative(alpha_k);
 
-
-        gradient_k=compute_local_energy_derivative(x_k);
-
-
+        //Varies the step length. If the gradients are to close, it sets the step length to a set value.
         if(fabs(gradient_k - gradient_k_prev) > 1e-10){
-            alpha_k = step_length*(x_k - x_k_prev)/(gradient_k - gradient_k_prev);
+            step = step_length*(alpha_k - alpha_k_prev)/(gradient_k - gradient_k_prev);
         }
         else{
-            std::cout << "Eeeeh" << std::endl;
-            alpha_k = 0.001;
+            step = 0.001;
         }
+
 
         p_k = -gradient_k;
 
-        //gradient_k_1=compute_local_energy_derivative(x_k_1);
-
-        //y_k=gradient_k_1-gradient_k;
-        //B_k=y_k/s_k;
-
-
-        if(fabs(gradient_k) < tol || fabs(1-p_k/gradient_10_steps_ago) < tol){
+        if(fabs(gradient_k) < tol){
             std::cout<<"MOM WE DID IT "<<gradient_k<<std::endl;
             break;
         }
 
-
-        if(i%10 == 0){
-            gradient_10_steps_ago = p_k;
-        }
         gradient_k_prev=gradient_k;
         local_energy_current=total_energy;
-        x_k_prev=x_k;
+        alpha_k_prev=alpha_k;
         i++;
 
     }
 
-
-
-    return x_k;
+    return alpha_k;
 }
 
+
+
+//Runs a simulation for a given alpha, and returns the derivative of the local energy, needed for gradien descent
 double Simulation::compute_local_energy_derivative(double alpha){
     energy = 0;
     total_energy = 0;
@@ -111,7 +97,7 @@ double Simulation::compute_local_energy_derivative(double alpha){
     system->make_grid(alpha);
     for(int i = 0;i<fast_MC_cycles;i++){
         energy = 0;
-        move = (int)distribution(gen);
+        move = static_cast<int>(distribution(gen));
         system->make_move_and_update(move);
         energy += system->check_acceptance_and_return_energy(move);
 
@@ -122,29 +108,11 @@ double Simulation::compute_local_energy_derivative(double alpha){
     double expectation_wavefunction_times_local_energy = system->expectation_derivative_energy/(N*fast_MC_cycles);
     double expectation_wavefunction_times_expectation_local_energy = system->expectation_derivative/(N*fast_MC_cycles)*total_energy;
     local_energy_derivative = 2.0*(expectation_wavefunction_times_local_energy-expectation_wavefunction_times_expectation_local_energy);
-    //local_energy_derivative=(2.0/(N*MC_cycles))*(system->expectation_derivative_energy-(2.0/(N*MC_cycles))*system->expectation_derivative*system->expectation_local_energy);
+
 
     return local_energy_derivative;
 
 }
-
-void Simulation::data_for_derivated(){
-    DataDump<double> deriv_data("..//output//deriv_data.bin");
-    DataDump<double> data("..//output//data.bin");
-    DataDump<double> alphas("..//output//alphas.bin");
-    for(double a = alpha_min; a < alpha_max; a+=alpha_step){
-        std::cout << "a: " << a << std::endl;
-        alphas.push_back(a);
-        double deriv = compute_local_energy_derivative(a);
-        data.push_back(total_energy);
-        deriv_data.push_back(deriv);
-    }
-    data.dump_all();
-    alphas.dump_all();
-    deriv_data.dump_all();
-
-}
-
 
 
 
@@ -157,6 +125,9 @@ void Simulation::initiate(){
 }
 
 
+
+
+//Does the main Metropolise Simulation over the alpha interval given in the parameter file.
 void Simulation::run(int rank){
 
     std::random_device rd;
@@ -190,19 +161,27 @@ void Simulation::run(int rank){
         system->make_grid(a);
         dump.push_back_stamp(a);
         std::cout << "a: " << a << std::endl;
+
+
+        //The main MC loop
         for(int i = 0;i<MC_cycles;i++){
             energy = 0;
-            move = (int)distribution(gen);
+            move = static_cast<int>(distribution(gen));
+
+            //Makes the move and updates the relevant data
             system->make_move_and_update(move);
+
+            //Checks if the move is accepted, and returns the local energy.
             energy += system->check_acceptance_and_return_energy(move);
+
             dump.push_back(energy);
             total_energy += energy;
 
         }
-        //dump.push_back(energy/(MC_cycles));
         if(rank == 0){
             data.push_back(total_energy/(MC_cycles));
         }
+
         std::cout << "Energy " << total_energy/(MC_cycles) << std::endl;
         std::cout << "Acceptance rate: " << (double)system->number_accept/double(MC_cycles) << std::endl;
         total_energy = 0;
@@ -215,6 +194,8 @@ void Simulation::run(int rank){
 }
 
 
+
+//Same as the run above, but does the simulation for a given alpha
 void Simulation::run(int rank,double alpha){
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -245,7 +226,7 @@ void Simulation::run(int rank,double alpha){
 
     for(int i = 0;i<MC_cycles;i++){
         energy = 0;
-        move = (int)distribution(gen);
+        move = static_cast<int>(distribution(gen));
         system->make_move_and_update(move);
         energy += system->check_acceptance_and_return_energy(move);
         dump.push_back(energy);
@@ -263,7 +244,9 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
     std::uniform_real_distribution<double> distribution(0,N);
 
     int move = 1;
-    double pi = 3.14159265359;
+    double distance_from_origo = 0;
+    int bin = 0;
+
 
 
 
@@ -273,8 +256,6 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
     DataDump<std::vector<double>> density_packet("..//output//density.bin");
 
     DataDump<double> volume_factor_packet("..//output//volume.bin");
-
-
 
 
 
@@ -289,21 +270,8 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
         rs.push_back(r);
         density.push_back(0);
 
-       // for(int i = 0; i<r_num;i++){
 
-
-        /*if(Parameters::dimension ==1){
-            volume.push_back(r+r_step-r);
-        }
-        else if(Parameters::dimension == 2){
-            volume.push_back(M_PI*((r+r_step)*(r+r_step) - r*r));
-        }
-        else{
-            //std::cout << "3 dim" << std::endl;
-            volume.push_back((4./3)*M_PI*((r+r_step)*(r+r_step)*(r+r_step) - r*r*r));
-        }*/
-    //}
-
+        //Makes the volume element
         volume.push_back(4*M_PI*(r+r_step)*(r+r_step)*r_step);
         volume_factor_packet.push_back(4*M_PI*(r+r_step)*(r+r_step)*r_step);
 
@@ -318,15 +286,12 @@ void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min
     r_packet.push_back(r_step);
 
 
-    double distance_from_origo = 0;
-    double wave_function_squared = 0;
-    int bin = 0;
 
 
     system->make_grid(optimal_alpha);
 
     for(int i = 0;i<MC_cycles;i++){
-        move = (int)distribution(gen);
+        move = static_cast<int>(distribution(gen));
         system->make_move_and_update(move);
         system->check_acceptance_and_return_energy(move);
         distance_from_origo = system->r.col(move).norm();

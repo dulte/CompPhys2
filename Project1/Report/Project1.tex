@@ -58,9 +58,11 @@
 	\maketitle
 	\begin{abstract}
 	We present an investigation into hard-sphere bosons trapped in a harmonic-oscillator like trap, using the same set-up as \cite{DuBois2001}. This system is investigated using a variational Monte Carlo approach, with both the Metropolis and the Metropolis-Hastings algorithm. This is done both with and without an interaction potential between the bosons, and the results are compared to the analytic results and results found by a previous study (\cite{Kristiansen2016}), with the error being estimated using blocking. We are able to excellently reproduce the analytic results in the noninteracting case. In the interacting case, in an elliptical harmonic oscillator potential, we find an excellent agreement for 10 particles (0.23\% deviation) but a somewhat poorer agreement for 50 and 100 particles (1.52\% and 2.72\% deviation respectively).
-	Finally, we also plot the onebody density for 10 particles both with and without interaction, and find that it qualitatively fits our picture of the system. All scripts and some of the data used for this project are available at our \href{https://github.com/dulte/FYS4411/}{GIT repository.}\footnote{\url{https://github.com/dulte/FYS4411/}}
+	Finally, we also plot the onebody density for 10 particles both with and without interaction, and find that it qualitatively fits our picture of the system. The onebody density in the noninteracting case also reproduces the exact answer to within $0.5\%$. All scripts and some of the data used for this project are available at our \href{https://github.com/dulte/FYS4411/}{GIT repository.}\footnote{\url{https://github.com/dulte/FYS4411/}}
 	\end{abstract}
+	\newpage
 	\tableofcontents
+	\newpage
 	\section{Introduction}
 	Confined quantum mechanical systems have received considerable attention in the literature, as they have many possible novel applications, ranging from qubits to energy storage. The existence of Bose-Einstein condensation in gases of certain alkali atoms, has sparked the interest in confined bosonic systems in particular (see e.g. \cite{Nilsen2005}). \\
 	\linebreak
@@ -77,13 +79,13 @@
 	\subsubsection{The external potential}
 	We will focus on two different trap shapes: spherical and elliptical. The spherical trap can be described by a standard harmonic oscillator potential, which is given by:
 	\begin{equation}
-	V_{ext}(\boldsymbol{r})=\frac{1}{2}m\omega_{ho}^2 r^2 \quad \mathrm{(spherical\  trap)}
+	V_{ext}(\boldsymbol{r})=\frac{1}{2}m\omega^2 r^2 \quad \mathrm{(spherical\  trap)}
 	\end{equation}
 	Where $m$ is the mass of the bosons and $\omega$ is a parameter characterizing the strength of the potential (the characteristic frequency of the trap). The elliptical trap, however, is given by:
 	\begin{equation}
-	V_{ext}(\boldsymbol{r})=\frac{1}{2}m[\omega_{ho}^2 (x^2+y^2)+\omega_z^2 z^2] \quad \mathrm{(elliptical\  trap)}
+	V_{ext}(\boldsymbol{r})=\frac{1}{2}m[\omega^2 (x^2+y^2)+\omega_z^2 z^2] \quad \mathrm{(elliptical\  trap)}
 	\end{equation}
-	I.e. we allow the strength of the potential to vary in one direction, which we designate as the $z$-axis.
+	I.e. we allow the strength of the potential to be anisotropic in one direction, which we designate as the $z$-axis.
 	\subsubsection{The internal potential}
 	We will begin by investigating models where there is no repulsion between the bosons, however, we later add a repulsive potential that prevents bosons from occupying the same point in space. We define our internal potential as:
 	\begin{equation}
@@ -225,8 +227,12 @@
 	\begin{equation}\label{eq:OneBodyDensity}
 	\rho(\boldsymbol{r_1})=\int d\boldsymbol{r_2}...d\boldsymbol{r_N}|\Psi_T(\boldsymbol{r_1},\boldsymbol{r_2},...,\boldsymbol{r_N})|^2
 	\end{equation}
-	Where $\boldsymbol{r_1}$ is the position of any particle. The integral is evaluated using Monte Carlo integration, as described in further detail in section \ref{sec:MetOneBody}.
-	
+	Where $\boldsymbol{r_1}$ is the position of any particle. The integral is evaluated using Monte Carlo integration, as described in further detail in section \ref{sec:MetOneBody}.\\
+	\linebreak
+	We also compute the expected value of our density distribution for the noninteracting case in an isotropic trap. We show in section \ref{ap:Expectation_value_onebody} that this expectation value is:
+	\begin{equation}\label{eq:expectation_value_onebody}
+	\langle r \rangle =\frac{2}{\sqrt{\pi}}
+	\end{equation}
 	\section{Methods}\label{Method_section}
 	\subsection{A note on units}\label{sec:UNITS}
 	The scattering-length for a typical BEC condensate atom is somewhere in the range $85<a<140a_0$, where $a_0$ is the Bohr radius. The characteristic trap length (at 0 K), however, is $a_{ho}=(\hbar/m\omega)^{1/2}\approx 10^{4}$Å$-2\cdot 10^{4}$Å, as described in further detail in \cite{DuBois2001}. We introduce length units of $a_{ho}$ and energy units of $\hbar \omega$. We show in appendix \ref{ap:dimensionless_hamiltonian} that, using these units, the Hamiltonian can be rewritten as:
@@ -290,21 +296,22 @@
 	\begin{equation}
 		\rho(r_i)\approx \frac{N_i}{4\pi r_i^2 \Delta r}
 		\end{equation}
-		Where $N_i$ is the number of particles in the spherical shell with radius $r_i$ to $r_i+\Delta r$. Thus, to compute the onebody density, we run our Monte Carlo simulation and check in which shell the particle that we move at every step is located. We also check numerically that the normalization is correct (i.e. that the the area under the curve equals the total number of particles).
+		Where $N_i$ is the number of particles in the spherical shell with radius $r_i$ to $r_i+\Delta r$. Thus, to compute the onebody density, we run our Monte Carlo simulation and check in which shell the particle that we move at every step is located. We also check numerically that the normalization is correct (i.e. that the area under the curve equals the total number of particles).
 	\subsection{Parallelizing our code}
-	We note that our algorithms are embarrassingly parallel, as they do not need to communicate between one another to span a large portion of the parameter space. We therefore run 4 cores simultaneously, producing 4 times as much data. This data is simply appended \textbf{ASK DANIEL} in the blocking, giving $4$ times more data, and thus better estimates of the mean and the standard deviation.
+	We note that our algorithms are embarrassingly parallel, as they do not need to communicate between one another to span a large portion of the parameter space. We therefore run 4 cores simultaneously, producing 4 times as much data. This data is simply appended in the blocking method, giving $4$ times more data, and thus better estimates of the mean and the standard deviation.
+	\newpage
 	\section{Results}
 	\subsection{Finding the optimal step size}
 We plot the mean and the variance for various steps sizes, as discussed in section \ref{sec:finding_optimal_step_size}. This gives the plot shown in figure \ref{fig:find_dx_noimportance} for the brute force sampling. As discussed further in section \ref{sec:Disc_optimal_step_size_brute_force}, we choose $dx=0.5$ as our parameter for the brute-force case.\\
 	\begin{figure}[ht!]
 		\centering
 			\centering
-			\begin{subfigure}{.45\textwidth}
+			\begin{subfigure}{.5\textwidth}
 				\centering
 				\includegraphics[width=.8\linewidth]{../Results/EvoMean.pdf}
 				\caption{Mean energy}
 			\end{subfigure}%
-			\begin{subfigure}{.45\textwidth}
+			\begin{subfigure}{.5\textwidth}
 				\centering
 				\includegraphics[width=.8\linewidth]{../Results/EvoStd.pdf}
 				\caption{Standard deviation of the energy}
@@ -317,12 +324,12 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 		\begin{figure}[ht!]
 			\centering
 			\centering
-			\begin{subfigure}{.45\textwidth}
+			\begin{subfigure}{.5\textwidth}
 				\centering
 				\includegraphics[width=.8\linewidth]{../Results/EvoMeanIS.pdf}
 				\caption{Mean energy}
 			\end{subfigure}%
-			\begin{subfigure}{.45\textwidth}
+			\begin{subfigure}{.5\textwidth}
 				\centering
 				\includegraphics[width=.8\linewidth]{../Results/EvoStdIS.pdf}
 				\caption{Standard deviation of the energy}
@@ -518,7 +525,7 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 	\end{table}
 	\pagebreak
 	\subsection{Onebody densities}
-	We plot the onebody density for the interacting and noninteracting case in figure \ref{fig:results_onebody} below.
+	We plot the onebody density for the interacting and noninteracting case in figure \ref{fig:results_onebody} below. We find that the mean of this distribution is at $r=1.123$.
 		\begin{figure}[ht!]
 			\centering
 			\includegraphics[scale=0.8]{../Results/onbody.pdf}
@@ -550,7 +557,9 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 	 The convergence for $N=100$ was very weak. The gradient stayed above $10^{-3}$ throughout the $40$ iterations, and it varied quite wildly between successive iterations. Furthermore, it was highly sensitive to the starting conditions. Starting with an initial guess of $\alpha=0.3$ gives the $\alpha=0.474419$ shown in table \ref{tab:correct_alpha_interacting}. However, starting with $\alpha=0.49$, gives (after $40$ iterations), $\alpha=0.493261$. Running with this $\alpha$ gives an energy of $E_L=253.0\pm 0.1\ \mathrm{\hbar \omega}$. Similarly, running with the same $\alpha$ as for $N=10$ (i.e. $\alpha=0.499037$) gives a local energy of $E_L=253.12 \pm 0.06\ \mathrm{\hbar \omega}$. These values are slightly lower than for the optimal $\alpha$ found by the gradient descent method. This suggests that the energy is relatively flat close to the minimum. We therefore choose $\alpha=0.493261$ as our correct value of $\alpha$, as this has the lowest energy. Note that this still has a discrepancy of 2.49\% relative to the data found in \cite{Kristiansen2016}.
 	 
 	 \subsection{The onebody density}\label{sec:Disc_onebody}
-	 We show the radial onebody density in figure \ref{fig:results_onebody}. Interpreting this as the probability to find a particle at a certain distance from the origin, shows that the probability is highest a little way out from the origin, and rapidly drops to zero far from the origin. This corresponds to our intuition in the noninteracting system, as we place our bosons a certain distance from the origin initially, and as they do not interact, the spherical potential should lead to a distribution closes to the origin. We expect the distribution to be shifted slightly to the right in the interacting case, as the bosons no longer have to opportunity to be as closely together. This is not immediately obvious from figure \ref{fig:results_onebody}. We therefore rerun the same algorithm, but let $a=0.1$ (i.e. a much larger repulsive potential). The result of this is shown in figure \ref{fig:disc_onebody}. In this case, the repulsive interaction has a much larger effect, shifting the entire probability distribution outwards. This is in agreement with our intuitive picture of the probability distribution.
+	 We show the radial onebody density in figure \ref{fig:results_onebody}. Interpreting this as the probability to find a particle at a certain distance from the origin, shows that the probability is highest a little way out from the origin, and rapidly drops to zero far from the origin. This corresponds to our intuition in the noninteracting system, as we place our bosons a certain distance from the origin initially, and as they do not interact, the spherical potential should lead to a distribution closes to the origin. We also note that the mean of our distribution is at $1.123$, whereas we expected the mean to be at $2/\sqrt{2}\approx 1.128$ (according to appendix \ref{ap:Expectation_value_onebody}). These values are within $0.5\%$ of one another, and are thus in excellent agreement.\\
+	 \linebreak
+	  We expect the distribution to be shifted slightly to the right in the interacting case, as the bosons no longer have to opportunity to be as closely together. This is not immediately obvious from figure \ref{fig:results_onebody}. We therefore rerun the same algorithm, but let $a=0.1$ (i.e. a much larger repulsive potential). The result of this is shown in figure \ref{fig:disc_onebody}. In this case, the repulsive interaction has a much larger effect, shifting the entire probability distribution outwards. This is in agreement with our intuitive picture of the probability distribution.
 	 \begin{figure}[ht!]
 	 	\centering
 	 	\includegraphics[scale=0.8]{../Results/onbodyHighAlpha.pdf}
@@ -855,7 +864,27 @@ We plot the mean and the variance for various steps sizes, as discussed in secti
 		\rho(r_i)\approx \frac{N_i}{4\pi r_i^2 \Delta r}
 		\end{equation}
 		Where $N_i$ is the number of particles in the spherical shell with radius $r_i$ to $r_i+\Delta r$.
-		
+		\section{Finding the expectation value of the onebody density}\label{ap:Expectation_value_onebody}
+		If we choose to interpret the onebody density as the probability of finding a single particle at a distance $r$ from the origin, then we can compute the expected distance from the origin for the isotropic harmonic oscillator. The exact wavefunction (in atomic units) is (according to \cite{Griffiths2004}) given by:
+		\begin{equation}
+		\psi(r)=A\exp\left(-\frac{r^2}{2}\right)
+		\end{equation}
+		Where $A$ is a normalization factor. We compute this as:
+		\begin{equation}
+		1=\langle \psi | \psi \rangle = |A|^2 \int_0^{2\pi}\int_0^{\pi} \int_0^{\infty} d\phi d\theta dr\ r^2 \sin \theta \exp \left(-r^2\right) = 4\pi |A|^2\int_0^{\infty}dr\ r^2\exp(-r^2)
+		\end{equation}
+		Looking up the integral gives:
+		\begin{equation}
+		1= |A|^2 \pi^{3/2}
+		\end{equation}
+		Choosing a positive real value gives the normalization factor as:
+		\begin{equation}
+		A=\pi^{-3/2}
+		\end{equation}
+		The expected value of the distance from the origin is now given by:
+		\begin{equation}
+		\langle r \rangle =\pi^{-3/2}\int_0^{2\pi}\int_0^{\pi} \int_0^{\infty}d\phi d\theta dr\ r^3\sin \theta \exp (-r^2)=\frac{2}{\sqrt{\pi}}\approx 1.128
+		\end{equation}
 		\section{Finding the derivative of the local energy}\label{ap:derivative_of_local_energy}
 		The local energy, $E_L$ is given by:
 		\begin{equation}

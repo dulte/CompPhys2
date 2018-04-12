@@ -5,7 +5,22 @@ This class is made to make it easy to dump data. By now this class uses a templa
 which will accept either double, int or a vector of doubles.
 
 This class is used by simply making an instance which take the name of the file
-you want to contain the data. The constructor can also take the
+you want to contain the data. The constructor can also take the filename of a stamp file.
+A stamp is an additional variable one can save together with the main data (optional and
+somewhat pointless).
+
+Use:
+
+DataDump<type> instance_name("filename");
+
+instance_name.push_back(data_point); //Push back a new data point
+instance_name.push_back_stamp(data_stamp); //Push back a new stamp
+
+instance_name.dump(data_point); //Directly dumps a data point to file(slow and should not be used)
+
+instance_name.dump_all(data_point); //Dumps everthing, should be used at the end
+
+instance_name.dump_metadata(); //Dumps all the parameters from parameter file as meta data
 
 */
 

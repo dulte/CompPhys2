@@ -39,7 +39,7 @@ public:
     double greens_function_ratio(int move);
     void distribute_particles_interacting();
     void distribute_particles_noninteracting();
-    double calculate_energy_interacting();
+    double calculate_energy_numerically();
 
 
     double get_wavefunction();
@@ -48,7 +48,6 @@ public:
     double get_local_energy();
     int number_accept;
 
-//private:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
     const int dimension = Parameters::dimension;
@@ -63,7 +62,6 @@ public:
     //Vector and double used for holding temp values
     Eigen::VectorXd temp_r;
     double temp_value;
-    //double temp_value2;
     Eigen::MatrixXd *r_temp_pointer;
 
 
