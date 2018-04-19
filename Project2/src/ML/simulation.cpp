@@ -36,12 +36,39 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     double gradient = 0;
 
     while(i < max_iter){
-        gradient = 1;
+        gradient = calculate_gradient(x_prev);
         x = x_prev + step_length(x_prev,A,t)*gradient;
         x_prev = x;
         i++;
     }
 
+}
+
+
+double Simulation::calculate_gradient(Eigen::ArrayXd &x){
+    energy = 0;
+    total_energy = 0;
+    int move = 0;
+    double local_energy_derivative=0;
+
+    //This lowers the number of MC step by a factor 100.
+    //This is done because we dont need as many steps, and to make this go faster.
+    int fast_MC_cycles = static_cast<int>(MC_cycles/100.);
+
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_real_distribution<double> distribution(0,N);
+
+    //A simple simulation for the given alpha
+    system->make_grid(x);
+    for(int i = 0;i<fast_MC_cycles;i++){
+        energy = 0;
+        move = static_cast<int>(distribution(gen));
+        system->make_move_and_update(move);
+        energy += system->check_acceptance_and_return_energy(move);
+
+        total_energy += energy;
+    }
 }
 
 

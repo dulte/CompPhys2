@@ -7,14 +7,18 @@ including updating the wavefunction and the energy.
 System::System()
 {
 
-    r = Eigen::MatrixXd(Parameters::dimension,Parameters::N);
-    next_r = Eigen::MatrixXd(Parameters::dimension,Parameters::N);
+    r = Eigen::MatrixXd(dimension,N);
+    next_r = Eigen::MatrixXd(dimension,N);
 
-    distance.resize(Parameters::N,Parameters::N);
-    next_distance.resize(Parameters::N,Parameters::N);
+    distance.resize(P,P);
+    next_distance.resize(P,P);
 
     quantum_force_vector.resize(Parameters::dimension);
     quantum_force_vector_new.resize(Parameters::dimension);
+
+    a_bias.resize(M);
+    b_bias.resize(N);
+    weights.resize(M,N);
 
     std::random_device rd;
     gen = std::mt19937_64(rd());
@@ -60,6 +64,14 @@ void System::make_grid(double m_alpha){
     next_r = r;
     update();
     wavefunction_value=get_wavefunction();
+}
+
+void System::make_grid(Eigen::ArrayXd &parameters)
+{
+    Eigen::VectorXd par = (Eigen::VectorXd) parameters;
+    Eigen::Map<Eigen::VectorXd,0,M-1> a_bias(par.data(),M);
+    Eigen::Map<Eigen::VectorXd,M,N-1> b_bias(par.data(),N);
+    Eigen::Map<Eigen::MatrixXd>;
 }
 
 void System::distribute_particles_interacting(){

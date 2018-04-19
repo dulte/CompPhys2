@@ -19,10 +19,15 @@ public:
     Eigen::MatrixXd next_distance;
     Eigen::VectorXd quantum_force_vector;
     Eigen::VectorXd quantum_force_vector_new;
+    Eigen::VectorXd b_bias;
+    Eigen::VectorXd a_bias;
+    Eigen::MatrixXd weights;
+
 
 
     //Functions for making and updating the grid/system
     void make_grid(double m_alpha);
+    void make_grid(Eigen::ArrayXd &parameters);
     void make_move_and_update(int move);
     void update();
     void update_expectation();
@@ -54,13 +59,14 @@ public:
     //Saves all the variables from the parameters to save time
     const int N = Parameters::N;
     const int dimension = Parameters::dimension;
-    const double beta = Parameters::beta;
     const double dx = Parameters::dx;
     const double omega = Parameters::omega;
-    const double omega_z = Parameters::omega_z;
-    const double a = Parameters::a;
     const double D = Parameters::D;
     const bool is_numerical = Parameters::numerical;
+    const bool is_interacting = Parameters::interacting;
+    const double sigma = Parameter::sigma;
+    const int P = Parameters::P;
+    const int M = P*dimension;
 
 
     //Vector and double used for holding temp values
