@@ -16,6 +16,7 @@ System::System()
     quantum_force_vector.resize(Parameters::dimension);
     quantum_force_vector_new.resize(Parameters::dimension);
 
+
     a_bias.resize(M);
     b_bias.resize(N);
     weights.resize(M,N);
@@ -355,52 +356,50 @@ double System::get_local_energy(){
 
 //Returns the local energy. Does also compute the derivative of E_L used in the gradien descent.
 double System::get_local_energy_noninteracting(){
-        double total_energy = 0;
-        double temp_value = 0;
-        double factor1_noB = -2*(dimension)*alpha*N ;
-        double factor1_B = -2*alpha*(dimension - 1)*N -  2*alpha*beta*N;
-        double factor2 = 4*alpha*alpha;
-        double pot_factor = 0.5*omega*omega;
-        double r_i_annen = 0;
-        double wavefunction_derivative_value=0;
-        double omega_ratio = omega_z/omega;
-
-
-        for(int k = 0;k<N;k++){
-            for(int i = 0; i<dimension;i++){
-                if(i==2){
-                    temp_value += r(i,k)*r(i,k)*beta*beta;
-                    wavefunction_derivative_value+=beta*r(i,k)*r(i,k);
-                    r_i_annen += omega_ratio*omega_ratio*r(i,k)*r(i,k);
-                }
-                else{
-                    temp_value += r(i,k)*r(i,k);
-                    wavefunction_derivative_value+=r(i,k)*r(i,k );
-                    r_i_annen += r(i,k)*r(i,k);
-                }
-
-
-            }
+    double derivative_of_log_psi=0;
+    double second_derivative_of_log_psi=0;
+    double exp_factor=0;
+    double denominator_factor=0;
+    double potential_energy=0;
+    double potential_factor=0.5*omega*omega;
+    Eigen::VectorXd x_weight_product(N);
+    for(int k=0;k<M;k++){
+           derivative_of_log_psi+=(a_bias[k]-X[k])/(sigma_squared);
+           second_derivative_of_log_psi+=-1.0/(sigma_squared);
+           x_weight_product=(1.0/sigma_squared)*X.dot(weights);
+           for(int j=0;j<N;j++){
+                exp_factor=exp(-b_bias[j]-x_weight_product[j]);
+                derivative_of_log_psi+=w[k][j]/(sigma_squared*(1+exp_factor));
+                denominator_factor = sigma_squared*sigma_squared*(1+exp_factor)*(1+exp_factor);
+                second_derivative_of_log_psi+=(w[k][j]*w[k][j])*exp_factor/denominator_factor;
+           }
         }
-
-        if(dimension >= 3){
-            total_energy = factor1_B + factor2*temp_value;
-        }
-        else{
-            total_energy = factor1_noB + factor2*temp_value;
-        }
-
-        wavefunction_derivative_value*=-1;
-
-        temp_value=-0.5*total_energy+ pot_factor*r_i_annen;
-        expectation_local_energy+=temp_value;
-        expectation_local_energy_squared+=temp_value*temp_value;
-        expectation_derivative+=wavefunction_derivative_value;
-        expectation_derivative_energy+=(wavefunction_derivative_value)*temp_value;
-
-
-    return temp_value;
+    for(int k=0;k<P;k+=3){
+        potential_energy+=X[k]*X[k]+X[k+1]*X[k+1]+X[k+2]*X[k+2];
+    }
+   return -0.5*(derivative_of_log_psi*derivative_of_log_psi+second_derivative_of_log_psi)+potential_factor*potential_energy;
 }
+
+double System::d_psi_da(int k){
+    return (a_bias[k]-X[k])/sigma_squared;
+}
+
+double System::d_psi_db(int k){
+    double exp_factor=0;
+    for(int i=0;i<M;i++){
+        exp_factor+=X[i]*w[i][k];
+    }
+    return 1.0/(1+exp(-b_bias[k]-(1.0/sigma_squared)*exp_factor));
+}
+
+double System::d_psi_dw(int k, int l){
+    double exp_factor=0;
+    for(int i=0;i<M;i++){
+        exp_factor+=X[i]*w[i][l];
+    }
+    return X[k]/(sigma_squared*(1+exp(-b_bias[l]-(1.0/sigma_squared)*exp_factor)));
+}
+
 //u' . This assumes the distance between particles is more than a because of the placement.
 double System::udiv(int idx1,int idx2){
     return a/(distance(idx1,idx2)*distance(idx1,idx2) - a*distance(idx1,idx2));;
