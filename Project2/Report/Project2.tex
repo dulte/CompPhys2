@@ -1,0 +1,135 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{a4wide}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvips]{epsfig}
+\usepackage[toc,page]{appendix}
+\usepackage[T1]{fontenc}
+\usepackage{cite} % [2,3,4] --> [2--4]
+\usepackage{shadow}
+\usepackage{hyperref}
+\usepackage{titling}
+\usepackage{marvosym }
+\usepackage{physics}
+
+\usepackage{subcaption}
+\usepackage[noabbrev]{cleveref}
+\usepackage{wasysym}
+\usepackage{changepage}
+
+
+\renewcommand{\topfraction}{.85}
+\renewcommand{\bottomfraction}{.7}
+\renewcommand{\textfraction}{.15}
+\renewcommand{\floatpagefraction}{.66}
+\renewcommand{\dbltopfraction}{.66}
+\renewcommand{\dblfloatpagefraction}{.66}
+\setcounter{topnumber}{9}
+\setcounter{bottomnumber}{9}
+\setcounter{totalnumber}{20}
+\setcounter{dbltopnumber}{9}
+
+
+\setlength{\droptitle}{-10em}   % This is your set screw
+
+\setcounter{tocdepth}{2}
+
+\lstset{language=c++}
+\lstset{alsolanguage=[90]Fortran}
+\lstset{basicstyle=\small}
+\lstset{backgroundcolor=\color{white}}
+\lstset{frame=single}
+\lstset{stringstyle=\ttfamily}
+\lstset{keywordstyle=\color{red}\bfseries}
+\lstset{commentstyle=\itshape\color{blue}}
+\lstset{showspaces=false}
+\lstset{showstringspaces=false}
+\lstset{showtabs=false}
+\lstset{breaklines}
+\title{FYS4411 - Project 2\\
+	Variational Monte Carlo}
+\author{Daniel Heinesen$^1$, Gunnar Lange$^2$ \& Aram Salihi$^2$\\
+	\small $^1$Department of Theoretical Astrophysics, University of Oslo, N-0316 Oslo, Norway\\
+	\small $^2$Department of Physics, University of Oslo, N-0316 Oslo, Norway}
+\begin{document}
+	\maketitle
+	\begin{abstract}
+	\begin{center}
+	 NICE ABSTRACT
+\end{center}
+	\end{abstract}
+	\newpage
+	\tableofcontents
+	\newpage
+	\section{Introduction}
+	COOL INTRO
+	\section{Theoretical model}
+	MUCH THEORY
+	\section{Methods}\label{Method_section}
+	MUCHO METHOD
+	\section{Results}
+	GROUNDBREAKING RESULTS
+	\section{Discussion}
+	EXCELLENT DISCUSSION
+	\section{Conclusion}
+	BRILLIANT CONCLUSION
+	\subsection{Outlook}
+	MAGNIFICIENT OUTLOOK
+	\bibliographystyle{apalike}
+	\bibliography{Project1}
+	\pagebreak
+	\begin{appendices}
+	\section{Deriving the derivatives}
+	In this section, we derive the expressions for the various derivatives stated in section \textbf{SECTION}. We begin with the local energy.
+	\subsection{The local energy}
+	The local energy is given by:
+	\begin{equation}
+	E_L=\frac{1}{\Psi}\hat{H}\Psi= \sum_{i=1}^N \left(-\frac{1}{2\Psi}\nabla_i^2 \Psi + \frac{1}{2}\omega^2 r_i^2\right)+\sum_{i<j} \frac{1}{r_{ij}}
+	\end{equation}
+	Thus, we must compute:
+	\begin{equation}
+	\frac{1}{\Psi}\nabla_i^2 \Psi
+	\end{equation}
+	This may be rewritten as:
+	\begin{equation}\label{eq:log_expression_for_trial_wavefunction}
+	\frac{1}{\Psi}\nabla \left(\Psi \frac{1}{\Psi} \nabla\Psi\right)=\left(\frac{1}{\Psi}\nabla \Psi\right)^2+\nabla \left(\frac{1}{\Psi}\nabla \Psi \right)=\left[\nabla \log \Psi\right]^2 + \nabla^2 \log \Psi
+	\end{equation}
+	The logarithm of our trial wavefunction is given by:
+	\begin{equation}\label{eq:logarithm_of_wavefunction}
+	\log \Psi = -\log Z -\sum_{i=1}^M \left(\frac{(X_i-a_i)^2}{2\sigma^2}\right)+\sum_{j=1}^N \log \left(1+\exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)
+	\end{equation}
+	The derivative with respect to one coordinate is now given by:
+	\begin{equation}\label{eq:first_derivative_log_psi}
+	\begin{split}
+	\frac{\partial \log \Psi}{\partial X_k}=\frac{(a_k-X_k)}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj} \exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)}{\sigma^2 \left(1+\exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}\\
+	=\frac{a_k-X_k}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}}{\sigma^2 \left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}
+	\end{split}
+	\end{equation}
+	Whereas the second derivative is:
+	\begin{equation}\label{eq:second_derivative_log_psi}
+	\frac{\partial^2 \log \Psi}{\partial X_k^2}=-\frac{1}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}^2 \exp \left(-b_j-\sum_{i=1}^{M}\frac{X_iw_{ij}}{\sigma^2} \right)}{\sigma^4\left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)^2}
+	\end{equation}
+	The local energy can now be found by using equation \ref{eq:log_expression_for_trial_wavefunction}, and inserting equation \ref{eq:first_derivative_log_psi} and equation \ref{eq:second_derivative_log_psi}.
+	\subsection{The derivatives with respect to the parameters}
+	For our optimization method, we require:
+	\begin{equation}
+	\frac{1}{\Psi}\frac{\partial \Psi}{\partial \alpha_k}=\frac{\partial }{\partial \alpha_k}\log \Psi
+	\end{equation}
+	Where $\alpha_k$ is any of the variational parameters $a$, $b$ or $w$. These derivatives are given by:
+	\begin{equation}
+	\frac{\partial \log \Psi }{\partial a_k}=\frac{a_k-X_k}{\sigma^2}
+	\end{equation}
+	\begin{equation}
+	\frac{\partial \log \Psi}{\partial b_k}=\frac{\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}{1+\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}=\frac{1}{1+\exp \left(-b_k-\sum_{i=1}^M \frac{X_i w_{ik}}{\sigma^2}\right)}
+	\end{equation}
+	Finally, the derivative with respect to the weights, $w_{kl}$ is given by:
+	\begin{equation}
+	\frac{\partial \log \Psi}{\partial w_{kl}}=\frac{X_k\exp\left(b_l+\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)}{\sigma^2\left(1+\exp \left( b_l + \sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}=\frac{X_k}{\sigma^2\left(1+\exp \left(-b_l-\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}
+	\end{equation}
+	\end{appendices}
+\end{document}
