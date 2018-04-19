@@ -35,7 +35,6 @@ void Parameters::read_parameters(std::string location){
         double variable;
 
         ss >> name >> variable;
-        //std::cout << "Ting: " << name[0] << std::endl;
 
         if (name.front() == '#'){
             continue;
@@ -46,10 +45,11 @@ void Parameters::read_parameters(std::string location){
                 MC_cycles_set=true;
             }
         }
-        else if(name == "N"){
-            N = variable;
-            if(N>0){
-                N_set=true;
+
+        else if(name == "P"){
+            P = variable;
+            if(P>0){
+                P_set=true;
             }
         }
 
@@ -60,46 +60,39 @@ void Parameters::read_parameters(std::string location){
             }
         }
 
-        else if(name == "alpha_min"){
-            alpha_min = variable;
-            alpha_min_set=true;
-        }
-        else if(name == "alpha_max"){
-            alpha_max = variable;
-            alpha_max_set=true;
-        }
-        else if(name == "alpha_num"){
-            alpha_num = variable;
-            alpha_num_set=true;
+        else if(name == "N"){
+            N = variable;
+            if(N>0){
+                N_set=true;
+            }
         }
 
-        else if(name == "beta"){
-            beta = variable;
-            beta_set=true;
+        else if(name == "D"){
+            D=variable;
+            D_set=true;
         }
+
         else if(name == "omega"){
             omega = variable;
             omega_set=true;
         }
 
-        else if(name == "omega_z"){
-            omega_z=variable;
-            omega_z_set=true;
+        else if(name == "sigma"){
+            sigma = variable;
+            sigma_set=true;
         }
 
-        else if(name == "a"){
-            a=variable;
-            a_set=true;
-        }
 
         else if(name == "dx"){
             dx=variable;
             dx_set=true;
         }
-        else if(name == "D"){
-            D=variable;
-            D_set=true;
+
+        else if(name == "interacting"){
+            interacting=variable;
+            numerical_set=true;
         }
+
         else if(name == "numerical"){
             numerical=variable;
             numerical_set=true;
@@ -117,6 +110,11 @@ void Parameters::read_parameters(std::string location){
         exit(EXIT_FAILURE);
     }
 
+    else if(!P_set){
+        std::cout << "P not set or invalid!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
     else if(!dimension_set){
         std::cout << "Dimensions not set or invalid!" << std::endl;
         exit(EXIT_FAILURE);
@@ -126,47 +124,24 @@ void Parameters::read_parameters(std::string location){
         std::cout << "Number of particles not set or invalid!" << std::endl;
         exit(EXIT_FAILURE);
     }
-    else if(!alpha_max_set){
-        std::cout << "Max alpha not set!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    else if(!alpha_min_set){
-        std::cout << "Min alpha not set!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    else if(!alpha_num_set){
-        std::cout << "Numbers of alpha not set!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    else if(!beta_set){
-        std::cout << "Beta not set!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
     else if(!omega_set){
         std::cout << "Omega not set!" << std::endl;
         exit(EXIT_FAILURE);
     }
-
-    else if(!omega_z_set){
-        std::cout << "Omega_z not set!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    else if(!a_set){
-        std::cout << "a not set!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    else if(!dx_set){
-        std::cout << "dx not set!" << std::endl;
+    else if(!sigma_set){
+        std::cout << "Sigma not set!" << std::endl;
         exit(EXIT_FAILURE);
     }
     else if(!D_set){
         std::cout << "D not set!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    else if(!dx_set){
+        std::cout << "dx not set!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    else if(!interacting_set){
+        std::cout << "interacting not set!" << std::endl;
         exit(EXIT_FAILURE);
     }
     else if(!numerical_set){
@@ -180,32 +155,26 @@ void Parameters::read_parameters(std::string location){
 
 
 bool Parameters::MC_cycles_set=false;
-bool Parameters::dimension_set=false;
+bool Parameters::P_set=false;
 bool Parameters::N_set=false;
-bool Parameters::alpha_max_set=false;
-bool Parameters::alpha_min_set=false;
-bool Parameters::alpha_num_set=false;
-bool Parameters::beta_set=false;
+bool Parameters::dimension_set=false;
 bool Parameters::omega_set=false;
-bool Parameters::omega_z_set=false;
-bool Parameters::a_set=false;
-bool Parameters::dx_set=false;
+bool Parameters::sigma_set=false;
 bool Parameters::D_set=false;
-bool Parameters::numerical=false;
+bool Parameters::dx_set=false;
+bool Parameters::interacting_set=false;
+bool Parameters::numerical_set=false;
 
 int Parameters::MC_cycles = 0;
+int Parameters::P = 0;
 int Parameters::dimension=0;
 int Parameters::N=0;
-double Parameters::alpha_min = 0;
-double Parameters::alpha_max = 0;
-int Parameters::alpha_num = 0;
-double Parameters::beta = 0;
 double Parameters::omega = 0;
-double Parameters::omega_z = 0;
-double Parameters::a = 0;
-double Parameters::dx=0;
+double Parameters::sigma = 0;
 double Parameters::D=0;
-bool Parameters::numerical_set=false;
+double Parameters::dx=0;
+bool Parameters::interacting=false;
+bool Parameters::numerical=false;
 
 
 
