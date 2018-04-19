@@ -6,7 +6,9 @@ CONFIG -= qt
 SOURCES += main.cpp \
     DataDump/datadump.cpp \
     boltzmannmachine.cpp \
-    Parameters/parameters.cpp
+    Parameters/parameters.cpp \
+    system.cpp \
+    simulation.cpp
 
 HEADERS += \
     DataDump/datadump.h \
@@ -311,7 +313,9 @@ HEADERS += \
     Eigen/SVD \
     Eigen/UmfPackSupport \
     boltzmannmachine.h \
-    Parameters/parameters.h
+    Parameters/parameters.h \
+    system.h \
+    simulation.h
 
 DISTFILES += \
     Eigen/CMakeLists.txt
