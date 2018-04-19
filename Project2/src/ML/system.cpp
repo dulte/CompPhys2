@@ -7,8 +7,8 @@ including updating the wavefunction and the energy.
 System::System()
 {
 
-    r = Eigen::MatrixXd(dimension,N);
-    next_r = Eigen::MatrixXd(dimension,N);
+    r = Eigen::MatrixXd(dimension,P);
+    next_r = Eigen::MatrixXd(dimension,P);
 
     distance.resize(P,P);
     next_distance.resize(P,P);
@@ -27,7 +27,7 @@ System::System()
     h=1e-6; //Step size for numerical derivative
     number_accept = 0;
 
-    if(Parameters::a !=0){
+    if(is_interacting){
 	   //We use some function pointers to avoid some if statements in the functions
            System::wavefunction_function_pointer=&System::update_wavefunction_interacting;
            System::compute_local_energy=&System::get_local_energy_interacting;
@@ -54,12 +54,9 @@ void System::make_grid(double m_alpha){
     alpha = m_alpha;
     number_accept = 0;
     //Sets all positions to a random position [-1,1]
-    if(a!=0){
-        distribute_particles_interacting();
-    }
-    else{
-        distribute_particles_noninteracting();
-    }
+
+    distribute_particles_noninteracting();
+
 
     next_r = r;
     update();
@@ -68,10 +65,25 @@ void System::make_grid(double m_alpha){
 
 void System::make_grid(Eigen::ArrayXd &parameters)
 {
+
     Eigen::VectorXd par = (Eigen::VectorXd) parameters;
-    Eigen::Map<Eigen::VectorXd,0,M-1> a_bias(par.data(),M);
-    Eigen::Map<Eigen::VectorXd,M,N-1> b_bias(par.data(),N);
-    Eigen::Map<Eigen::MatrixXd>;
+    Eigen::VectorXd w_flatten(M*N);
+    for(int i = 0;i<par.size();i++){
+        if(i<M){
+            a_bias(i) = par(i);
+        }else if(i>=M && i<(N+M)){
+            b_bias(i-(M)) = par(i);
+        }else{
+            w_flatten(i-(M+N)) = par(i);
+        }
+    }
+    Eigen::Map<Eigen::MatrixXd> weights(w_flatten.data(),M,N);
+
+    distribute_particles_noninteracting();
+    next_r = r;
+    update();
+    wavefunction_value=get_wavefunction();
+
 }
 
 void System::distribute_particles_interacting(){
@@ -80,7 +92,7 @@ void System::distribute_particles_interacting(){
     in the interacting case, ensuring that none
     of them start out closer than a from one another.
     */
-    bool safe_distance = false;
+    /*bool safe_distance = false;
     for(int i = 0;i<N;i++){
         safe_distance = false;
         while(!safe_distance){
@@ -99,7 +111,7 @@ void System::distribute_particles_interacting(){
                 }
             }
         }
-    }
+    }*/
 }
 void System::distribute_particles_noninteracting(){
    /*
@@ -159,7 +171,7 @@ void System::make_move_and_update(const int move){
         next_r(i,move) = r(i,move) +  random_nr;
     }
 
-    if(D!=0 || a!=0){
+    if(D!=0){
         update_next_distance(move);
     }
 
@@ -240,13 +252,9 @@ double System::phi_exponant(const Eigen::VectorXd &r){
     temp_value = 0;
 
     for(int i = 0;i<dimension;i++){
-        if(i == 2){
-            //Multiplices beta to the z-componant
-            temp_value += beta*r(i)*r(i);
-        }
-        else{
-            temp_value += r(i)*r(i);
-        }
+
+        temp_value += r(i)*r(i);
+
     }
     return -alpha*temp_value;
 }
@@ -257,15 +265,15 @@ double System::f(double dist){
     /*
     Computes Jastrow factor
     */
-    double function;
+    /*double function;
     if(dist <= a){
         function = 0;
     }
     else{
         function = 1 - a/dist;
-    }
+    }*/
 
-    return function;
+    return 1;//function;
 }
 
 double System::get_probability_ratio(int move){
@@ -278,7 +286,7 @@ double System::get_probability_ratio(int move){
     double temp_value2 = phi_exponant(next_r.col(move)); //Stores the probability of move
     double f_part = 1;
     double green_part = 1;
-    if(a!=0){ //Interacting if needed
+    if(is_interacting){ //Interacting if needed
         f_part *= update_wavefunction_interacting_f(move);
     }
     if(D!=0){ //Importance sampling if needed
@@ -299,7 +307,7 @@ double System::get_wavefunction(){
     for(int i = 0;i<N;i++){
         temp_r = r.col(i);
         temp_value += phi_exponant(temp_r);
-        if(a != 0){
+        if(is_interacting){
             for(int other = i+1;other<N;other++){
                 f_part*= f(distance(other,i));
             }
@@ -355,7 +363,7 @@ double System::get_local_energy(){
 
 //Returns the local energy. Does also compute the derivative of E_L used in the gradien descent.
 double System::get_local_energy_noninteracting(){
-        double total_energy = 0;
+        /*double total_energy = 0;
         double temp_value = 0;
         double factor1_noB = -2*(dimension)*alpha*N ;
         double factor1_B = -2*alpha*(dimension - 1)*N -  2*alpha*beta*N;
@@ -399,22 +407,12 @@ double System::get_local_energy_noninteracting(){
         expectation_derivative_energy+=(wavefunction_derivative_value)*temp_value;
 
 
-    return temp_value;
+    return temp_value;*/
 }
-//u' . This assumes the distance between particles is more than a because of the placement.
-double System::udiv(int idx1,int idx2){
-    return a/(distance(idx1,idx2)*distance(idx1,idx2) - a*distance(idx1,idx2));;
-    }
-
-//u''
-double System::udivdiv(int idx1,int idx2){
-    return (a*a - 2*a*distance(idx1,idx2))/(
-                (distance(idx1,idx2)*distance(idx1,idx2)-
-                 a*distance(idx1,idx2))*(distance(idx1,idx2)*distance(idx1,idx2)-a*distance(idx1,idx2)));}
 
 //Returns the horrible local energy for interacting... Does also compute the derivative of E_L
 double System::get_local_energy_interacting(){
-    double sec_fac = 0;
+    /*double sec_fac = 0;
     double trd_fac = 0;
     double frt_fac = 0;
 
@@ -501,7 +499,7 @@ double System::get_local_energy_interacting(){
     expectation_derivative+=wavefunction_derivative_value;
     expectation_derivative_energy+=(wavefunction_derivative_value)*temp_value;
 
-    return temp_value;
+    return temp_value;*/
 }
 
 //Computes the quantum force
@@ -509,7 +507,7 @@ void System::quantum_force(int move){
     double grad_value = 0;
     double grad_value_new = 0;
 
-
+    /*
 
 
     for(int j=0; j<dimension;j++){
@@ -538,7 +536,7 @@ void System::quantum_force(int move){
         grad_value=0;
         grad_value_new=0;
     }
-
+*/
 
 }
 
@@ -563,7 +561,7 @@ double System::calculate_energy_numerically(){
 
     double kinetic_energy = 0;
     double potential_energy = 0;
-    double omega_ratio = omega_z/omega;
+    double omega_ratio = 1;// omega_z/omega;
     wavefunction_value=get_wavefunction();
     for(int i = 0; i<N;i++){
         for(int j = 0; j<dimension;j++){

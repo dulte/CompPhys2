@@ -90,7 +90,7 @@ void Parameters::read_parameters(std::string location){
 
         else if(name == "interacting"){
             interacting=variable;
-            numerical_set=true;
+            interacting_set=true;
         }
 
         else if(name == "numerical"){

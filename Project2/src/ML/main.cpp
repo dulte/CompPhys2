@@ -1,21 +1,25 @@
 #include <iostream>
 #include "boltzmannmachine.h"
 #include "Eigen/Dense"
+#include "system.h"
+#include "Parameters/parameters.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    cout << "Hello World!" << endl;
+    //Enables Eigen to do matrix operations in parallel
+    Eigen::initParallel();
 
-    BoltzmannMachine BM(4,2);
-    Eigen::VectorXd input(2);
-    input << .1,.2;
+    //Reads the parameter file
+    Parameters::read_parameters("../input/parameters.txt");
 
-    Eigen::VectorXd hidden(4);
-    hidden << .1,.2,.3,.4;
-    std::cout << BM.feedForward(input) << std::endl;
-    std::cout << BM.feedBackward(hidden) << std::endl;
+    Eigen::ArrayXd test_parameters(8);
+
+    test_parameters << 1,2,3,4,5,6,7,8;
+
+    System syst;
+    syst.make_grid(test_parameters);
 
     return 0;
 }

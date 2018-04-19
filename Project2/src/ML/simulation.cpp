@@ -116,11 +116,7 @@ double Simulation::compute_local_energy_derivative(double alpha){
 
 
 void Simulation::initiate(){
-    alpha_max = Parameters::alpha_max;
-    alpha_min = Parameters::alpha_min;
-    alpha_step = (alpha_max - alpha_min)/(double)Parameters::alpha_num;
-    MC_cycles = Parameters::MC_cycles;
-    N = Parameters::N;
+
 }
 
 

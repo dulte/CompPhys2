@@ -64,7 +64,7 @@ public:
     const double D = Parameters::D;
     const bool is_numerical = Parameters::numerical;
     const bool is_interacting = Parameters::interacting;
-    const double sigma = Parameter::sigma;
+    const double sigma = Parameters::sigma;
     const int P = Parameters::P;
     const int M = P*dimension;
 

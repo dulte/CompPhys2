@@ -1,6 +1,6 @@
 MC_cycles 1000000
 P 2 #Number of particles
-dimensions 2 #Dimensions
+dimensions 1 #Dimensions
 N 2 #Number of hidden nodes
 omega 1
 sigma 1
