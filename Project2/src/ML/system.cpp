@@ -21,6 +21,8 @@ System::System()
     b_bias.resize(N);
     weights.resize(M,N);
 
+    X.resize(M);
+
     std::random_device rd;
     gen = std::mt19937_64(rd());
     distribution = std::normal_distribution<double>(0.0,1.0);
@@ -83,7 +85,8 @@ void System::make_grid(Eigen::ArrayXd &parameters)
     distribute_particles_noninteracting();
     next_r = r;
     update();
-    wavefunction_value=get_wavefunction();
+
+    //wavefunction_value=get_wavefunction();
 
 }
 
@@ -131,6 +134,16 @@ void System::distribute_particles_noninteracting(){
     }
 }
 
+void System::update_X()
+{
+    for(int i = 0;i<P;i++){
+        for(int dim = 0;dim<dimension;dim++){
+
+            X(dimension*i+dim) = r(dim,i);
+        }
+    }
+}
+
 
 void System::update(){
     /*
@@ -151,6 +164,8 @@ void System::update(){
         quantum_force(0); //Re-initialize quantum force
     }
     update_expectation();
+    update_X();
+
 }
 
 void System::make_move_and_update(const int move){
@@ -371,15 +386,16 @@ double System::get_local_energy_noninteracting(){
     double potential_energy=0;
     double potential_factor=0.5*omega*omega;
     Eigen::VectorXd x_weight_product(N);
+
     for(int k=0;k<M;k++){
            derivative_of_log_psi+=(a_bias[k]-X[k])/(sigma_squared);
            second_derivative_of_log_psi+=-1.0/(sigma_squared);
-           x_weight_product=(1.0/sigma_squared)*X.dot(weights);
+           x_weight_product=(1.0/sigma_squared)*(X*weights);
            for(int j=0;j<N;j++){
                 exp_factor=exp(-b_bias[j]-x_weight_product[j]);
-                derivative_of_log_psi+=w[k][j]/(sigma_squared*(1+exp_factor));
+                derivative_of_log_psi+=weights(k,j)/(sigma_squared*(1+exp_factor));
                 denominator_factor = sigma_squared*sigma_squared*(1+exp_factor)*(1+exp_factor);
-                second_derivative_of_log_psi+=(w[k][j]*w[k][j])*exp_factor/denominator_factor;
+                second_derivative_of_log_psi+=(weights(k,j)*weights(k,j))*exp_factor/denominator_factor;
            }
         }
     for(int k=0;k<P;k+=3){
@@ -395,15 +411,15 @@ double System::d_psi_da(int k){
 double System::d_psi_db(int k){
     double exp_factor=0;
     for(int i=0;i<M;i++){
-        exp_factor+=X[i]*w[i][k];
+        exp_factor+=X[i]*weights(i,k);
     }
-    return 1.0/(1+exp(-b_bias[k]-(1.0/sigma_squared)*exp_factor));
+    return 1.0/(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor));
 }
 
 double System::d_psi_dw(int k, int l){
     double exp_factor=0;
     for(int i=0;i<M;i++){
-        exp_factor+=X[i]*w[i][l];
+        exp_factor+=X[i]*weights(i,l);
     }
     return X[k]/(sigma_squared*(1+exp(-b_bias[l]-(1.0/sigma_squared)*exp_factor)));
 }

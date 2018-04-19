@@ -22,6 +22,7 @@ public:
     Eigen::VectorXd b_bias;
     Eigen::VectorXd a_bias;
     Eigen::MatrixXd weights;
+    Eigen::VectorXd X;
 
 
 
@@ -34,6 +35,7 @@ public:
     void update_next_distance(int move);
     void distribute_particles_interacting();
     void distribute_particles_noninteracting();
+    void update_X();
 
 
     //Variables for dE_L/dAlpha
@@ -64,7 +66,7 @@ public:
     const double D = Parameters::D;
     const bool is_numerical = Parameters::numerical;
     const bool is_interacting = Parameters::interacting;
-    const double sigma = Parameter::sigma;
+    const double sigma = Parameters::sigma;
     const double sigma_squared=sigma*sigma;
     const int P = Parameters::P;
     const int M = P*dimension;
