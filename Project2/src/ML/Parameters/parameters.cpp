@@ -12,8 +12,8 @@ parameter_name parameter_value #Comment
 '#' works as a marker for comments (a simple space between the value and comment may work
 but use # to be safe.
 
-The parameter name has to coinside with the names in this class. If unknow name is found in the
-file, or a parameter if not set in the file, an error will be given.
+The parameter name has to coincide with the names in this class. If unknow name is found in the
+file, or a parameter is not set in the file, an error will be given.
 */
 
 void Parameters::read_parameters(std::string location){

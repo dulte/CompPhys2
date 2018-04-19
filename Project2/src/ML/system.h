@@ -64,7 +64,8 @@ public:
     const double D = Parameters::D;
     const bool is_numerical = Parameters::numerical;
     const bool is_interacting = Parameters::interacting;
-    const double sigma = Parameters::sigma;
+    const double sigma = Parameter::sigma;
+    const double sigma_squared=sigma*sigma;
     const int P = Parameters::P;
     const int M = P*dimension;
 
@@ -114,6 +115,9 @@ public:
 
 
 
+    double d_psi_da(int k);
+    double d_psi_db(int k);
+    double d_psi_dw(int k, int l);
 };
 
 #endif // SYSTEM_H
