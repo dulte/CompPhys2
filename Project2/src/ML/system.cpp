@@ -22,6 +22,7 @@ System::System()
     weights.resize(M,N);
 
     X.resize(M);
+    X_next.resize(M);
 
     std::random_device rd;
     gen = std::mt19937_64(rd());
@@ -61,7 +62,7 @@ void System::make_grid(double m_alpha){
     distribute_particles_noninteracting();
 
 
-    next_r = r;
+    next_X = X;
     update();
     wavefunction_value=get_wavefunction();
 }
@@ -83,7 +84,7 @@ void System::make_grid(Eigen::ArrayXd &parameters)
     Eigen::Map<Eigen::MatrixXd> weights(w_flatten.data(),M,N);
 
     distribute_particles_noninteracting();
-    next_r = r;
+    next_X = X;
     update();
 
     //wavefunction_value=get_wavefunction();
@@ -123,26 +124,32 @@ void System::distribute_particles_noninteracting(){
    as we do not need to take a minimum distance
    into account.
    */
-    for(int i = 0;i<N;i++){
-        for(int j = 0;j<dimension;j++){
+    for(int i = 0;i<P*dimension;i++){
             if(D!=0){
-                r(j,i) = distribution(gen)*sqrt(dx);
+                X(i) = distribution(gen)*sqrt(dx);
             }else{
-                r(j,i) = 2*(static_cast<double>(rand())/RAND_MAX - 0.5);
-            }
+                X(i) = 2*(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
     }
 }
 
-void System::update_X()
-{
-    for(int i = 0;i<P;i++){
-        for(int dim = 0;dim<dimension;dim++){
-
-            X(dimension*i+dim) = r(dim,i);
-        }
+void System::update_next_X(int move){
+    double random_nr = 0;
+    if(D!=0){
+        quantum_force(move);
     }
-}
+
+    for(int i = 0; i<dimension; i++){
+        if(D!=0){
+            random_nr = sqrt(dx)*distribution(gen) + quantum_force_vector(i)*dx*D;
+        }else{
+            random_nr = dx*2*(static_cast<double>(rand())/RAND_MAX - 0.5);
+        }
+
+        next_X(move*dimension+i) = X(move*dimension+i) +  random_nr;
+    }
+ }
+
 
 
 void System::update(){
@@ -173,26 +180,8 @@ void System::make_move_and_update(const int move){
     Takes a random move as input and 
     proposes the new step.
     */
-    if(D!=0){
-        quantum_force(move);
-    }
-    double random_nr = 0;
-    for(int i = 0; i<dimension; i++){
-        if(D!=0){
-            random_nr = sqrt(dx)*distribution(gen) + quantum_force_vector(i)*dx*D;
-        }else{
-            random_nr = dx*2*(static_cast<double>(rand())/RAND_MAX - 0.5);
-        }
 
-        next_r(i,move) = r(i,move) +  random_nr;
-    }
-
-    if(D!=0){
-        update_next_distance(move);
-    }
-
-
-
+    update_next_X(move);
 
 }
 
@@ -424,97 +413,6 @@ double System::d_psi_dw(int k, int l){
     return X[k]/(sigma_squared*(1+exp(-b_bias[l]-(1.0/sigma_squared)*exp_factor)));
 }
 
-//Returns the horrible local energy for interacting... Does also compute the derivative of E_L
-double System::get_local_energy_interacting(){
-    /*double sec_fac = 0;
-    double trd_fac = 0;
-    double frt_fac = 0;
-
-    double total_energy = 0;
-    double temp_value = 0;
-    temp_r = Eigen::VectorXd::Zero(dimension);
-    Eigen::VectorXd grad_r = Eigen::VectorXd::Zero(dimension);
-    Eigen::VectorXd temp_difference_vector = Eigen::VectorXd::Zero(dimension);
-    double factor1_noB = -2*(dimension)*alpha*N ;
-    double factor1_B = -2*alpha*(dimension -1)*N -2*alpha*beta*N;
-    double factor2 = 4*alpha*alpha;
-    double pot_factor = 0.5*omega*omega;
-    double r_i_annen = 0;
-    double wavefunction_derivative_value=0;
-    double omega_ratio = omega_z/omega;
-
-
-
-    for(int k = 0;k<N;k++){
-        for(int i = 0; i<dimension;i++){
-            if(i==2){
-                temp_value += r(i,k)*r(i,k)*beta*beta;
-                r_i_annen += omega_ratio*omega_ratio*r(i,k)*r(i,k);
-                wavefunction_derivative_value+=beta*r(i,k)*r(i,k);
-            }
-            else{
-                temp_value += r(i,k)*r(i,k);
-                wavefunction_derivative_value+=r(i,k)*r(i,k);
-                r_i_annen += r(i,k)*r(i,k);
-            }
-        }
-    }
-
-
-    for(int k = 0;k<N;k++){
-        temp_r = r.col(k);
-        for(int dim = 0;dim<dimension;dim++){
-            if(dim == 2){
-                grad_r(dim) = temp_r(dim)*beta;
-            }
-            else{
-                grad_r(dim) = temp_r(dim);
-            }
-        }
-        grad_r *= -4*alpha;
-        for(int j = 0;j<N;j++){
-            if(j!=k){
-                temp_difference_vector += (r.col(k)-r.col(j))/(distance(k,j))*udiv(k,j);
-            }
-        }
-
-        sec_fac += grad_r.dot(temp_difference_vector);
-    }
-
-    for(int k = 0; k<N;k++){
-        for(int j = 0; j<N;j++){
-            for(int i = 0; i<N;i++){
-                if(k!=i && k!=j){
-                    trd_fac += (r.col(k) - r.col(i)).dot(r.col(k) - r.col(j))/(distance(k,j)*distance(k,i))*udiv(k,i)*udiv(k,j);
-                }
-           }
-        }
-    }
-    for(int k = 0;k<N;k++){
-        for(int j = 0;j<N;j++){
-            if(j!=k){
-                frt_fac += udivdiv(k,j) + 2.0/(distance(k,j))*udiv(k,j);
-            }
-        }
-    }
-
-    if(dimension >= 3){
-        total_energy = factor1_B + factor2*temp_value + sec_fac + trd_fac + frt_fac;
-    }
-    else{
-        total_energy = factor1_noB + factor2*temp_value + sec_fac + trd_fac + frt_fac;
-    }
-
-
-    wavefunction_derivative_value*=-1;
-    temp_value= -0.5*total_energy+ pot_factor*r_i_annen;
-    expectation_local_energy+=temp_value;
-    expectation_local_energy_squared+=temp_value*temp_value;
-    expectation_derivative+=wavefunction_derivative_value;
-    expectation_derivative_energy+=(wavefunction_derivative_value)*temp_value;
-
-    return temp_value;*/
-}
 
 //Computes the quantum force
 void System::quantum_force(int move){

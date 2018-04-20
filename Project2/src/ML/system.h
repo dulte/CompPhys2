@@ -23,6 +23,8 @@ public:
     Eigen::VectorXd a_bias;
     Eigen::MatrixXd weights;
     Eigen::VectorXd X;
+    Eigen::VectorXd X_next;
+
 
 
 
@@ -35,7 +37,7 @@ public:
     void update_next_distance(int move);
     void distribute_particles_interacting();
     void distribute_particles_noninteracting();
-    void update_X();
+    void update_next_X(int move);
 
 
     //Variables for dE_L/dAlpha
