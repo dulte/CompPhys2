@@ -446,7 +446,7 @@ double System::d_psi_db(int k){
     for(int i=0;i<M;i++){
         exp_factor+=X[i]*weights(i,k);
     }
-    return 0;// 1.0/(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor));
+    return 1.0/(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor));
 }
 
 double System::d_psi_dw(int k, int l){

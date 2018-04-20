@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     Eigen::ArrayXd test_parameters(8);
 
 
-    test_parameters << .1,.2,.3,.4,.5,.6,.7,.8;
+    test_parameters << .1,.0,.31,.10,.76,.69,.1,.3;
 
     System * system = new System();
     Simulation * simulation = new Simulation(system);

@@ -28,20 +28,20 @@ inline Eigen::ArrayXd step_length(Eigen::ArrayXd & X, const int & A,Eigen::Array
 
 
 Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
-    int max_iter = 2;
+    int max_iter = 200;
     int i = 0;
     double A = 20;
     Eigen::ArrayXd  t = Eigen::ArrayXd::Ones(x_0.size())*A;
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
-    Eigen::ArrayXd gradient(x_0.size());
+    Eigen::ArrayXd gradient = Eigen::ArrayXd::Zero(x_0.size());
 
 
 
     while(i < max_iter){
         calculate_gradient(x,gradient);
 
-        x = x_prev + 0.01*gradient;//step_length(x_prev,A,t)*gradient;
+        x = x_prev + step_length(x_prev,A,t)*gradient;
         x_prev = x;
         i++;
 
@@ -61,8 +61,8 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     int total_size = x.size();
     int M = Parameters::P*Parameters::dimension;
 
-    Eigen::ArrayXd E_L_times_derivatives(total_size);
-    Eigen::ArrayXd derivatives(total_size);
+    Eigen::ArrayXd E_L_times_derivatives = Eigen::ArrayXd::Zero(total_size);
+    Eigen::ArrayXd derivatives = Eigen::ArrayXd::Zero(total_size);
 
     //This lowers the number of MC step by a factor 100.
     //This is done because we dont need as many steps, and to make this go faster.
@@ -89,8 +89,8 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
 
             }else if(k>=M && k<(Parameters::N+M)){
                 variable_derivative = system->d_psi_db(k-M);
-                std::cout << variable_derivative << std::endl;
-                std::cout << x(k) << std::endl;
+                //std::cout << variable_derivative << std::endl;
+                //std::cout << x(k) << std::endl;
             }else{
                 int w_index = k-(M+Parameters::N);
                 int column = w_index/M;
@@ -101,6 +101,9 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
 
             E_L_times_derivatives(k) += variable_derivative*local_energy;
             derivatives(k) += variable_derivative;
+
+
+
         }
 
     }
@@ -109,7 +112,7 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     derivatives /= fast_MC_cycles;
     total_energy /= fast_MC_cycles;
 
-
+    std::cout << total_energy << std::endl;
 
     gradient = 2*(E_L_times_derivatives - total_energy*derivatives);
 
