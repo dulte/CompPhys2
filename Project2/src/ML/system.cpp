@@ -81,7 +81,12 @@ void System::make_grid(Eigen::ArrayXd &parameters)
             w_flatten(i-(M+N)) = par(i);
         }
     }
-    Eigen::Map<Eigen::MatrixXd> weights(w_flatten.data(),M,N);
+
+    Eigen::Map<Eigen::MatrixXd> M2(w_flatten.data(),M,N);
+
+    weights = M2;
+
+
 
     distribute_particles_noninteracting();
     X_next = X;
@@ -158,6 +163,7 @@ void System::update(){
     Updates the distance
     maxtrix after a new move
     */
+
     double dist = 0;
     for(int i = 0; i<P;i++){
         for(int j = 0;j<i;j++){
@@ -320,8 +326,8 @@ double System::get_probability_ratio(int move){
             exp_factor_new += X_next[i]*weights(i,j);
 
         }
-        wave_function_second_part *= (1+exp(-b_bias(j)-(1.0/sigma_squared)*exp_factor));
-        wave_function_second_part_new *= (1+exp(-b_bias(j)-(1.0/sigma_squared)*exp_factor_new));
+        wave_function_second_part *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor));
+        wave_function_second_part_new *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor_new));
     }
 
     return first_part_ratio*(wave_function_second_part_new/wave_function_second_part);
@@ -352,7 +358,7 @@ double System::get_wavefunction(){
         for(int i=0;i<M;i++){
             exp_factor+=X[i]*weights(i,j);
         }
-        wave_function_second_part *= (1+exp(-b_bias(j)-(1.0/sigma_squared)*exp_factor));
+        wave_function_second_part *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor));
     }
 
     return wave_function_first_part*wave_function_second_part;
