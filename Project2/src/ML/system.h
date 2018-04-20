@@ -37,7 +37,7 @@ public:
     void update_next_distance(int move);
     void distribute_particles_interacting();
     void distribute_particles_noninteracting();
-    void update_next_X(int move);
+    void update_X_next(int move);
 
 
     //Variables for dE_L/dAlpha

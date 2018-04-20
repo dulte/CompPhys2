@@ -34,7 +34,7 @@ System::System()
     if(is_interacting){
 	   //We use some function pointers to avoid some if statements in the functions
            System::wavefunction_function_pointer=&System::update_wavefunction_interacting;
-           System::compute_local_energy=&System::get_local_energy_interacting;
+           //System::compute_local_energy=&System::get_local_energy_interacting;
 
        }
      else{
@@ -62,7 +62,7 @@ void System::make_grid(double m_alpha){
     distribute_particles_noninteracting();
 
 
-    next_X = X;
+    X_next = X;
     update();
     wavefunction_value=get_wavefunction();
 }
@@ -84,7 +84,7 @@ void System::make_grid(Eigen::ArrayXd &parameters)
     Eigen::Map<Eigen::MatrixXd> weights(w_flatten.data(),M,N);
 
     distribute_particles_noninteracting();
-    next_X = X;
+    X_next = X;
     update();
 
     //wavefunction_value=get_wavefunction();
@@ -133,7 +133,7 @@ void System::distribute_particles_noninteracting(){
     }
 }
 
-void System::update_next_X(int move){
+void System::update_X_next(int move){
     double random_nr = 0;
     if(D!=0){
         quantum_force(move);
@@ -146,7 +146,7 @@ void System::update_next_X(int move){
             random_nr = dx*2*(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
 
-        next_X(move*dimension+i) = X(move*dimension+i) +  random_nr;
+        X_next(move*dimension+i) = X(move*dimension+i) +  random_nr;
     }
  }
 
@@ -157,13 +157,17 @@ void System::update(){
     Updates the distance
     maxtrix after a new move
     */
-    double temp_value = 0;
-    for(int i = 0; i<N;i++){
+    double dist = 0;
+    for(int i = 0; i<P;i++){
         for(int j = 0;j<i;j++){
-            temp_value = (r.col(i)- r.col(j)).norm();
-            distance(i,j) = temp_value;
-            distance(j,i) = temp_value;
+            for(int dim=0;dim<dimension;i++){
+                dist+=(X(i*dimension+dim)-X(j*dimension+dim))*(X(i*dimension+dim)-X(j*dimension+dim));
+            }
+            dist=sqrt(dist);
+            distance(i,j) = dist;
+            distance(j,i) = dist;
         }
+        temp_value=0;
     }
 
     next_distance = distance;
@@ -171,8 +175,6 @@ void System::update(){
         quantum_force(0); //Re-initialize quantum force
     }
     update_expectation();
-    update_X();
-
 }
 
 void System::make_move_and_update(const int move){
@@ -181,7 +183,7 @@ void System::make_move_and_update(const int move){
     proposes the new step.
     */
 
-    update_next_X(move);
+    update_X_next(move);
 
 }
 
@@ -191,11 +193,14 @@ void System::update_next_distance(int move){
     to use in importance samplinf.
     */
     double dist = 0;
-    for(int i = 0;i<N;i++){
-        dist = (next_r.col(i)- next_r.col(move)).norm();
-
+    for(int i = 0;i<P;i++){
+        for(int dim=0;dim<dimension;dim++){
+            dist+=(X_next(i*dimension+dim)-X_next(move*dimension+dim))*(X_next(i*dimension+dim)-X_next(move*dimension+dim));
+        }
+        dist=sqrt(dist);
         next_distance(i,move) = dist;
         next_distance(move,i) = dist;
+        dist=0;
     }
 
 }
