@@ -122,7 +122,7 @@
 	\end{equation}
 	Where $\alpha_k$ is any of the variational parameters $a$, $b$ or $w$. These derivatives are given by:
 	\begin{equation}
-	\frac{\partial \log \Psi }{\partial a_k}=\frac{a_k-X_k}{\sigma^2}
+	\frac{\partial \log \Psi }{\partial a_k}=\frac{X_k-a_k}{\sigma^2}
 	\end{equation}
 	\begin{equation}
 	\frac{\partial \log \Psi}{\partial b_k}=\frac{\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}{1+\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}=\frac{1}{1+\exp \left(-b_k-\sum_{i=1}^M \frac{X_i w_{ik}}{\sigma^2}\right)}
