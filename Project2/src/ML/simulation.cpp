@@ -41,7 +41,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     while(i < max_iter){
         calculate_gradient(x,gradient);
         //std::cout << gradient << std::endl;
-        x = x_prev - 0.01*gradient;//step_length(x_prev,A,t)*gradient;
+        x = x_prev - step_length(x_prev,A,t)*gradient;
         x_prev = x;
         i++;
 
@@ -80,7 +80,7 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
         system->make_move_and_update(move);
 
         local_energy = system->check_acceptance_and_return_energy(move);
-
+        std::cout << local_energy << std::endl;
         total_energy += local_energy;
 
         for(int k = 0;k<total_size;k++){
@@ -103,6 +103,12 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
 
             E_L_times_derivatives(k) += variable_derivative*local_energy;
             derivatives(k) += variable_derivative;
+
+            if(variable_derivative != variable_derivative){
+                exit(1);
+            }
+
+
         }
 
     }
