@@ -231,6 +231,7 @@ double System::check_acceptance_and_return_energy(int move){
     double temp_value = (double)rand()/RAND_MAX;
 
     //If r is less than the acceptance prob, r is updated to the new r
+
     if(temp_value <= get_probability_ratio(move)){
 
         update_wavefunction(move);
@@ -240,6 +241,8 @@ double System::check_acceptance_and_return_energy(int move){
         distance.row(move) = next_distance.row(move);
 
         number_accept++;
+
+
 
     }
     else{
@@ -300,8 +303,8 @@ double System::get_probability_ratio(int move){
     */
 
     double first_part_ratio = 0;
-    double wave_function_second_part = 0;
-    double wave_function_second_part_new = 0;
+    double wave_function_second_part = 1;
+    double wave_function_second_part_new = 1;
     double exp_factor = 0;
     double exp_factor_new = 0;
 
@@ -334,7 +337,7 @@ double System::get_wavefunction(){
     Computes the wavefunction (complete)
     */
     double wave_function_first_part = 0;
-    double wave_function_second_part = 0;
+    double wave_function_second_part = 1;
     double exp_factor=0;
 
     for(int i=0;i<M;i++){

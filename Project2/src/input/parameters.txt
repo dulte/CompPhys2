@@ -1,10 +1,10 @@
-MC_cycles 1000000
+MC_cycles 100000
 P 2 #Number of particles
 dimensions 1 #Dimensions
 N 2 #Number of hidden nodes
 omega 1
 sigma 1
 D 0 #Importance sampling
-dx 0.005 #Step size
+dx 0.5 #Step size
 interacting 0 #bool
 numerical 0 #bool
