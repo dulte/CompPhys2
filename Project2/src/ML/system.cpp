@@ -292,19 +292,30 @@ double System::get_probability_ratio(int move){
     which accounts for interacting and importance sampling
     */
 
-    double temp_value = phi_exponant(r.col(move)); //Stores the probability before move
-    double temp_value2 = phi_exponant(next_r.col(move)); //Stores the probability of move
-    double f_part = 1;
-    double green_part = 1;
-    if(is_interacting){ //Interacting if needed
-        f_part *= update_wavefunction_interacting_f(move);
-    }
-    if(D!=0){ //Importance sampling if needed
-        green_part = greens_function_ratio(move);
+    double first_part_ratio = 0;
+    double wave_function_second_part = 0;
+    double wave_function_second_part_new = 0;
+    double exp_factor = 0;
+    double exp_factor_new = 0;
 
+    first_part_ratio = -((X_next(move) - a_bias(move))*(X_next(move) - a_bias(move)) - (X(move) - a_bias(move))*(X(move) - a_bias(move)));
+    first_part_ratio = exp(first_part_ratio/(2*sigma_squared));
+
+    for(int j = 0;j<N;j++){
+        exp_factor = 0;
+        exp_factor_new = 0;
+        for(int i=0;i<M;i++){
+            exp_factor += X[i]*weights(i,j);
+            exp_factor_new += X_next[i]*weights(i,j);
+
+        }
+        wave_function_second_part *= (1+exp(-b_bias(j)-(1.0/sigma_squared)*exp_factor));
+        wave_function_second_part_new *= (1+exp(-b_bias(j)-(1.0/sigma_squared)*exp_factor_new));
     }
 
-    return exp(2*(temp_value2-temp_value))*f_part*f_part*green_part;
+    return first_part_ratio*(wave_function_second_part_new/wave_function_second_part);
+
+
 }
 
 
