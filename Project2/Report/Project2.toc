@@ -6,6 +6,6 @@
 \contentsline {section}{\numberline {6}Conclusion}{3}{section.6}
 \contentsline {subsection}{\numberline {6.1}Outlook}{3}{subsection.6.1}
 \contentsline {section}{Appendices}{4}{section*.2}
-\contentsline {section}{\numberline {A}Deriving the derivatives}{4}{Appendix.a.A}
+\contentsline {section}{\numberline {A}Finding the derivatives}{4}{Appendix.a.A}
 \contentsline {subsection}{\numberline {A.1}The local energy}{4}{subsection.a.A.1}
 \contentsline {subsection}{\numberline {A.2}The derivatives with respect to the parameters}{4}{subsection.a.A.2}

@@ -28,7 +28,7 @@ inline Eigen::ArrayXd step_length(Eigen::ArrayXd & X, const int & A,Eigen::Array
 
 
 Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
-    int max_iter = 200;
+    int max_iter = 2000;
     int i = 0;
     double A = 20;
     Eigen::ArrayXd  t = Eigen::ArrayXd::Ones(x_0.size())*A;
@@ -87,17 +87,13 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
             if(k<M){
                 variable_derivative = system->d_psi_da(k);
 
-
             }else if(k>=M && k<(Parameters::N+M)){
                 variable_derivative = system->d_psi_db(k-M);
-                //std::cout << variable_derivative << std::endl;
-                //std::cout << x(k) << std::endl;
             }else{
                 int w_index = k-(M+Parameters::N);
-                int row = w_index/M;
-                int column = w_index%M;
-                variable_derivative = system->d_psi_dw(column,row);
-
+                int column = w_index/M;
+                int row = w_index%M;
+                variable_derivative = system->d_psi_dw(row,column);
 
             }
 

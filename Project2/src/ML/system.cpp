@@ -426,16 +426,16 @@ double System::get_local_energy_noninteracting(){
 
 
     for(int k=0;k<M;k++){
-           derivative_of_log_psi+=(a_bias[k]-X[k])/(sigma_squared);
+           derivative_of_log_psi+=(a_bias(k)-X(k))/(sigma_squared);
            second_derivative_of_log_psi+=-1.0/(sigma_squared);
 
            x_weight_product=(1.0/sigma_squared)*(weights.transpose()*X);
 
            for(int j=0;j<N;j++){
-                exp_factor=-b_bias[j]-x_weight_product[j];
-                derivative_of_log_psi+=weights(k,j)/(sigma_squared*(1+exp(exp_factor)));
-                denominator_factor = sigma_squared*sigma_squared*(1+exp(exp_factor))*(1+exp(exp_factor));
-                second_derivative_of_log_psi+=(weights(k,j)*weights(k,j))*exp(exp_factor)/denominator_factor;
+                exp_factor=exp(-b_bias(j)-x_weight_product(j));
+                derivative_of_log_psi+=weights(k,j)/(sigma_squared*(1+exp_factor));
+                denominator_factor = sigma_squared*sigma_squared*(1+exp_factor)*(1+exp_factor);
+                second_derivative_of_log_psi+=(weights(k,j)*weights(k,j))*exp_factor/denominator_factor;
            }
         }
 
@@ -454,7 +454,7 @@ double System::d_psi_da(int k){
 double System::d_psi_db(int k){
     double exp_factor=0;
     for(int i=0;i<M;i++){
-        exp_factor+=X[i]*weights(i,k);
+        exp_factor+=X(i)*weights(i,k);
     }
     return 1.0/(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor));
 }
@@ -462,9 +462,9 @@ double System::d_psi_db(int k){
 double System::d_psi_dw(int k, int l){
     double exp_factor=0;
     for(int i=0;i<M;i++){
-        exp_factor+=X[i]*weights(i,l);
+        exp_factor+=X(i)*weights(i,l);
     }
-    return X[k]/(sigma_squared*(1+exp(-b_bias[l]-(1.0/sigma_squared)*exp_factor)));
+    return X(k)/(sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
 }
 
 
