@@ -86,8 +86,7 @@ void System::make_grid(Eigen::ArrayXd &parameters)
     distribute_particles_noninteracting();
     X_next = X;
     update();
-
-    //wavefunction_value=get_wavefunction();
+    wavefunction_value=get_wavefunction();
 
 }
 
@@ -124,6 +123,7 @@ void System::distribute_particles_noninteracting(){
    as we do not need to take a minimum distance
    into account.
    */
+
     for(int i = 0;i<P*dimension;i++){
             if(D!=0){
                 X(i) = distribution(gen)*sqrt(dx);
@@ -131,6 +131,7 @@ void System::distribute_particles_noninteracting(){
                 X(i) = 2*(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
     }
+
 }
 
 void System::update_X_next(int move){
@@ -160,12 +161,14 @@ void System::update(){
     double dist = 0;
     for(int i = 0; i<P;i++){
         for(int j = 0;j<i;j++){
-            for(int dim=0;dim<dimension;i++){
+            for(int dim=0;dim<dimension;dim++){
                 dist+=(X(i*dimension+dim)-X(j*dimension+dim))*(X(i*dimension+dim)-X(j*dimension+dim));
             }
+
             dist=sqrt(dist);
             distance(i,j) = dist;
             distance(j,i) = dist;
+            dist = 0;
         }
         temp_value=0;
     }
@@ -229,8 +232,9 @@ double System::check_acceptance_and_return_energy(int move){
 
     //If r is less than the acceptance prob, r is updated to the new r
     if(temp_value <= get_probability_ratio(move)){
+
         update_wavefunction(move);
-        r.col(move) = next_r.col(move);
+        X = X_next;
 
         distance.col(move) = next_distance.col(move);
         distance.row(move) = next_distance.row(move);
@@ -239,16 +243,19 @@ double System::check_acceptance_and_return_energy(int move){
 
     }
     else{
-        next_r.col(move) = r.col(move);
+
+        X_next = X;
         next_distance.col(move) = distance.col(move);
         next_distance.row(move) = distance.row(move);
+
 
     }
     if(is_numerical){
         return calculate_energy_numerically();
     }
     else{
-        return get_local_energy();
+
+        return get_local_energy_noninteracting();
     }
 
 
@@ -406,10 +413,14 @@ double System::get_local_energy_noninteracting(){
     double potential_factor=0.5*omega*omega;
     Eigen::VectorXd x_weight_product(N);
 
+
+
     for(int k=0;k<M;k++){
            derivative_of_log_psi+=(a_bias[k]-X[k])/(sigma_squared);
            second_derivative_of_log_psi+=-1.0/(sigma_squared);
-           x_weight_product=(1.0/sigma_squared)*(X*weights);
+
+           x_weight_product=(1.0/sigma_squared)*(weights*X);
+
            for(int j=0;j<N;j++){
                 exp_factor=exp(-b_bias[j]-x_weight_product[j]);
                 derivative_of_log_psi+=weights(k,j)/(sigma_squared*(1+exp_factor));
@@ -417,9 +428,12 @@ double System::get_local_energy_noninteracting(){
                 second_derivative_of_log_psi+=(weights(k,j)*weights(k,j))*exp_factor/denominator_factor;
            }
         }
-    for(int k=0;k<P;k+=3){
-        potential_energy+=X[k]*X[k]+X[k+1]*X[k+1]+X[k+2]*X[k+2];
+
+    for(int k=0;k<M;k+=dimension){
+        for(int dim=0;dim<dimension;dim++)
+            potential_energy+=X(k+dim)*X(k+dim);
     }
+
    return -0.5*(derivative_of_log_psi*derivative_of_log_psi+second_derivative_of_log_psi)+potential_factor*potential_energy;
 }
 
@@ -432,7 +446,7 @@ double System::d_psi_db(int k){
     for(int i=0;i<M;i++){
         exp_factor+=X[i]*weights(i,k);
     }
-    return 1.0/(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor));
+    return 0;// 1.0/(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor));
 }
 
 double System::d_psi_dw(int k, int l){

@@ -4,6 +4,7 @@
 Simulation::Simulation(System *m_system)
 {
     system = m_system;
+    MC_cycles = Parameters::MC_cycles;
 
 }
 
@@ -27,29 +28,41 @@ inline Eigen::ArrayXd step_length(Eigen::ArrayXd & X, const int & A,Eigen::Array
 
 
 Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
-    int max_iter = 100;
+    int max_iter = 2;
     int i = 0;
     double A = 20;
     Eigen::ArrayXd  t = Eigen::ArrayXd::Ones(x_0.size())*A;
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
-    double gradient = 0;
+    Eigen::ArrayXd gradient(x_0.size());
+
+
 
     while(i < max_iter){
-        gradient = calculate_gradient(x_prev);
-        x = x_prev + step_length(x_prev,A,t)*gradient;
+        calculate_gradient(x,gradient);
+
+        x = x_prev + 0.01*gradient;//step_length(x_prev,A,t)*gradient;
         x_prev = x;
         i++;
-    }
 
+    }
+    return x;
 }
 
 
-double Simulation::calculate_gradient(Eigen::ArrayXd &x){
-    energy = 0;
-    total_energy = 0;
+void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
+
     int move = 0;
     double local_energy_derivative=0;
+    double local_energy = 0;
+    double total_energy = 0;
+
+    double variable_derivative = 0;
+    int total_size = x.size();
+    int M = Parameters::P*Parameters::dimension;
+
+    Eigen::ArrayXd E_L_times_derivatives(total_size);
+    Eigen::ArrayXd derivatives(total_size);
 
     //This lowers the number of MC step by a factor 100.
     //This is done because we dont need as many steps, and to make this go faster.
@@ -61,14 +74,45 @@ double Simulation::calculate_gradient(Eigen::ArrayXd &x){
 
     //A simple simulation for the given alpha
     system->make_grid(x);
+
     for(int i = 0;i<fast_MC_cycles;i++){
-        energy = 0;
         move = static_cast<int>(distribution(gen));
         system->make_move_and_update(move);
-        energy += system->check_acceptance_and_return_energy(move);
 
-        total_energy += energy;
+        local_energy = system->check_acceptance_and_return_energy(move);
+
+        total_energy += local_energy;
+
+        for(int k = 0;k<total_size;k++){
+            if(k<M){
+                variable_derivative = system->d_psi_da(k);
+
+            }else if(k>=M && k<(Parameters::N+M)){
+                variable_derivative = system->d_psi_db(k-M);
+                std::cout << variable_derivative << std::endl;
+                std::cout << x(k) << std::endl;
+            }else{
+                int w_index = k-(M+Parameters::N);
+                int column = w_index/M;
+                int row = w_index%M;
+                variable_derivative = system->d_psi_dw(column,row);
+
+            }
+
+            E_L_times_derivatives(k) += variable_derivative*local_energy;
+            derivatives(k) += variable_derivative;
+        }
+
     }
+
+    E_L_times_derivatives /= fast_MC_cycles;
+    derivatives /= fast_MC_cycles;
+    total_energy /= fast_MC_cycles;
+
+
+
+    gradient = 2*(E_L_times_derivatives - total_energy*derivatives);
+
 }
 
 

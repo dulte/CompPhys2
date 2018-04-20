@@ -41,6 +41,7 @@ void Parameters::read_parameters(std::string location){
         }
         else if(name == "MC_cycles"){
             MC_cycles = variable;
+
             if(MC_cycles>0){
                 MC_cycles_set=true;
             }

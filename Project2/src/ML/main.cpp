@@ -3,6 +3,7 @@
 #include "Eigen/Dense"
 #include "system.h"
 #include "Parameters/parameters.h"
+#include "simulation.h"
 
 using namespace std;
 
@@ -16,10 +17,18 @@ int main(int argc, char *argv[])
 
     Eigen::ArrayXd test_parameters(8);
 
-    test_parameters << 1,2,3,4,5,6,7,8;
 
-    System syst;
-    syst.make_grid(test_parameters);
+    test_parameters << .1,.2,.3,.4,.5,.6,.7,.8;
+
+    System * system = new System();
+    Simulation * simulation = new Simulation(system);
+
+    test_parameters = simulation->stochastic_descent(test_parameters);
+
+
+    std::cout << test_parameters << std::endl;
+    delete simulation;
+    delete system;
 
     return 0;
 }

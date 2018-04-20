@@ -17,7 +17,7 @@ public:
     void run(int rank,double alpha);
 
     Eigen::ArrayXd stochastic_descent(Eigen::ArrayXd x_0);
-    double calculate_gradient(Eigen::ArrayXd & x);
+    void calculate_gradient(Eigen::ArrayXd & x,Eigen::ArrayXd &gradient);
     double compute_local_energy_derivative(double alpha);
     void oneBodyDensity(double optimal_alpha, double r_step, double r_min, double r_max);
 private:
