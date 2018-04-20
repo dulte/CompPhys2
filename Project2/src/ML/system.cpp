@@ -253,6 +253,7 @@ double System::check_acceptance_and_return_energy(int move){
 
 
     }
+
     if(is_numerical){
         return calculate_energy_numerically();
     }
@@ -422,7 +423,7 @@ double System::get_local_energy_noninteracting(){
            derivative_of_log_psi+=(a_bias[k]-X[k])/(sigma_squared);
            second_derivative_of_log_psi+=-1.0/(sigma_squared);
 
-           x_weight_product=(1.0/sigma_squared)*(weights*X);
+           x_weight_product=(1.0/sigma_squared)*(weights.transpose()*X);
 
            for(int j=0;j<N;j++){
                 exp_factor=exp(-b_bias[j]-x_weight_product[j]);

@@ -15,18 +15,19 @@ int main(int argc, char *argv[])
     //Reads the parameter file
     Parameters::read_parameters("../input/parameters.txt");
 
-    Eigen::ArrayXd test_parameters(8);
+    Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
 
-
-    test_parameters << .1,.0,.31,.10,.76,.69,.1,.3;
+    std::cout << test_parameters << std::endl;
+    std::cout << "---------------" << std::endl;
+    //test_parameters << -.1,.0,-.31,.10,.76,.69,-.1,.3;
 
     System * system = new System();
     Simulation * simulation = new Simulation(system);
 
-    test_parameters = simulation->stochastic_descent(test_parameters);
+    Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
 
 
-    std::cout << test_parameters << std::endl;
+    std::cout <<  test_parameters - done << std::endl;
     delete simulation;
     delete system;
 

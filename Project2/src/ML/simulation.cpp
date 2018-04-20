@@ -95,7 +95,7 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
                 int w_index = k-(M+Parameters::N);
                 int column = w_index/M;
                 int row = w_index%M;
-                variable_derivative = system->d_psi_dw(column,row);
+                variable_derivative = system->d_psi_dw(row,column);
 
             }
 
