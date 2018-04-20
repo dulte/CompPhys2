@@ -313,25 +313,39 @@ double System::get_probability_ratio(int move){
     return exp(2*(temp_value2-temp_value))*f_part*f_part*green_part;
 }
 
+
+
+
+
 double System::get_wavefunction(){
     /*
     Computes the wavefunction (complete)
     */
-    double temp_value = 0; //Stores the exponants of phi
-    double f_part = 1;
-    Eigen::VectorXd temp_r;
-    for(int i = 0;i<N;i++){
-        temp_r = r.col(i);
-        temp_value += phi_exponant(temp_r);
-        if(is_interacting){
-            for(int other = i+1;other<N;other++){
-                f_part*= f(distance(other,i));
-            }
-        }
+    double wave_function_first_part = 0;
+    double wave_function_second_part = 0;
+    double exp_factor=0;
 
+    for(int i=0;i<M;i++){
+        wave_function_first_part+=-(X(i) - a_bias(i))*(X(i) - a_bias(i));
     }
-    return exp(temp_value)*f_part;
+
+    wave_function_first_part = exp(wave_function_first_part/(2*sigma_squared));
+
+    for(int j = 0;j<N;j++){
+        exp_factor=0;
+        for(int i=0;i<M;i++){
+            exp_factor+=X[i]*weights(i,j);
+        }
+        wave_function_second_part *= (1+exp(-b_bias(j)-(1.0/sigma_squared)*exp_factor));
+    }
+
+    return wave_function_first_part*wave_function_second_part;
 }
+
+
+
+
+
 
 void System::update_wavefunction(const int move){
     return (this->*wavefunction_function_pointer)(move);
