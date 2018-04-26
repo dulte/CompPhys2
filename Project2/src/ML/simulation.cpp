@@ -30,7 +30,7 @@ inline Eigen::ArrayXd step_length(Eigen::ArrayXd & X, const int & A,Eigen::Array
 Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     int max_iter = 2000;
     int i = 0;
-    double A = 20;
+    double A = 2;
     Eigen::ArrayXd  t = Eigen::ArrayXd::Ones(x_0.size())*A;
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
@@ -40,8 +40,8 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
 
     while(i < max_iter){
         calculate_gradient(x,gradient);
-        //std::cout << gradient << std::endl;
-        x = x_prev - 0.0001*gradient; //step_length(x_prev,A,t)*gradient;
+        //std::cout << "Gradient: " << gradient << std::endl;
+        x = x_prev - 0.01*gradient;//step_length(x_prev,A,t)*gradient;
         x_prev = x;
         i++;
 
@@ -80,7 +80,6 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
         system->make_move_and_update(move);
 
         local_energy = system->check_acceptance_and_return_energy(move);
-        std::cout << local_energy << std::endl;
         total_energy += local_energy;
 
         for(int k = 0;k<total_size;k++){
@@ -113,10 +112,10 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     derivatives /= fast_MC_cycles;
     total_energy /= fast_MC_cycles;
 
-    /*std::cout << E_L_times_derivatives << std::endl;
-    std::cout << "#######" << std::endl;
-    std::cout << total_energy*derivatives << std::endl;
-    std::cout << "-----------------" << std::endl;*/
+    std::cout << "total energy: " << total_energy << std::endl;
+    /*std::cout << "#######" << std::endl;
+    std::cout << total_energy*derivatives << std::endl;*/
+    std::cout << "-----------------" << std::endl;
 
     gradient = 2*(E_L_times_derivatives - total_energy*derivatives);
 

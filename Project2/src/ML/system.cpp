@@ -272,7 +272,7 @@ double System::check_acceptance_and_return_energy(int move){
         return calculate_energy_numerically();
     }
     else{
-        std::cout<<"Numerical energy: "<< calculate_energy_numerically()<<std::endl;
+        //std::cout<<"Numerical energy: "<< calculate_energy_numerically()<<std::endl;
         return get_local_energy_noninteracting();
     }
 
@@ -338,7 +338,7 @@ double System::get_probability_ratio(int move){
         wave_function_second_part_new *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor_new));
     }
 
-    return first_part_ratio*(wave_function_second_part_new/wave_function_second_part)*greens_factor(move);
+    return first_part_ratio*(wave_function_second_part_new/wave_function_second_part)*first_part_ratio*(wave_function_second_part_new/wave_function_second_part)*greens_factor(move);
 
 
 }
@@ -368,6 +368,8 @@ double System::get_wavefunction(){
         }
         wave_function_second_part *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor));
     }
+
+    //std::cout << wave_function_first_part*wave_function_second_part << std::endl;
 
     return wave_function_first_part*wave_function_second_part;
 }
