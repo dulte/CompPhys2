@@ -43,6 +43,7 @@ System::System()
            System::compute_local_energy=&System::get_local_energy_noninteracting;
 
     }
+
     if(D!=0){
         System::greens_pointer=&System::greens_function_ratio;
     }
@@ -270,7 +271,7 @@ double System::check_acceptance_and_return_energy(int move){
         return calculate_energy_numerically();
     }
     else{
-
+        std::cout<<"Numerical energy: "<< calculate_energy_numerically()<<std::endl;
         return get_local_energy_noninteracting();
     }
 
@@ -568,24 +569,17 @@ double System::calculate_energy_numerically(){
     double potential_energy = 0;
     double omega_ratio = 1;// omega_z/omega;
     wavefunction_value=get_wavefunction();
-    for(int i = 0; i<N;i++){
-        for(int j = 0; j<dimension;j++){
-            if (j==2){
-                potential_energy += omega_ratio*omega_ratio*r(j,i)*r(j,i);
-            }
-            else{
-                potential_energy+=omega*omega*r(j,i)*r(j,i);
-            }
+    for(int i = 0; i<M;i++){
+            potential_energy+=omega*omega*X(i)*X(i);
 
 
-            r(j,i)+=h;
+            X(i)+=h;
             wavefunction_value_plus=get_wavefunction();
-            r(j,i)-=2*h;
+            X(i)-=2*h;
             wavefunction_value_minus=get_wavefunction();
-            r(j,i)+=h;
+            X(i)+=h;
             kinetic_energy -= (wavefunction_value_plus+wavefunction_value_minus - 2*wavefunction_value)/h/h/wavefunction_value;
 
-        }
     }
     return (0.5*potential_energy+0.5*(kinetic_energy));
 }
