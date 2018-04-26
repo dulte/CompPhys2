@@ -86,6 +86,8 @@ public:
     void (System::*wavefunction_function_pointer)(const int);
     double (System::*compute_energy_numeric)();
     double (System::*compute_local_energy)();
+    double (System::*greens_pointer)(const int);
+
 
 
     //Functions for calulations involving wavefunction
@@ -122,6 +124,11 @@ public:
     double d_psi_da(int k);
     double d_psi_db(int k);
     double d_psi_dw(int k, int l);
+    double greens_function_ratio_none(int move);
+    double greens_factor(const int move);
+    double d_psi_da_log(int k);
+    double d_psi_db_log(int k);
+    double d_psi_dw_log(int k, int l);
 };
 
 #endif // SYSTEM_H

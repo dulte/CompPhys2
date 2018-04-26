@@ -43,6 +43,12 @@ System::System()
            System::compute_local_energy=&System::get_local_energy_noninteracting;
 
     }
+    if(D!=0){
+        System::greens_pointer=&System::greens_function_ratio;
+    }
+    else{
+        System::greens_pointer=&System::greens_function_ratio_none;
+    }
 
     //Sets the seed of rand() to the current time
     srand(time(NULL));
@@ -330,7 +336,7 @@ double System::get_probability_ratio(int move){
         wave_function_second_part_new *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor_new));
     }
 
-    return first_part_ratio*(wave_function_second_part_new/wave_function_second_part);
+    return first_part_ratio*(wave_function_second_part_new/wave_function_second_part)*greens_factor(move);
 
 
 }
@@ -467,57 +473,90 @@ double System::d_psi_dw(int k, int l){
     return X(k)/(sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
 }
 
+double System::d_psi_da_log(int k){
+    return (X(k)-a_bias(k))/(2.0*sigma_squared);
+}
+
+double System::d_psi_db_log(int k){
+    double exp_factor=0;
+    for(int i=0;i<M;i++){
+        exp_factor+=X(i)*weights(i,k);
+    }
+    return 1.0/(2.0*(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor)));
+}
+
+double System::d_psi_dw_log(int k, int l){
+    double exp_factor=0;
+    for(int i=0;i<M;i++){
+        exp_factor+=X(i)*weights(i,l);
+    }
+    return X(k)/(2.0*sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
+}
+
 
 //Computes the quantum force
 void System::quantum_force(int move){
     double grad_value = 0;
-    double grad_value_new = 0;
+    double grad_value_next = 0;
+    double exp_factor = 0;
+    double exp_factor_next = 0;
+    Eigen::VectorXd x_weight_product(N);
+    Eigen::VectorXd x_weight_product_next(N);
 
-    /*
+
+    x_weight_product=(1.0/sigma_squared)*(weights.transpose()*X);
+    x_weight_product_next=(1.0/sigma_squared)*(weights.transpose()*X_next);
 
 
-    for(int j=0; j<dimension;j++){
+    for(int dim=0;dim<dimension;dim++){
+        grad_value+=(a_bias(move*dimension+dim)-X(move*dimension+dim));
+        grad_value_next+=(a_bias(move*dimension+dim)-X_next(move*dimension+dim));
+        grad_value/=sigma_squared;
+        grad_value_next/=sigma_squared;
+        for(int j=0;j<N;j++){
+            exp_factor=exp(-b_bias(j)-x_weight_product(j));
+            exp_factor_next=exp(-b_bias(j)-x_weight_product_next(j));
+            grad_value+=weights(move,j)/(sigma_squared*(1+exp_factor));
+            grad_value_next+=weights(move,j)/(sigma_squared*(1+exp_factor_next));
+       }
+       quantum_force_vector(dim)=grad_value;
+       quantum_force_vector_new(dim)=grad_value_next;
+       grad_value=0;
+       grad_value_next=0;
 
-        if(a!=0){
-            for(int k=0; k<N;k++){
-                if(k !=move){
-                    if(distance(move,k)>a){
-                        grad_value+=2*a*(r(j,move)-r(j,k))/(distance(move,k)*distance(move,k)*distance(move,k) - a*distance(move,k)*distance(move,k)) ;//distance(move,k)*udiv(move,k);
-                    }
-                    if(next_distance(move,k)>a){
-                        grad_value_new+=2*a*(next_r(j,move)-next_r(j,k))/(next_distance(move,k)*next_distance(move,k)*next_distance(move,k) - a*next_distance(move,k)*next_distance(move,k));//next_distance(move,k)*udiv(move,k);
-                    }
-                 }
-            }
-        }
-        if(j==2){
-           quantum_force_vector(j)=-4.0*alpha*beta*r(j,move)+grad_value;
-           quantum_force_vector_new(j)=-4.0*alpha*beta*next_r(j,move)+grad_value;
-
-        }
-        else{
-            quantum_force_vector(j)=-4.0*alpha*r(j,move)+grad_value;
-            quantum_force_vector_new(j)=-4.0*alpha*next_r(j,move)+grad_value;
-        }
-        grad_value=0;
-        grad_value_new=0;
     }
-*/
-
 }
 
 //Returns the ratio of the green functions
 double System::greens_function_ratio(int move)
 {
     double value=0;
+    Eigen::VectorXd x_move(dimension);
+    Eigen::VectorXd x_move_next(dimension);
+
+    for(int dim=0;dim<dimension;dim++){
+        x_move(dim)=X(dimension*move+dim);
+        x_move_next(dim)=X_next(dimension*move+dim);
+
+    }
+
 
     quantum_force(move);
 
-    value = -(r.col(move) - next_r.col(move) -D*dx*quantum_force_vector_new).squaredNorm()+(next_r.col(move)-r.col(move) - D*dx*quantum_force_vector).squaredNorm();
+    value = -(x_move - x_move_next -D*dx*quantum_force_vector_new).squaredNorm()+(x_move_next-x_move - D*dx*quantum_force_vector).squaredNorm();
     value /= 4*D*dx;
 
     return exp(value);
 }
+
+double System::greens_factor(const int move){
+    return (this->*greens_pointer)(move);
+}
+
+double System::greens_function_ratio_none(int move){
+    return 1.0;
+}
+
 
 
 //Calculates the energy numerically. Does NOT calculate the derivative of E_L

@@ -5,6 +5,6 @@ N 2 #Number of hidden nodes
 omega 1
 sigma 1
 D 0 #Importance sampling
-dx 0.05 #Step size
+dx 0.5 #Step size
 interacting 0 #bool
 numerical 0 #bool
