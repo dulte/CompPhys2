@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     //Reads the parameter file
     Parameters::read_parameters("../input/parameters.txt");
 
-    Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
+    Eigen::ArrayXd test_parameters = 0.01*Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
 
     std::cout << test_parameters << std::endl;
     std::cout << "---------------" << std::endl;

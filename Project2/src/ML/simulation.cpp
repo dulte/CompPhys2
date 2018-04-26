@@ -9,17 +9,17 @@ Simulation::Simulation(System *m_system)
 }
 
 inline Eigen::ArrayXd f(const Eigen::ArrayXd & X){
-    double f_max = .5;
-    double f_min = -.5;
+    double f_max = 1.;
+    double f_min = -1;
     double f_ratio = f_max/f_min;
-    double omega = 10;
+    double omega = 1;
 
     return  (f_min - (f_max-f_min)*Eigen::inverse(1-f_ratio*Eigen::exp(-X/omega)));
 }
 
 
 inline Eigen::ArrayXd step_length(Eigen::ArrayXd & X, const int & A,Eigen::ArrayXd & t){
-    int a = 10;
+    int a = 1;
     Eigen::ArrayXd f_val = f(X);
     Eigen::ArrayXd delta = a*Eigen::inverse(t+A);
     t = (t+f_val).cwiseMax(0);
@@ -40,7 +40,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
 
     while(i < max_iter){
         calculate_gradient(x,gradient);
-        //std::cout << "Gradient: " << gradient << std::endl;
+        //std::cout << "Gradient: " << (gradient) << std::endl;
         x = x_prev - 0.01*gradient;//step_length(x_prev,A,t)*gradient;
         x_prev = x;
         i++;
@@ -118,6 +118,30 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     std::cout << "-----------------" << std::endl;
 
     gradient = 2*(E_L_times_derivatives - total_energy*derivatives);
+    std::cout << "Gradients: " << std::endl;
+    for(int k = 0;k<total_size;k++){
+        if(k<M){
+            std::cout << "a: " << gradient[k] << std::endl;
+
+        }else if(k>=M && k<(Parameters::N+M)){
+            std::cout << "b: " << gradient[k-M] << std::endl;
+        }else{
+
+            std::cout << "w: " << gradient[k - (M+N)] << std::endl;
+        }
+
+        E_L_times_derivatives(k) += variable_derivative*local_energy;
+        derivatives(k) += variable_derivative;
+
+        if(variable_derivative != variable_derivative){
+            exit(1);
+        }
+
+
+    }
+
+    std::cout << "_________________" << std::endl;
+
 
 }
 

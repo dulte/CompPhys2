@@ -140,7 +140,7 @@ void System::distribute_particles_noninteracting(){
             if(D!=0){
                 X(i) = distribution(gen)*sqrt(dx);
             }else{
-                X(i) = 2*(static_cast<double>(rand())/RAND_MAX - 0.5);
+                X(i) = 0.5*(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
     }
 
@@ -320,7 +320,7 @@ double System::get_probability_ratio(int move){
     double wavefunction_old=get_wavefunction();
     double wavefunction_new=get_wavefunction_next();
 
-    return (wavefunction_new*wavefunction_new)/(wavefunction_old*wavefunction_old);
+    return (wavefunction_new*wavefunction_new)/(wavefunction_old*wavefunction_old)*greens_function_ratio(move);
 
     /*
     double first_part_ratio = 0;
