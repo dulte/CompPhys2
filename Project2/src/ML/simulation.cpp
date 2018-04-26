@@ -41,7 +41,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     while(i < max_iter){
         calculate_gradient(x,gradient);
         //std::cout << "Gradient: " << gradient << std::endl;
-        x = x_prev - 0.01*gradient;//step_length(x_prev,A,t)*gradient;
+        x = x_prev - 0.001*gradient;//step_length(x_prev,A,t)*gradient;
         x_prev = x;
         i++;
 

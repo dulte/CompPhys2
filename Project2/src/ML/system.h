@@ -129,6 +129,7 @@ public:
     double d_psi_da_log(int k);
     double d_psi_db_log(int k);
     double d_psi_dw_log(int k, int l);
+    double get_wavefunction_next();
 };
 
 #endif // SYSTEM_H

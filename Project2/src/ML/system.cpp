@@ -317,6 +317,12 @@ double System::get_probability_ratio(int move){
     which accounts for interacting and importance sampling
     */
 
+    double wavefunction_old=get_wavefunction();
+    double wavefunction_new=get_wavefunction_next();
+
+    return (wavefunction_new*wavefunction_new)/(wavefunction_old*wavefunction_old);
+
+    /*
     double first_part_ratio = 0;
     double wave_function_second_part = 1;
     double wave_function_second_part_new = 1;
@@ -339,7 +345,7 @@ double System::get_probability_ratio(int move){
     }
 
     return first_part_ratio*(wave_function_second_part_new/wave_function_second_part)*first_part_ratio*(wave_function_second_part_new/wave_function_second_part)*greens_factor(move);
-
+    */
 
 }
 
@@ -364,7 +370,7 @@ double System::get_wavefunction(){
     for(int j = 0;j<N;j++){
         exp_factor=0;
         for(int i=0;i<M;i++){
-            exp_factor+=X[i]*weights(i,j);
+            exp_factor+=X(i)*weights(i,j);
         }
         wave_function_second_part *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor));
     }
@@ -375,6 +381,32 @@ double System::get_wavefunction(){
 }
 
 
+double System::get_wavefunction_next(){
+    /*
+    Computes the wavefunction (complete)
+    */
+    double wave_function_first_part = 0;
+    double wave_function_second_part = 1;
+    double exp_factor=0;
+
+    for(int i=0;i<M;i++){
+        wave_function_first_part+=-(X_next(i) - a_bias(i))*(X_next(i) - a_bias(i));
+    }
+
+    wave_function_first_part = exp(wave_function_first_part/(2*sigma_squared));
+
+    for(int j = 0;j<N;j++){
+        exp_factor=0;
+        for(int i=0;i<M;i++){
+            exp_factor+=X_next(i)*weights(i,j);
+        }
+        wave_function_second_part *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor));
+    }
+
+    //std::cout << wave_function_first_part*wave_function_second_part << std::endl;
+
+    return wave_function_first_part*wave_function_second_part;
+}
 
 
 

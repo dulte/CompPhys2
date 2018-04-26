@@ -1,7 +1,7 @@
 MC_cycles 10000000
 P 1 #Number of particles
-dimensions 1 #Dimensions
-N 2 #Number of hidden nodes
+dimensions 3 #Dimensions
+N 4 #Number of hidden nodes
 omega 1
 sigma 1
 D 0 #Importance sampling
