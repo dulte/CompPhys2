@@ -9,17 +9,17 @@ Simulation::Simulation(System *m_system)
 }
 
 inline Eigen::ArrayXd f(const Eigen::ArrayXd & X){
-    double f_max = 1;
-    double f_min = -1;
+    double f_max = .5;
+    double f_min = -.5;
     double f_ratio = f_max/f_min;
-    double omega = 1;
+    double omega = 10;
 
     return  (f_min - (f_max-f_min)*Eigen::inverse(1-f_ratio*Eigen::exp(-X/omega)));
 }
 
 
 inline Eigen::ArrayXd step_length(Eigen::ArrayXd & X, const int & A,Eigen::ArrayXd & t){
-    int a = 1;
+    int a = 10;
     Eigen::ArrayXd f_val = f(X);
     Eigen::ArrayXd delta = a*Eigen::inverse(t+A);
     t = (t+f_val).cwiseMax(0);
@@ -30,7 +30,7 @@ inline Eigen::ArrayXd step_length(Eigen::ArrayXd & X, const int & A,Eigen::Array
 Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     int max_iter = 2000;
     int i = 0;
-    double A = 2;
+    double A = 20;
     Eigen::ArrayXd  t = Eigen::ArrayXd::Ones(x_0.size())*A;
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
@@ -41,7 +41,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     while(i < max_iter){
         calculate_gradient(x,gradient);
         //std::cout << "Gradient: " << gradient << std::endl;
-        x = x_prev - 0.001*gradient;//step_length(x_prev,A,t)*gradient;
+        x = x_prev - 0.01*gradient;//step_length(x_prev,A,t)*gradient;
         x_prev = x;
         i++;
 
@@ -70,13 +70,13 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
-    std::uniform_real_distribution<double> distribution(0,N);
-
+    std::uniform_real_distribution<double> distribution(0,Parameters::P);
     //A simple simulation for the given alpha
     system->make_grid(x);
 
     for(int i = 0;i<fast_MC_cycles;i++){
         move = static_cast<int>(distribution(gen));
+
         system->make_move_and_update(move);
 
         local_energy = system->check_acceptance_and_return_energy(move);
