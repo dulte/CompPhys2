@@ -247,7 +247,8 @@ double System::check_acceptance_and_return_energy(int move){
 
     if(temp_value <= get_probability_ratio(move)){
 
-        update_wavefunction(move);
+        //update_wavefunction(move);
+        wavefunction_value = get_wavefunction();
         X = X_next;
 
         distance.col(move) = next_distance.col(move);
