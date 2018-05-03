@@ -74,6 +74,9 @@ build-*/
 *.out
 *.synctex.gz
 *.toc
+*.blg
+*.bbl
+*.log
 
 # Binaries
 # --------
