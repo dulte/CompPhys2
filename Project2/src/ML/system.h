@@ -24,6 +24,7 @@ public:
     Eigen::MatrixXd weights;
     Eigen::VectorXd X;
     Eigen::VectorXd X_next;
+    Eigen::VectorXd H;
 
 
 
@@ -113,12 +114,15 @@ public:
     double greens_function_ratio(int move);
     double f(double);
     double calculate_energy_numerically();
+    void sample_h();
+    void sample_x();
 
 
 
     std::random_device rd;
     std::mt19937_64 gen;
     std::normal_distribution<double> distribution;
+
 
 
 
@@ -132,6 +136,7 @@ public:
     double d_psi_db_log(int k);
     double d_psi_dw_log(int k, int l);
     double get_wavefunction_next();
+    double gibbs_sample_and_return_energy();
 };
 
 #endif // SYSTEM_H

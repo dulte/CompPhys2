@@ -23,6 +23,7 @@ System::System()
 
     X.resize(M);
     X_next.resize(M);
+    H.resize(N);
 
     std::random_device rd;
     gen = std::mt19937_64(rd());
@@ -48,7 +49,7 @@ System::System()
         System::gibbs_factor=0.5;
     }
     else{
-        System::gibbs_factor=1.0;
+        System::gibbs_factor=1.;
     }
 
     if(D!=0){
@@ -146,7 +147,7 @@ void System::distribute_particles_noninteracting(){
             if(D!=0){
                 X(i) = distribution(gen)*sqrt(dx);
             }else{
-                X(i) = 0.5*(static_cast<double>(rand())/RAND_MAX - 0.5);
+                X(i) = 0.05*(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
     }
 
@@ -206,7 +207,6 @@ void System::make_move_and_update(const int move){
     */
 
     update_X_next(move);
-
 }
 
 void System::update_next_distance(int move){
@@ -283,6 +283,15 @@ double System::check_acceptance_and_return_energy(int move){
     }
 
 
+}
+
+double System::gibbs_sample_and_return_energy(){
+    sample_x();
+    sample_h();
+    if(is_interacting){
+        update();
+    }
+    return get_local_energy_noninteracting();
 }
 
 
@@ -501,7 +510,7 @@ double System::get_local_energy_noninteracting(){
     if(is_interacting){
         for(int i=0;i<P;i++){
             for(int j=0;j<i;j++){
-                repulsive_interaction+=1.0/distance(i,j)
+                repulsive_interaction+=1.0/distance(i,j);
             }
         }
     }
@@ -551,7 +560,7 @@ double System::d_psi_dw_log(int k, int l){
     for(int i=0;i<M;i++){
         exp_factor+=X(i)*weights(i,l);
     }
-    return gibbs*factor*X(k)/(2.0*sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
+    return gibbs_factor*X(k)/(2.0*sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
 }
 
 
@@ -644,6 +653,36 @@ double System::calculate_energy_numerically(){
     return (0.5*potential_energy+0.5*(kinetic_energy));
 }
 
+
+
+void System::sample_h(){
+    std::uniform_real_distribution<double> sampling_distribution;
+
+    Eigen::VectorXd backwards_H = -b_bias - (X.transpose()*weights).transpose()/sigma_squared;
+
+    double coin_toss = 0;
+    double sample_prob = 0;
+    for(int i = 0;i<N;i++){
+        sample_prob = 1./(1+exp(backwards_H(i)));
+        coin_toss = 2*(static_cast<double>(rand())/RAND_MAX - 0.5);
+        if(sample_prob > coin_toss){
+            H(i) = 1.;
+        }
+        else{
+            H(i) = 0.;
+        }
+    }
+}
+
+void System::sample_x(){
+    std::normal_distribution<double> sampling_distribution;
+    Eigen::VectorXd backwards_X = a_bias + weights*H;
+
+    for(int i = 0;i<M;i++){
+        sampling_distribution = std::normal_distribution<double>(backwards_X(i),sigma_squared);
+        X(i) = sampling_distribution(gen);
+    }
+}
 
 
 
