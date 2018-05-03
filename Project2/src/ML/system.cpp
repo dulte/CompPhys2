@@ -333,6 +333,7 @@ double System::get_probability_ratio(int move){
     */
 
     double wavefunction_old=get_wavefunction();
+
     double wavefunction_new=get_wavefunction_next();
 
     return (wavefunction_new*wavefunction_new)/(wavefunction_old*wavefunction_old)*greens_function_ratio(move);
