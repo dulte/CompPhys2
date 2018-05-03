@@ -131,5 +131,20 @@
 	\begin{equation}
 	\frac{\partial \log \Psi}{\partial w_{kl}}=\frac{X_k\exp\left(b_l+\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)}{\sigma^2\left(1+\exp \left( b_l + \sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}=\frac{X_k}{\sigma^2\left(1+\exp \left(-b_l-\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}
 	\end{equation}
+	\subsection{The derivatives with Gibbs sampling}
+	In Gibbs sampling, we represent the wavefunction as $\Psi=\sqrt{F_{rbm}}$, instead of $\Psi=F_{rbm}$. Note, however, that we only ever differentiate the logarithm of the wavefunction. As $\log \sqrt{\Psi}=\frac{1}{2}\log \Psi$, however, this is only a marginal change. Specifically:
+	\begin{equation}
+	E_L=[\nabla \log \sqrt{\Psi}]^2 + \nabla^2 \log \sqrt{\Psi} =\frac{1}{4}[\nabla \log \Psi]^2 +\frac{1}{2}\nabla^2 \log \Psi
+	\end{equation}
+	\begin{equation}
+	\frac{\partial }{\partial \alpha_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial \alpha_k}\Psi
+	\end{equation}
+	\begin{equation}
+	\frac{\partial }{\partial b_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi 
+	\end{equation}
+	\begin{equation}
+	\frac{\partial}{\partial w_{kl}}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial}{\partial w_{kl}}\log \Psi
+	\end{equation}
+	Where the derivatives on the right-hand side are given in the previous section.
 	\end{appendices}
 \end{document}
