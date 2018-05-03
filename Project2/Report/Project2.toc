@@ -1,11 +1,14 @@
 \contentsline {section}{\numberline {1}Introduction}{3}{section.1}
 \contentsline {section}{\numberline {2}Theoretical model}{3}{section.2}
+\contentsline {subsection}{\numberline {2.1}Neural-network quantum states}{3}{subsection.2.1}
 \contentsline {section}{\numberline {3}Methods}{3}{section.3}
 \contentsline {section}{\numberline {4}Results}{3}{section.4}
 \contentsline {section}{\numberline {5}Discussion}{3}{section.5}
 \contentsline {section}{\numberline {6}Conclusion}{3}{section.6}
-\contentsline {subsection}{\numberline {6.1}Outlook}{3}{subsection.6.1}
-\contentsline {section}{Appendices}{4}{section*.2}
-\contentsline {section}{\numberline {A}Finding the derivatives}{4}{Appendix.a.A}
-\contentsline {subsection}{\numberline {A.1}The local energy}{4}{subsection.a.A.1}
-\contentsline {subsection}{\numberline {A.2}The derivatives with respect to the parameters}{4}{subsection.a.A.2}
+\contentsline {subsection}{\numberline {6.1}Outlook}{4}{subsection.6.1}
+\contentsline {section}{Appendices}{5}{section*.3}
+\contentsline {section}{\numberline {A}Finding the derivatives}{5}{Appendix.a.A}
+\contentsline {subsection}{\numberline {A.1}The local energy}{5}{subsection.a.A.1}
+\contentsline {subsection}{\numberline {A.2}The derivatives with respect to the parameters}{5}{subsection.a.A.2}
+\contentsline {subsection}{\numberline {A.3}The derivatives with Gibbs sampling}{6}{subsection.a.A.3}
+\contentsline {section}{\numberline {B}Deriving the spin of the ground state wavefunction}{6}{Appendix.a.B}
