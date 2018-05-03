@@ -101,7 +101,7 @@ void System::make_grid(Eigen::ArrayXd &parameters)
     weights = M2;
 
 
-
+    number_accept = 0;
     distribute_particles_noninteracting();
     X_next = X;
     update();
@@ -147,7 +147,7 @@ void System::distribute_particles_noninteracting(){
             if(D!=0){
                 X(i) = distribution(gen)*sqrt(dx);
             }else{
-                X(i) = 0.05*(static_cast<double>(rand())/RAND_MAX - 0.5);
+                X(i) = 0.5*(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
     }
 
@@ -333,9 +333,10 @@ double System::get_probability_ratio(int move){
     */
 
     double wavefunction_old=get_wavefunction();
+
     double wavefunction_new=get_wavefunction_next();
 
-    return (wavefunction_new*wavefunction_new)/(wavefunction_old*wavefunction_old)*greens_function_ratio(move);
+    return (wavefunction_new*wavefunction_new)/(wavefunction_old*wavefunction_old)*greens_factor(move);
 
     /*
     double first_part_ratio = 0;
@@ -514,6 +515,8 @@ double System::get_local_energy_noninteracting(){
             }
         }
     }
+
+
 
     for(int k=0;k<M;k+=dimension){
         for(int dim=0;dim<dimension;dim++)

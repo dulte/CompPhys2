@@ -118,6 +118,7 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     total_energy /= fast_MC_cycles;
 
     std::cout << "total energy: " << total_energy << std::endl;
+    std::cout << system->number_accept/((double)fast_MC_cycles) << std::endl;
     /*std::cout << "#######" << std::endl;
     std::cout << total_energy*derivatives << std::endl;*/
     std::cout << "-----------------" << std::endl;
