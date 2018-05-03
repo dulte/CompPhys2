@@ -99,6 +99,11 @@ void Parameters::read_parameters(std::string location){
             numerical_set=true;
         }
 
+        else if (name == "gibbs"){
+            gibbs=variable;
+            gibbs_set=true;
+        }
+
 
         else{
             std::cout << "Unknonw Variable found: " << name << std::endl;
@@ -150,6 +155,10 @@ void Parameters::read_parameters(std::string location){
         exit(EXIT_FAILURE);
     }
 
+    else if(!gibbs_set){
+        std::cout << "gibbs not set!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
 }
 
@@ -165,6 +174,7 @@ bool Parameters::D_set=false;
 bool Parameters::dx_set=false;
 bool Parameters::interacting_set=false;
 bool Parameters::numerical_set=false;
+bool Parameters::gibbs_set=false;
 
 int Parameters::MC_cycles = 0;
 int Parameters::P = 0;
@@ -176,6 +186,7 @@ double Parameters::D=0;
 double Parameters::dx=0;
 bool Parameters::interacting=false;
 bool Parameters::numerical=false;
+bool Parameters::gibbs=false;
 
 
 

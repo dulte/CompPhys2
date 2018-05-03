@@ -44,6 +44,13 @@ System::System()
 
     }
 
+    if(gibbs){
+        System::gibbs_factor=0.5;
+    }
+    else{
+        System::gibbs_factor=1.0;
+    }
+
     if(D!=0){
         System::greens_pointer=&System::greens_function_ratio;
     }
@@ -53,7 +60,6 @@ System::System()
 
     //Sets the seed of rand() to the current time
     srand(time(NULL));
-
 }
 
 void System::make_grid(double m_alpha){
@@ -377,7 +383,12 @@ double System::get_wavefunction(){
 
     //std::cout << wave_function_first_part*wave_function_second_part << std::endl;
 
-    return wave_function_first_part*wave_function_second_part;
+    if(gibbs){
+        return sqrt(wave_function_first_part*wave_function_second_part);
+    }
+    else{
+        return wave_function_first_part*wave_function_second_part;
+    }
 }
 
 
@@ -405,7 +416,12 @@ double System::get_wavefunction_next(){
 
     //std::cout << wave_function_first_part*wave_function_second_part << std::endl;
 
-    return wave_function_first_part*wave_function_second_part;
+    if(gibbs){
+        return sqrt(wave_function_first_part*wave_function_second_part);
+    }
+    else{
+        return wave_function_first_part*wave_function_second_part;
+    }
 }
 
 
@@ -462,6 +478,7 @@ double System::get_local_energy_noninteracting(){
     double exp_factor=0;
     double denominator_factor=0;
     double potential_energy=0;
+    double repulsive_interaction=0;
     double potential_factor=0.5*omega*omega;
     Eigen::VectorXd x_weight_product(N);
 
@@ -481,12 +498,20 @@ double System::get_local_energy_noninteracting(){
            }
         }
 
+    if(is_interacting){
+        for(int i=0;i<P;i++){
+            for(int j=0;j<i;j++){
+                repulsive_interaction+=1.0/distance(i,j)
+            }
+        }
+    }
+
     for(int k=0;k<M;k+=dimension){
         for(int dim=0;dim<dimension;dim++)
             potential_energy+=X(k+dim)*X(k+dim);
     }
 
-   return -0.5*(derivative_of_log_psi*derivative_of_log_psi+second_derivative_of_log_psi)+potential_factor*potential_energy;
+   return -0.5*(derivative_of_log_psi*derivative_of_log_psi*gibbs_factor*gibbs_factor+second_derivative_of_log_psi*gibbs_factor)+potential_factor*potential_energy+repulsive_interaction;
 }
 
 double System::d_psi_da(int k){
@@ -498,7 +523,7 @@ double System::d_psi_db(int k){
     for(int i=0;i<M;i++){
         exp_factor+=X(i)*weights(i,k);
     }
-    return 1.0/(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor));
+    return gibbs_factor*1.0/(1+exp(-b_bias(k)-(1.0/sigma_squared)*exp_factor));
 }
 
 double System::d_psi_dw(int k, int l){
@@ -506,11 +531,11 @@ double System::d_psi_dw(int k, int l){
     for(int i=0;i<M;i++){
         exp_factor+=X(i)*weights(i,l);
     }
-    return X(k)/(sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
+    return gibbs_factor*X(k)/(sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
 }
 
 double System::d_psi_da_log(int k){
-    return (X(k)-a_bias(k))/(2.0*sigma_squared);
+    return gibbs_factor*(X(k)-a_bias(k))/(2.0*sigma_squared);
 }
 
 double System::d_psi_db_log(int k){
@@ -526,7 +551,7 @@ double System::d_psi_dw_log(int k, int l){
     for(int i=0;i<M;i++){
         exp_factor+=X(i)*weights(i,l);
     }
-    return X(k)/(2.0*sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
+    return gibbs*factor*X(k)/(2.0*sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
 }
 
 
@@ -555,8 +580,8 @@ void System::quantum_force(int move){
             grad_value+=weights(move,j)/(sigma_squared*(1+exp_factor));
             grad_value_next+=weights(move,j)/(sigma_squared*(1+exp_factor_next));
        }
-       quantum_force_vector(dim)=grad_value;
-       quantum_force_vector_new(dim)=grad_value_next;
+       quantum_force_vector(dim)=gibbs_factor*grad_value;
+       quantum_force_vector_new(dim)=gibbs_factor*grad_value_next;
        grad_value=0;
        grad_value_next=0;
 

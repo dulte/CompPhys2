@@ -42,6 +42,9 @@ public:
 
     static bool numerical;
     static bool numerical_set;  
+
+    static bool gibbs;
+    static bool gibbs_set;
 };
 
 #endif // PARAMETERS_H

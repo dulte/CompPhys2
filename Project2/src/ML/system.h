@@ -68,10 +68,12 @@ public:
     const double D = Parameters::D;
     const bool is_numerical = Parameters::numerical;
     const bool is_interacting = Parameters::interacting;
+    const bool gibbs = Parameters::gibbs;
     const double sigma = Parameters::sigma;
     const double sigma_squared=sigma*sigma;
     const int P = Parameters::P;
     const int M = P*dimension;
+    double gibbs_factor;
 
 
     //Vector and double used for holding temp values
