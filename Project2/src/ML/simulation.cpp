@@ -75,11 +75,16 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     system->make_grid(x);
 
     for(int i = 0;i<fast_MC_cycles;i++){
-        move = static_cast<int>(distribution(gen));
 
-        system->make_move_and_update(move);
+        if(Parameters::gibbs){
 
-        local_energy = system->check_acceptance_and_return_energy(move);
+            local_energy = system->gibbs_sample_and_return_energy();
+        }else{
+            move = static_cast<int>(distribution(gen));
+            system->make_move_and_update(move);
+            local_energy = system->check_acceptance_and_return_energy(move);
+        }
+
         total_energy += local_energy;
 
         for(int k = 0;k<total_size;k++){
