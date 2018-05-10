@@ -68,10 +68,10 @@
 	\newpage
 	\section{Introduction}
 	COOL INTRO
-	\section{Theoretical model}
-	Our system of $N$ electrons confined in an isotropic harmonic oscillator potential is described by the Hamiltonian:
+	\section{Theory}
+	Our system of $P$ electrons confined in an isotropic harmonic oscillator potential is described by the Hamiltonian:
 	\begin{equation}
-	H=\sum_{i=1}^N \left(-\frac{1}{2}\nabla_i^2 +\frac{1}{2}\omega^2 r_i^2\right)+\sum_{i=1}^N \sum_{j=1}^{i}\frac{1}{r_{ij}}
+	H=\sum_{i=1}^P \left(-\frac{1}{2}\nabla_i^2 +\frac{1}{2}\omega^2 r_i^2\right)+\sum_{i=1}^P \sum_{j=1}^{i}\frac{1}{r_{ij}}
 	\end{equation}
 	Where this is in natural units, i.e. $\hbar=c=e=m_e=1$. Here $\omega$ is the frequency of the oscillator trap and $1/r_{ij}$ is the distance between particle $i$ and $j$. The first term describes the interaction of the electrons with the potential, and we refer to it as the noninteracting part. The second term describes the Coloumb interaction between the electrons, and we refer to it as the interacting part.\\
 	\linebreak
@@ -79,13 +79,55 @@
 	\begin{equation}\label{eq:time_depenedent_schrodinger}
 	H\Psi = E\Psi
 	\end{equation}
-	We are chiefly interested in finding a bound on the ground-state energy of our system. We achieve such an upper bound by invoking the variational principle, as formulated in \textbf{GRIFFITHS}, which states that:
+	\subsection{Analytic expression}
+	We are chiefly interested in the ground-state energy, as this is the state that our system will fall into if unperturbed by e.g. thermal excitation. If we ignore the interacting part, then we have an analytic solution to the ground-state energy for two electrons, given by:
 	\begin{equation}
+	\Psi(\mathbf{r}_1, \mathbf{r}_2)=C\exp\left(-\omega\frac{\boldsymbol{r_1}^2+\boldsymbol{r_2}^2}{2}\right)
+	\end{equation}
+	Where $C$ is a normalization constant. Furthermore, the ground-state energy in such a harmonic oscillator is, according to \textbf{REFERENCE}, given by:
+	\begin{equation}\label{eq:Ground-state-energy}
+	E=P\frac{D}{2}
+	\end{equation}
+	Where $D$ is the number of dimensions and $P$ is the number of particles.
+	\textbf{FINISH - DISCUSS SPIN, TWO PARTICLES, ANALYTIC SOLUTION FOR SIMPLE INTERACTION}
+	\subsection{The variational principle}
+	 In the more complicated case of interacting fermions,  
+	 We achieve such an upper bound by invoking the variational principle, as formulated in \textbf{GRIFFITHS}, which states that:
+	\begin{equation}\label{eq:Variational_Principle}
 	E_0\leq \frac{\langle \Psi_T | H |\Psi_T \rangle}{\langle \Psi_T | \Psi_T \rangle}
 	\end{equation} 
 	Where $E_0$ is the ground-state energy and $\Psi_T$ is any (not necessarily normalized) wavefunction. Our approach is therefore to choose a trial wavefunction, $\Psi_T$, and the compute $E'=\langle \Psi_T | H |\Psi_T\rangle$ by using a variational Monte Carlo approach. The variational method then guarantees that our approximation to the energy, $E'$ will be larger than the ground state energy $E_0$. 
 	\subsection{Neural-network quantum states}
-	We follow the approach outlined by \textbf{REFERENCE} to determine our trial wavefunction. They choose to interpret the problem of solving equation \ref{eq:time_depenedent_schrodinger} as a multi-dimensional minimization and feature extraction problem. We therefore employ a neural network to find the optimal wavefunction.
+	We follow the approach outlined by \textbf{REFERENCE} to determine our trial wavefunction. They choose to interpret the problem of solving equation \ref{eq:time_depenedent_schrodinger} as a multi-dimensional minimization and feature extraction problem. We therefore employ a neural network to find the optimal wavefunction. Thus, we represent our wavefunction by a set of parameters, which we then seek to optimize. We choose to follow \textbf{REFERENCE} and choose a restricted Boltzmann machine (RBM) appproach to this neural network.
+	\subsection{Restricted Boltzmann Machines}
+	Restricted Boltzmann Machines (RBM) are described in great detail in the literature, see e.g. \textbf{REFERENCE}. We therefore only outline how to apply them. The basic idea consists of setting up a vector of $M$ visible nodes $\mathbf{X}$, which corresponds to the position states of our system (with one state per particle, $P$ and dimension, $D$, i.e. $M=PD$), and a vector of $N$ hidden nodes, $\mathbf{H}$ which correspond to some feature of our system \textbf{DANIEL CHECK THIS PLEASE}. Each of these nodes have weights associated with them. Furthermore, there are also weights coupling the hidden nodes to the visible nodes, but there are no connections between nodes in the same layer (hence \textit{restricted} Boltzmann machine). We then model the probability distribution for our particles, given a position $\mathbf{X}$ and a set of hidden nodes $\mathbf{H}$. by a Boltzmann distribution function of the form:
+	\begin{equation}
+	F_{rbm}(\mathbf{X}, \mathbf{H})=\frac{1}{Z}\exp \left(-\frac{1}{T_0}E(\mathbf{X},\mathbf{H})\right)
+	\end{equation}
+	Where $Z$ is a normalization constant, $T_0$ is some reference temperature (set to $1$ in what follows), and the energy is chosen to represent a continuous function of the position, given as:
+	\begin{equation}
+	E(\mathbf{X}, \mathbf{H})=\sum_{i=1}^{M}\frac{\left(X_i-a_i\right)^2}{2\sigma^2}-\sum_{j=1}^N b_j H_j -\sum_{i=1}^{N}\sum_{j=1}^{M}\frac{X_iw_{ij}H_j}{\sigma^2}
+	\end{equation}
+	Where $a_i$ are the weights associated with the visible nodes, $b_i$ are the weights associated with the visible nodes and $w_{ij}$ are the weights of the coupling between the visible and hidden nodes. The $\sigma$ models the spread of the energy.\\
+	\linebreak
+	As our wavefunction is a function of the position coordinates only, we choose to interpret the marginal distribution of the visible nodes as our wavefunction. This marginal distribution is given by:
+	\begin{equation}
+	F_{rbm}(\mathbf{X})=\sum_{h_i \in \mathbf{H}}F_{rbm}(\mathbf{X}, \mathbf{H})
+	\end{equation}
+	Which gives, after some algebra done in \textbf{REFERENCE}, our wavefunction as:
+	\begin{equation}\label{eq:Wavefunction}
+	\Psi(\mathbf{X})=F_{rbm}(\mathbf{X})=\frac{1}{Z}\exp \left(-\sum_{i=1}^M \frac{(X_i-a_i)^2}{2\sigma^2}\right)\prod_{j=1}^{N}\left(1+\exp\left(b_j+\sum_{i=1}^M \frac{X_iw_{ij}}{\sigma^2} \right)\right)
+	\end{equation}
+	This is therefore our trial wavefunction that we use in equation \ref{eq:Variational_Principle} to find an upper bound on the ground-state energy of our system. We seek to optimize this wavefunction with respect to the weights $a_i$, $b_i$ and $w_{ij}$. We also investigate how this energy behaves as a function of $\sigma$, as well as for different dimensions $D$ and particles $P$.
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	\section{Methods}\label{Method_section}
 	MUCHO METHOD
 	\section{Results}
@@ -156,34 +198,34 @@
 	\frac{\partial }{\partial \alpha_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial \alpha_k}\Psi
 	\end{equation}
 	\begin{equation}
-	\frac{\partial }{\partial b_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi
+	\frac{\partial }{\partial b_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi 
 	\end{equation}
 	\begin{equation}
 	\frac{\partial}{\partial w_{kl}}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial}{\partial w_{kl}}\log \Psi
 	\end{equation}
 	Where the derivatives on the right-hand side are given in the previous section.
-	\section{Deriving the spin of the ground state wavefunction}
-	Consider the unperturbed wavefunction for the ground state of the
-	two electron system is given by:
-	\begin{align}
-		\phi(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) =
-		C\exp\left(-\omega\left(r_{1}^{2} + r_{2}^{2}\right)/2\right)
-	\end{align}
-	Since this unperturbed wavefunction are symmetric under permutation of coordinate.
-	Pauli exclusion principle then states that the spin wavefunction must then be
-	a antisymmetric function in order to achieve
-	total spin $0$ under permutation of coordinate.
-	This wave function must then be singlet, and will look like:
-	\begin{align}
-		\ket{\psi} = \frac{1}{\sqrt{2}}\left(\ket{\uparrow} - \ket{\downarrow}\right)
-	\end{align}
-	We will now apply the spin operator $\boldsymbol{S}^{2}$ on this spin state to prove that
-	total spin is $0$:
-	\begin{align}
-		\boldsymbol{S}^{2}\ket{\psi} = \frac{1}{\sqrt{2}}\left(
-		\underbrace{\boldsymbol{S}^{2}\ket{\uparrow}}_{= \frac{3}{4}\hbar^{2}} -
-		\underbrace{\boldsymbol{S}^{2}\ket{\downarrow}}_{= \frac{3}{4}\hbar^{2}}\right)
-		= 0
-	\end{align}
-\end{appendices}
+\section{Deriving the spin of the ground state wavefunction}
+Consider the unperturbed wavefunction for the ground state of the
+two electron system, given by:
+\begin{align}
+\psi(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) =
+C\exp\left(-\omega\left(r_{1}^{2} + r_{2}^{2}\right)/2\right)
+\end{align}
+Since this unperturbed wavefunction are symmetric under permutation of coordinate.
+Pauli exclusion principle then states that the spin wavefunction must then be
+a antisymmetric function in order to achieve
+total spin $0$ under permutation of coordinate.
+This wave function must then be singlet, and will look like:
+\begin{align}
+\ket{\psi} = \frac{1}{\sqrt{2}}\left(\ket{\uparrow} - \ket{\downarrow}\right)
+\end{align}
+We will now apply the spin operator $\boldsymbol{S}^{2}$ on this spin state to prove that
+total spin is $0$:
+\begin{align}
+\boldsymbol{S}^{2}\ket{\psi} = \frac{1}{\sqrt{2}}\left(
+\underbrace{\boldsymbol{S}^{2}\ket{\uparrow}}_{= \frac{3}{4}\hbar^{2}} -
+\underbrace{\boldsymbol{S}^{2}\ket{\downarrow}}_{= \frac{3}{4}\hbar^{2}}\right)
+= 0
+\end{align}
+	\end{appendices}
 \end{document}
