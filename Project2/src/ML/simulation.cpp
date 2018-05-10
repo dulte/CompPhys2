@@ -61,6 +61,8 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     int total_size = x.size();
     int M = Parameters::P*Parameters::dimension;
 
+
+
     Eigen::ArrayXd E_L_times_derivatives = Eigen::ArrayXd::Zero(total_size);
     Eigen::ArrayXd derivatives = Eigen::ArrayXd::Zero(total_size);
 
@@ -319,7 +321,7 @@ void Simulation::run(int rank,double alpha){
 void Simulation::oneBodyDensity(double optimal_alpha, double r_step,double r_min, double r_max){
     std::random_device rd;
     std::mt19937_64 gen(rd());
-    std::uniform_real_distribution<double> distribution(0,N);
+    std::uniform_real_distribution<double> distribution(0,Parameters::P);
 
     int move = 1;
     double distance_from_origo = 0;
