@@ -82,14 +82,15 @@
 	\subsection{Analytic expression}
 	We are chiefly interested in the ground-state energy, as this is the state that our system will fall into if unperturbed by e.g. thermal excitation. If we ignore the interacting part, then we have an analytic solution to the ground-state energy for two electrons, given by:
 	\begin{equation}
-	\Psi(\mathbf{r}_1, \mathbf{r}_2)=C\exp\left(-\omega\frac{\boldsymbol{r_1}^2+\boldsymbol{r_2}^2}{2}\right)
+	\psi(\mathbf{r}_1, \mathbf{r}_2)=C\exp\left(-\omega\frac{\boldsymbol{r}_1^2+\boldsymbol{r}_2^2}{2}\right)
 	\end{equation}
 	Where $C$ is a normalization constant. Furthermore, the ground-state energy in such a harmonic oscillator is, according to \textbf{REFERENCE}, given by:
 	\begin{equation}\label{eq:Ground-state-energy}
 	E=P\frac{D}{2}
 	\end{equation}
-	Where $D$ is the number of dimensions and $P$ is the number of particles.
-	\textbf{FINISH - DISCUSS SPIN, TWO PARTICLES, ANALYTIC SOLUTION FOR SIMPLE INTERACTION}
+	Where $D$ is the number of dimensions and $P$ is the number of particles. Note that this expression is only valid up to $P=2$, as we are dealing with spin-1/2 fermions, to which the Pauli exclusion principle applies. Therefore, we can only have two of them in the same energy state, and they must have opposite spin. More precisely, they must be in the singlet state (total spin $0$) in the noninteracting case, as discussed in appendix \textbf{APPENDIX}. In what follows, we therefore restrict ourselves to $P\leq 2$.\\
+	\linebreak
+	We also have analytic results for some special cases in the interacting case. In particular, according to \textbf{REFERENCE}, the energy is $3$ (in natural units) for 2 particles in the 2-dimensional case. \textbf{CHECK THIS}.
 	\subsection{The variational principle}
 	 In the more complicated case of interacting fermions,  
 	 We achieve such an upper bound by invoking the variational principle, as formulated in \textbf{GRIFFITHS}, which states that:
@@ -174,12 +175,22 @@
 	This transition probability is implemented exactly as in the previous section. However, we use a slightly different initialization and we draw the next step, $\boldsymbol{\xi}dx$ in a slightly different way when using importance sampling. This is described in further detail in \textbf{SECTION}.
 	\subsubsection{Gibbs Sampling}
 	\subsection{Optimizing our wavefunction in parameter space}
-	For our neural network to be successful, we must be able to minimize the energy of our wavefunction. This is done by varying the parameters $a_i$, $b_i$ and $w_{ij}$, and computing the local energy. The variational method then guarantees that the lowest energy we find will be larger than the ground state energy.
-	
+	For our neural network to be successful, we must be able to minimize the energy of our wavefunction. This is done by varying the parameters $a_i$, $b_i$ and $w_{ij}$, and computing the local energy. The variational method then guarantees that the lowest energy we find will be larger than the ground state energy. We employ a stochastic gradient method to find the minimum in our parameter space, as described in \textbf{REFERENCE}. Defining a vector of all parameters, $\boldsymbol{\theta}$, we iterate this vector according to:
+	\begin{equation}
+	\boldsymbol{\theta}^{i+1}=\boldsymbol{\theta}^i + \gamma \frac{\partial \overline{E}_L}{\partial \boldsymbol{\theta}^i}(\boldsymbol{\theta}^i)
+	\end{equation}
+	Where $\overline{E}_L$ is the energy computed by means of the variational Monte Carlo method (given by equation \ref{eq:energy_in_state_space}) and $\gamma$ is the step size, which we vary. The derivative is with respect to all parameters. We showed in \textbf{REFERENCE} that the derivative of this expectation value of the energy is given by:
+	\begin{equation}
+	\frac{\partial \overline{E}_L}{\partial \boldsymbol{\theta}}(\boldsymbol{\theta})=2\left(\left\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \boldsymbol{\theta}}\overline{E}_L(\boldsymbol{\theta})\right\rangle-\left\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \boldsymbol{\theta}}\right\rangle\left\langle \overline{E}_L(\boldsymbol{\theta})\right\rangle\right)
+	\end{equation}
+	We must therefore compute the derivative of our trial wavefunction, given in equation \ref{eq:Wavefunction}, with respect to all of our variational parameters.
+	This is done in detail in appendix \textbf{APPENDIX}, both for the case of Metropolis sampling and Gibbs sampling. We iterate this method until the absolute value of our gradient, $\frac{\partial \overline{E}_L}{\partial \boldsymbol{\theta}}$  is small enough \textbf{DANIEL ADD STUFF}.
+	\subsection{Onebody densities}
 	
 	
 	\section{Methods}\label{Method_section}
-	MUCHO METHOD
+	\subsection{An overview of the structure of our program}
+	
 	\section{Results}
 	GROUNDBREAKING RESULTS
 	\section{Discussion}
