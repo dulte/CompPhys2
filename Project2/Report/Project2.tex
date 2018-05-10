@@ -76,14 +76,16 @@
 	Where this is in natural units, i.e. $\hbar=c=e=m_e=1$. Here $\omega$ is the frequency of the oscillator trap and $1/r_{ij}$ is the distance between particle $i$ and $j$. The first term describes the interaction of the electrons with the potential, and we refer to it as the noninteracting part. The second term describes the Coloumb interaction between the electrons, and we refer to it as the interacting part.\\
 	\linebreak
 	We now wish to find the energy, $E$ of our system by solving the time-independent Schrödinger equation:
-	\begin{equation}
+	\begin{equation}\label{eq:time_depenedent_schrodinger}
 	H\Psi = E\Psi
 	\end{equation}
 	We are chiefly interested in finding a bound on the ground-state energy of our system. We achieve such an upper bound by invoking the variational principle, as formulated in \textbf{GRIFFITHS}, which states that:
 	\begin{equation}
 	E_0\leq \frac{\langle \Psi_T | H |\Psi_T \rangle}{\langle \Psi_T | \Psi_T \rangle}
 	\end{equation} 
-	Where $E_0$ is the ground-state energy and $\Psi_T$ is any (not necessarily normalized) wavefunction.  
+	Where $E_0$ is the ground-state energy and $\Psi_T$ is any (not necessarily normalized) wavefunction. Our approach is therefore to choose a trial wavefunction, $\Psi_T$, and the compute $E'=\langle \Psi_T | H |\Psi_T\rangle$ by using a variational Monte Carlo approach. The variational method then guarantees that our approximation to the energy, $E'$ will be larger than the ground state energy $E_0$. 
+	\subsection{Neural-network quantum states}
+	We follow the approach outlined by \textbf{REFERENCE} to determine our trial wavefunction. They choose to interpret the problem of solving equation \ref{eq:time_depenedent_schrodinger} as a multi-dimensional minimization and feature extraction problem. We therefore employ a neural network to find the optimal wavefunction.
 	\section{Methods}\label{Method_section}
 	MUCHO METHOD
 	\section{Results}
@@ -154,13 +156,34 @@
 	\frac{\partial }{\partial \alpha_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial \alpha_k}\Psi
 	\end{equation}
 	\begin{equation}
-	\frac{\partial }{\partial b_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi 
+	\frac{\partial }{\partial b_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi
 	\end{equation}
 	\begin{equation}
 	\frac{\partial}{\partial w_{kl}}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial}{\partial w_{kl}}\log \Psi
 	\end{equation}
 	Where the derivatives on the right-hand side are given in the previous section.
 	\section{Deriving the spin of the ground state wavefunction}
-	The Pauli exclusion principle
-	\end{appendices}
+	Consider the unperturbed wavefunction for the ground state of the
+	two electron system is given by:
+	\begin{align}
+		\phi(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) =
+		C\exp\left(-\omega\left(r_{1}^{2} + r_{2}^{2}\right)/2\right)
+	\end{align}
+	Since this unperturbed wavefunction are symmetric under permutation of coordinate.
+	Pauli exclusion principle then states that the spin wavefunction must then be
+	a antisymmetric function in order to achieve
+	total spin $0$ under permutation of coordinate.
+	This wave function must then be singlet, and will look like:
+	\begin{align}
+		\ket{\psi} = \frac{1}{\sqrt{2}}\left(\ket{\uparrow} - \ket{\downarrow}\right)
+	\end{align}
+	We will now apply the spin operator $\boldsymbol{S}^{2}$ on this spin state to prove that
+	total spin is $0$:
+	\begin{align}
+		\boldsymbol{S}^{2}\ket{\psi} = \frac{1}{\sqrt{2}}\left(
+		\underbrace{\boldsymbol{S}^{2}\ket{\uparrow}}_{= \frac{3}{4}\hbar^{2}} -
+		\underbrace{\boldsymbol{S}^{2}\ket{\downarrow}}_{= \frac{3}{4}\hbar^{2}}\right)
+		= 0
+	\end{align}
+\end{appendices}
 \end{document}
