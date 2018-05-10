@@ -147,7 +147,7 @@ void System::distribute_particles_noninteracting(){
             if(D!=0){
                 X(i) = distribution(gen)*sqrt(dx);
             }else{
-                X(i) = 0.5*(static_cast<double>(rand())/RAND_MAX - 0.5);
+                X(i) = 0.5*distribution(gen);//(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
     }
 
@@ -272,6 +272,9 @@ double System::check_acceptance_and_return_energy(int move){
         next_distance.row(move) = distance.row(move);
 
 
+    }
+    if(is_interacting){
+        update();
     }
 
     if(is_numerical){
