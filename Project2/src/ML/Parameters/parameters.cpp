@@ -104,6 +104,10 @@ void Parameters::read_parameters(std::string location){
             gibbs_set=true;
         }
 
+        else if (name == "learning_rate"){
+            learning_rate=variable;
+            learning_rate_set=true;
+        }
 
         else{
             std::cout << "Unknonw Variable found: " << name << std::endl;
@@ -160,6 +164,11 @@ void Parameters::read_parameters(std::string location){
         exit(EXIT_FAILURE);
     }
 
+    else if(!learning_rate_set){
+        std::cout << "Learning rate not set!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
 }
 
 
@@ -175,6 +184,7 @@ bool Parameters::dx_set=false;
 bool Parameters::interacting_set=false;
 bool Parameters::numerical_set=false;
 bool Parameters::gibbs_set=false;
+bool Parameters::learning_rate_set=false;
 
 int Parameters::MC_cycles = 0;
 int Parameters::P = 0;
@@ -184,9 +194,11 @@ double Parameters::omega = 0;
 double Parameters::sigma = 0;
 double Parameters::D=0;
 double Parameters::dx=0;
+double Parameters::learning_rate = 0;
 bool Parameters::interacting=false;
 bool Parameters::numerical=false;
 bool Parameters::gibbs=false;
+
 
 
 

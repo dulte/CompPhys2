@@ -45,6 +45,9 @@ public:
 
     static bool gibbs;
     static bool gibbs_set;
+
+    static double learning_rate;
+    static bool learning_rate_set;
 };
 
 #endif // PARAMETERS_H

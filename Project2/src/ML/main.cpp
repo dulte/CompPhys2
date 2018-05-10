@@ -28,6 +28,15 @@ int main(int argc, char *argv[])
 
 
     std::cout <<  test_parameters - done << std::endl;
+
+
+    double dxs[6] = {1,1,0.5,0.1,0.05,0.01};
+
+    for(int i = 0;i<6;i++){
+        Parameters::dx = dxs[i];
+        simulation->run(0,done);
+    }
+
     delete simulation;
     delete system;
 
