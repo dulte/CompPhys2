@@ -13,8 +13,8 @@ class Simulation
 public:
     Simulation(System *m_system);
     void initiate();
-    void run(int rank);
-    void run(int rank,double alpha);
+    void run(int rank,Eigen::ArrayXd &x);
+
 
     Eigen::ArrayXd stochastic_descent(Eigen::ArrayXd x_0);
     void calculate_gradient(Eigen::ArrayXd & x,Eigen::ArrayXd &gradient);

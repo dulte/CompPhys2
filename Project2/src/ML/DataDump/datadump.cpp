@@ -106,14 +106,15 @@ void DataDump<T>::dump_metadata(std::string m_location){
     std::fstream metafile(m_location,std::fstream::out);
     metafile << "MC_cycle " << Parameters::MC_cycles << "\n";
     metafile << "P " << Parameters::P << "\n";
-    metafile<< "dimensions" << Parameters::dimension<<"\n";
+    metafile<< "dimensions " << Parameters::dimension<<"\n";
     metafile << "N " << Parameters::N << "\n";
     metafile << "omega " << Parameters::omega << "\n";
     metafile << "sigma " << Parameters::sigma << "\n";
     metafile << "D " << Parameters::D << "\n";
     metafile << "dx " << Parameters::dx << "\n";
-    metafile << "interacting" << Parameters::interacting << "\n";
-    metafile << "numerical"  << Parameters::numerical;
+    metafile << "interacting " << Parameters::interacting << "\n";
+    metafile << "numerical "  << Parameters::numerical << "\n";
+    metafile << "learning_rate "  << Parameters::learning_rate;
     metafile.close();
 
 }

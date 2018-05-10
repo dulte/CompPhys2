@@ -1,0 +1,2 @@
+- Finn dx, m/u importance, evt Gibbs
+- plots iterations mot learning rate og hidden nodes
