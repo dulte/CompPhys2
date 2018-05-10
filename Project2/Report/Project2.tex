@@ -70,7 +70,7 @@
 	COOL INTRO
 	\section{Theory}
 	Our system of $P$ electrons confined in an isotropic harmonic oscillator potential is described by the Hamiltonian:
-	\begin{equation}
+	\begin{equation}\label{eq:Hamiltonian}
 	H=\sum_{i=1}^P \left(-\frac{1}{2}\nabla_i^2 +\frac{1}{2}\omega^2 r_i^2\right)+\sum_{i=1}^P \sum_{j=1}^{i}\frac{1}{r_{ij}}
 	\end{equation}
 	Where this is in natural units, i.e. $\hbar=c=e=m_e=1$. Here $\omega$ is the frequency of the oscillator trap and $1/r_{ij}$ is the distance between particle $i$ and $j$. The first term describes the interaction of the electrons with the potential, and we refer to it as the noninteracting part. The second term describes the Coloumb interaction between the electrons, and we refer to it as the interacting part.\\
@@ -97,9 +97,9 @@
 	E_0\leq \frac{\langle \Psi_T | H |\Psi_T \rangle}{\langle \Psi_T | \Psi_T \rangle}
 	\end{equation} 
 	Where $E_0$ is the ground-state energy and $\Psi_T$ is any (not necessarily normalized) wavefunction. Our approach is therefore to choose a trial wavefunction, $\Psi_T$, and the compute $E'=\langle \Psi_T | H |\Psi_T\rangle$ by using a variational Monte Carlo approach. The variational method then guarantees that our approximation to the energy, $E'$ will be larger than the ground state energy $E_0$. 
-	\subsection{Neural-network quantum states}
-	We follow the approach outlined by \textbf{REFERENCE} to determine our trial wavefunction. They choose to interpret the problem of solving equation \ref{eq:time_depenedent_schrodinger} as a multi-dimensional minimization and feature extraction problem. We therefore employ a neural network to find the optimal wavefunction. Thus, we represent our wavefunction by a set of parameters, which we then seek to optimize. We choose to follow \textbf{REFERENCE} and choose a restricted Boltzmann machine (RBM) appproach to this neural network.
-	\subsection{Restricted Boltzmann Machines}
+	\subsection{Neural-network quantum states and Restricted Boltzmann Machines}
+	We follow the approach outlined by \textbf{REFERENCE} to determine our trial wavefunction. They choose to interpret the problem of solving equation \ref{eq:time_depenedent_schrodinger} as a multi-dimensional minimization and feature extraction problem. We therefore employ a neural network to find the optimal wavefunction. Thus, we represent our wavefunction by a set of parameters, which we then seek to optimize. We choose to follow \textbf{REFERENCE} and choose a restricted Boltzmann machine (RBM) appproach to this neural network.\\
+	\linebreak
 	Restricted Boltzmann Machines (RBM) are described in great detail in the literature, see e.g. \textbf{REFERENCE}. We therefore only outline how to apply them. The basic idea consists of setting up a vector of $M$ visible nodes $\mathbf{X}$, which corresponds to the position states of our system (with one state per particle, $P$ and dimension, $D$, i.e. $M=PD$), and a vector of $N$ hidden nodes, $\mathbf{H}$ which correspond to some feature of our system \textbf{DANIEL CHECK THIS PLEASE}. Each of these nodes have weights associated with them. Furthermore, there are also weights coupling the hidden nodes to the visible nodes, but there are no connections between nodes in the same layer (hence \textit{restricted} Boltzmann machine). We then model the probability distribution for our particles, given a position $\mathbf{X}$ and a set of hidden nodes $\mathbf{H}$. by a Boltzmann distribution function of the form:
 	\begin{equation}
 	F_{rbm}(\mathbf{X}, \mathbf{H})=\frac{1}{Z}\exp \left(-\frac{1}{T_0}E(\mathbf{X},\mathbf{H})\right)
@@ -116,15 +116,65 @@
 	\end{equation}
 	Which gives, after some algebra done in \textbf{REFERENCE}, our wavefunction as:
 	\begin{equation}\label{eq:Wavefunction}
-	\Psi(\mathbf{X})=F_{rbm}(\mathbf{X})=\frac{1}{Z}\exp \left(-\sum_{i=1}^M \frac{(X_i-a_i)^2}{2\sigma^2}\right)\prod_{j=1}^{N}\left(1+\exp\left(b_j+\sum_{i=1}^M \frac{X_iw_{ij}}{\sigma^2} \right)\right)
+	\Psi_T(\mathbf{X})=F_{rbm}(\mathbf{X})=\frac{1}{Z}\exp \left(-\sum_{i=1}^M \frac{(X_i-a_i)^2}{2\sigma^2}\right)\prod_{j=1}^{N}\left(1+\exp\left(b_j+\sum_{i=1}^M \frac{X_iw_{ij}}{\sigma^2} \right)\right)
 	\end{equation}
 	This is therefore our trial wavefunction that we use in equation \ref{eq:Variational_Principle} to find an upper bound on the ground-state energy of our system. We seek to optimize this wavefunction with respect to the weights $a_i$, $b_i$ and $w_{ij}$. We also investigate how this energy behaves as a function of $\sigma$, as well as for different dimensions $D$ and particles $P$.
-	
-	
-	
-	
-	
-	
+	\textbf{TALK ABOUT IF THIS CAN BE EXACT FOR NONINTERACTING}
+	\subsection{Variational Monte Carlo methods}
+	Having determined our trial wavefunction, it remains to use the variational principle to estimate the ground state energy. Our presentation here will closely follow that of \textbf{REFERENCE}. We use a variational Monte Carlo approach to estimate the inner product given in equation \ref{eq:Variational_Principle}. To do so, we consider the integrand function of this integral, given by:
+	\begin{equation}
+	P(\mathbf{X})=\frac{|\Psi_T|^2}{\int d\mathbf{X}|\Psi_T|^2}
+	\end{equation}
+	Where the integral is to be carried out over all particles and dimension (i.e. $M$ times). If we now define the local energy (by solving equation \ref{eq:time_depenedent_schrodinger} for $E$) as:
+	\begin{equation}\label{eq:Local_energy}
+	E_L(\mathbf{X})=\frac{1}{\Psi_T}H\Psi_T
+	\end{equation}
+	Then the expectation value of the Hamiltonian (which gives the energy) is given by:
+	\begin{equation}\label{eq:energy_in_state_space}
+	E_0 \leq E[H]=\int d\mathbf{X}P(\mathbf{X})E_L(\mathbf{X})\approx \frac{1}{K}\sum_{i=1}^{K}E_{L,i}
+	\end{equation}
+	Thus, we can get an approximation to the ground state energy if we can efficiently compute the local energy, and efficiently sample our space close to the optimal energy.
+	\subsection{The local energy}
+	The local energy is defined in equation \ref{eq:Local_energy}, with the Hamiltonian given in equation \ref{eq:Hamiltonian}. Note that the most complicated part of this expression is the second derivative of the wavefunction. We derive an analytic expression for this is in appendix \textbf{APPENDIX}. The local energy is then given by:
+	\begin{equation}
+	\begin{split}
+	\frac{1}{\Psi_T}H\Psi_T=\sum_{k=1}^M-\frac{1}{2}\left[\frac{a_k-X_k}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}}{\sigma^2 \left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}\right]^2\\
+	+\sum_{k=1}^M\frac{1}{2\sigma^2}-\frac{1}{2}\sum_{k=1}^M\sum_{j=1}^N \frac{w_{kj}^2 \exp \left(-b_j-\sum_{i=1}^{M}\frac{X_iw_{ij}}{\sigma^2} \right)}{\sigma^4\left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)^2}+\frac{1}{2}\sum_{i=1}^M\omega^2 X_i^2+\sum_{i=1}^P \sum_{j=1}^i \frac{1}{r_{ij}}
+	\end{split}
+	\end{equation}
+	\subsection{Sampling the position space}
+	To make sense of equation \ref{eq:energy_in_state_space}, we must sample our position space, to get a good estimate for the local energy of the system. We employ three different sampling techniques.	
+	\subsubsection{The Metropolis algorithm}
+	The Metropolis algorithm is described in some detail \textbf{REFERENCE}. Note that the wavefunction gives the probability of finding the particle at point in position space. We will therefore get the most reliable estimates for our local energy if we sample where the wavefunction (and thus the probability distribution) is large, and we avoid wasting CPU cycles. The Metropolis algorithm is one way to achieve this. This is achieved by proposing to move a single particle according to:
+	\begin{equation}\label{eq:metropolis_algorithm_step_size}
+	\boldsymbol{r}_{\mathrm{i,new}}=\boldsymbol{r}_{\mathrm{i}}+\boldsymbol{\xi}dx
+	\end{equation}
+	Where $\boldsymbol{r}_{\mathrm{i}}$ is the position of particle $i$, $dx$ is a chosen step size and $\boldsymbol{\xi}$ is a D-dimensional vector of random numbers distributed as $\xi_i \sim 0.5\cdot \mathcal{N}(0,1)$. To find out whether we should sample local energy at this new position, we compute the ratio:
+	\begin{equation}\label{eq:transition_probability}
+	w=\frac{P(\boldsymbol{X}_{\mathrm{new}})}{P(\boldsymbol{X})}=\frac{|\Psi(\boldsymbol{X}_{\mathrm{new}})|^2}{|\Psi(\boldsymbol{X})|^2}
+	\end{equation}
+	Where $\boldsymbol{X}_{\mathrm{new}}$ is the position of the particles after updating the position of particle $i$ according to \ref{eq:metropolis_algorithm_step_size}. Note that this ratio determines if the particle is more likely to be found at the position $\boldsymbol{X}_{\mathrm{new}}$ than at position $\boldsymbol{X}$. The move is only accepted if $w\geq \theta$, where $\theta\in[0,1]$ is a uniformly distributed random variable. Thus, if the probability of finding the particle at $\mathbf{X}_{\mathrm{new}}$ is larger than the probability of finding the particle at $\mathbf{X}$, then we accept the move. If not, then the larger the energy difference the less probable it is that the move is accepted. As such, we should eventually end up moving fairly close to the most likely position, without getting stuck in it.
+	\subsubsection{The Metropolis-Hasting alogrithm/importance sampling}
+	We compare the Metropolis algorithm to an alternative, known as importance sampling. This is described in further detail in \textbf{REFERENCE}. Note that the Metropolis sampling described in the previous section picks positions at random, and as such does not have a preference for proposing steps that move the system to a region of high probability density (given by $|\Psi|^2$). As such, some CPU cycles will be wasted on position that a very small probability of occurring. Importance sampling seeks to alleviate this problem by introducing a quantum force, which "pushes" the system in the direction of high probability. This force is, on particle $i$ given by:
+	\begin{equation}
+	F_i(\boldsymbol{X})=\frac{2}{\Psi_T}\nabla_i \Psi_T=2\nabla_i \log \Psi_T
+	\end{equation}
+	We compute this in appendix \textbf{APPENDIX} and show that this force is given by:
+	\begin{equation}
+	F_i(\boldsymbol{X})=2\sum_{k=1}^D \left(\frac{a_k-X_k}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}}{\sigma^2 \left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}\right)
+	\end{equation}
+	The analysis in \textbf{REFERENCE} shows that the correct way to include this in our algorithm is by multiplying the transition probability $w$ defined in equation \ref{eq:transition_probability} by a Green's function given by:
+	\begin{equation}
+	G(\mathbf{X}, \mathbf{X}')=\frac{1}{(4D\Delta t)^{3/2}}\sum_{i=1}^M \exp \left(-\frac{(X_i-X_i'-D\Delta t F_i(\mathbf{X}'))^2}{4D\Delta t}\right)
+	\end{equation}
+	And the modified transition probability is given by:
+	\begin{equation}
+	w_{\mathrm{importance}}=\frac{|\Psi(\boldsymbol{X}_{\mathrm{new}})|^2}{|\Psi(\boldsymbol{X})|^2}\frac{G(\boldsymbol{X}, \boldsymbol{X}_{\mathrm{new}})}{G(\boldsymbol{X}_{new}, \boldsymbol{X})}
+	\end{equation}
+	This transition probability is implemented exactly as in the previous section. However, we use a slightly different initialization and we draw the next step, $\boldsymbol{\xi}dx$ in a slightly different way when using importance sampling. This is described in further detail in \textbf{SECTION}.
+	\subsubsection{Gibbs Sampling}
+	\subsection{Optimizing our wavefunction in parameter space}
+	For our neural network to be successful, we must be able to minimize the energy of our wavefunction. This is done by varying the parameters $a_i$, $b_i$ and $w_{ij}$, and computing the local energy. The variational method then guarantees that the lowest energy we find will be larger than the ground state energy.
 	
 	
 	
