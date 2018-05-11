@@ -60,21 +60,21 @@
 	\maketitle
 	\begin{abstract}
 	\begin{center}
-	 NICE ABSTRACT
+	 NICE ABSTRACT! Also check out our \href{https://github.com/dulte/FYS4411/tree/master/Project2}{GitHub}\footnote{\url{https://github.com/dulte/FYS4411/tree/master/Project2}}
 \end{center}
 	\end{abstract}
 	\newpage
 	\tableofcontents
 	\newpage
 	\section{Introduction}
-	There interest in applying machine learning methods to quantum mechanical system has experienced a veritable surge in recent years, and a host of different methods are currently being explored (see e.g. \textbf{REFERENCE}). A particularly interesting application is presented by \textbf{REFERENCE}. They realize that the quantum many-body wavefunction is a system of exponential complexity, where we are interested in extracting a few crucial features, such as the energy. In this context, machine learning and neural networks is a natural way to attack the problem, as these are methods designed for extracting features highly complex systems. They present an approach titled neural-network quantum states, where they use restricted Boltzmann machines to represent the wavefunction.\\
+	The interest in applying machine learning methods to quantum mechanical system has experienced a veritable surge in recent years, and a host of different methods and applications are currently being explored (see e.g. \cite{Broecker2017} or \cite{Botu2015}). A particularly interesting application is presented by \cite{Carleo602}. They realize that the quantum many-body wavefunction is a system of exponential complexity, where we are interested in extracting a few crucial features, such as the energy. In this context, machine learning and neural networks is a natural way to attack the problem, as these are methods designed for extracting features highly complex systems. They present an approach titled neural-network quantum states, where they use restricted Boltzmann machines to represent the wavefunction.\\
 	\linebreak
-	We apply their method to a system of fermions in an isotropic harmonic oscillator trap with Coloumb repulsion. This system has the advantage of being well-studied, as both analytic (\textbf{REFERENCE}) and numeric (\textbf{REFERENCE}) results are available for some system configurations. This enables us to benchmark our results, and compare the performance of neural-network quantum states to other algorithms.\\
+	We apply their method to a system of fermions in an isotropic harmonic oscillator trap with Coloumb repulsion. This system has the advantage of being well-studied, as both analytic (\cite{0305-4470-27-3-040}) and numeric (\cite{PhysRevB.84.115302}) results are available for some system configurations. This enables us to benchmark our results, and compare the performance of neural-network quantum states to other algorithms.\\
 	\linebreak
 	We focus on the ground state of our system, and therefore only investigate the case of $1$ and $2$ electrons, in $1$, $2$ and $3$ dimensions. We use restricted Boltzmann machines to attain the form of our wavefunction, and the use Variational Monte Carlo (VMC) methods to establish an upper bound on the ground state energy. We use a stochastic gradient approach with a fixed learning rate to minimize the weights in our Restricted Boltzmann machine. This is then compared using three different sampling methods in our VMC calculations - Metropolis sampling, importance sampling and Gibbs sampling.\\
 	\linebreak
 	We investigate how our system behaves as we vary the parameters associated with the system, and as we vary the sampling method used.s
-	\section{Theory}
+	\section{Theory}\label{sec:Theory}
 	\subsection{The Hamiltonian}
 	We consider a $D$-dimensional system of $P$ electrons confined in an isotropic harmonic oscillator trap. Working in natural units ($\hbar=c=e=m_e=1$), the Hamiltonian of such a system is given by:
 	\begin{equation}\label{eq:Hamiltonian}
@@ -88,27 +88,27 @@
 	\end{equation}
 	Where $\Psi$ is the wavefunction of the system.
 	\subsection{Analytic solution}
-	We are chiefly interested in the ground-state energy of our system, as this is the state that the system will fall into if left unperturbed by e.g. thermal excitation. If we ignore the interacting part, then we have an analytic solution to the ground-state wavefunction $P$ two electrons, which according to \textbf{REFERENCE} is given by:
+	We are chiefly interested in the ground-state energy of our system, as this is the state that the system will fall into if left unperturbed by e.g. thermal excitation. If we ignore the interacting part, then we have an analytic solution to the ground-state wavefunction $P$ two electrons, which according to \cite{Griffiths2004} is given by:
 	\begin{equation}
 	\psi(r_1,...,r_P)=C\exp\left(-\frac{\omega}{2}\sum_{i=1}^P r_i^2\right)
 	\end{equation}
-	Where $C$ is a normalization constant. Furthermore, the ground-state energy (in natural units) of such a system is, according to \textbf{REFERENCE}, given by:
+	Where $C$ is a normalization constant. Furthermore, the ground-state energy (in natural units) of such a system is given by:
 	\begin{equation}\label{eq:Ground-state-energy}
 	E=P\frac{D}{2}
 	\end{equation}
-	Note, however, that all of the above expressions are only valid up to $P=2$, as we are dealing with spin-1/2 fermions, to which the Pauli exclusion principle applies. Therefore, we can only have two particles in the ground-state, and these particles must have opposite spin. More precisely, they must be in the singlet state (total spin $0$) in the noninteracting case, as discussed in appendix \textbf{APPENDIX}. In what follows, we therefore restrict ourselves to $P\in \{1,2\}$.\\
+	Note, however, that all of the above expressions are only valid up to $P=2$, as we are dealing with spin-1/2 fermions, to which the Pauli exclusion principle applies. Therefore, we can only have two particles in the ground-state, and these particles must have opposite spin. More precisely, they must be in the singlet state (total spin $0$) in the noninteracting case, as discussed in appendix \ref{ap:Derivative_spin}. In what follows, we therefore restrict ourselves to $P\in \{1,2\}$.\\
 	\linebreak
-	We also have analytic results for some special cases in the interacting case. In particular, according to \textbf{REFERENCE}, the energy is $3$ (in natural units) for 2 particles in the 2-dimensional case with $\omega=1$. \textbf{CHECK THIS}.
+	We also have analytic results for some special cases in the interacting case. In particular, according to \cite{0305-4470-27-3-040} and \cite{PhysRevB.84.115302}, the energy is $3$ (in natural units) for 2 particles in the 2-dimensional case with $\omega=1$.
 	\subsection{The variational principle}
-	 In the general case, where analytic solutions are not available, it is desirable to use a numeric method to find the ground state energy, or at least an upper bound on the ground state energy. We achieve such an upper bound by invoking the variational principle, as formulated in \textbf{GRIFFITHS}, which states that:
+	 In the general case, where analytic solutions are not available, it is desirable to use a numeric method to find the ground state energy, or at least an upper bound on the ground state energy. We achieve such an upper bound by invoking the variational principle, as formulated in \cite{Griffiths2004}, which states that:
 	\begin{equation}\label{eq:Variational_Principle}
 	E_0\leq \frac{\langle \Psi_T | H |\Psi_T \rangle}{\langle \Psi_T | \Psi_T \rangle}
 	\end{equation} 
 	Where $E_0$ is the ground-state energy and $\Psi_T$ is any (not necessarily normalized) trial wavefunction for our system. We therefore choose a class of trial wavefunctions, $\Psi_T$, and then compute $E'=\langle \Psi_T | H |\Psi_T\rangle$ by using a variational Monte Carlo approach. The variational method then guarantees that our approximation to the energy, $E'$ will be larger than the ground state energy $E_0$. We then adjust our trial wavefunction within our class of wavefunctions, to give the lowest possible energy, hoping to attain a decent estimate for the actual ground-state energy of our system. 
 	\subsection{Neural-network quantum states and Restricted Boltzmann Machines}
-	To actually determine our class of trial wavefunction, we follow the approach outlined by \textbf{REFERENCE}. They choose to interpret the problem of solving equation \ref{eq:time_depenedent_schrodinger} as a multi-dimensional minimization and feature extraction problem. As neural networks were designed to tackle exactly this class of problem, we choose to employ a neural network to find our trial wavefunction.\\
+	To actually determine our class of trial wavefunction, we follow the approach outlined by \cite{Carleo602}. They choose to interpret the problem of solving equation \ref{eq:time_depenedent_schrodinger} as a multi-dimensional minimization and feature extraction problem. As neural networks were designed to tackle exactly this class of problem, we choose to employ a neural network to find our trial wavefunction.\\
 	\linebreak
-	We follow the approach advocated by\textbf{REFERENCE} and choose a restricted Boltzmann machine (RBM) as the basis for our neural network. Restricted Boltzmann Machines (RBM) are described in great detail in the literature, see e.g. \textbf{REFERENCE}. We therefore provide only a rough outline on how to apply them. We begin by setting up a vector of $M$ visible nodes, $\mathbf{X}$, which corresponds to the position states of our system (with one state per particle, $P$ and dimension, $D$, i.e. $M=PD$), and a vector of $N$ hidden nodes, $\mathbf{H}$ which correspond to some feature of our system that we wish to use to predict our wavefunction. \textbf{DANIEL CHECK THIS PLEASE}. Each of these nodes have weights associated with them. Additionally, there are also weights coupling the hidden nodes to the visible nodes, but there are no connections between nodes in the same layer (hence \textit{restricted} Boltzmann machine). We then model the probability distribution for our particles, given a position $\mathbf{X}$ and a set of hidden nodes $\mathbf{H}$. by a Boltzmann distribution function of the form:
+	We follow the approach advocated by \cite{Carleo602} and choose a restricted Boltzmann machine (RBM) as the basis for our neural network. Restricted Boltzmann Machines (RBM) are described in great detail in the literature, see e.g. \cite{Hinton2010}. We therefore provide only a rough outline on how to apply them. We begin by setting up a vector of $M$ visible nodes, $\mathbf{X}$, which corresponds to the position states of our system (with one state per particle, $P$ and dimension, $D$, i.e. $M=PD$), and a vector of $N$ hidden nodes, $\mathbf{H}$ which correspond to some feature of our system that we wish to use to predict our wavefunction. \textbf{DANIEL CHECK THIS PLEASE}. Each of these nodes have weights associated with them. Additionally, there are also weights coupling the hidden nodes to the visible nodes, but there are no connections between nodes in the same layer (hence \textit{restricted} Boltzmann machine). We then model the probability distribution for our particles, given a position $\mathbf{X}$ and a set of hidden nodes $\mathbf{H}$. by a Boltzmann distribution function of the form:
 	\begin{equation}
 	F_{rbm}(\mathbf{X}, \mathbf{H})=\frac{1}{Z}\exp \left(-\frac{1}{T_0}E(\mathbf{X},\mathbf{H})\right)
 	\end{equation}
@@ -122,14 +122,14 @@
 	\begin{equation}
 	F_{rbm}(\mathbf{X})=\sum_{h_i \in \mathbf{H}}F_{rbm}(\mathbf{X}, \mathbf{H})
 	\end{equation}
-	Which gives, after some algebra done in \textbf{REFERENCE}, our class of trial wavefunctions as:
+	Which gives, after some algebra done in \cite{Hjorth-Jensen2018}, our class of trial wavefunctions as:
 	\begin{equation}\label{eq:Wavefunction}
 	\Psi_T(\mathbf{X})=F_{rbm}(\mathbf{X})=\frac{1}{Z}\exp \left(-\sum_{i=1}^M \frac{(X_i-a_i)^2}{2\sigma^2}\right)\prod_{j=1}^{N}\left(1+\exp\left(b_j+\sum_{i=1}^M \frac{X_iw_{ij}}{\sigma^2} \right)\right)
 	\end{equation}
 	This trial wavefunction, given weights $a,b,w$, is then plugged into equation \ref{eq:Variational_Principle} to find an upper bound on the ground-state energy of our system given the weights. We seek to optimize this wavefunction with respect to these weights.
 	\textbf{TALK ABOUT IF THIS CAN BE EXACT FOR NONINTERACTING}
 	\subsection{Variational Monte Carlo methods}
-	Having established our trial wavefunction, it remains to use the variational principle to estimate the ground state energy. We use a variational Monte Carlo approach to estimate the inner product given in equation \ref{eq:Variational_Principle}. A more detailed description of this may be found in \textbf{REFERENCE}, and we therefore only sketch a procedure. We begin by considering the probability distribution associated with our trial wavefunction, given by:
+	Having established our trial wavefunction, it remains to use the variational principle to estimate the ground state energy. We use a variational Monte Carlo approach to estimate the inner product given in equation \ref{eq:Variational_Principle}. A more detailed description of this may be found in \cite{Hjorth-Jensen2015}, and we therefore only sketch a procedure. We begin by considering the probability distribution associated with our trial wavefunction, given by:
 	\begin{equation}
 	P(\mathbf{X})=\frac{|\Psi_T|^2}{\int d\mathbf{X}|\Psi_T|^2}
 	\end{equation}
@@ -143,7 +143,7 @@
 	\end{equation}
 	Thus, we can get an approximation to the ground state energy if we sample our energy $K$ times. This is contingent upon our ability to efficiently compute the local energy, and efficiently sample our position space.
 	\subsection{The local energy}
-	The local energy is defined in equation \ref{eq:Local_energy}, with the Hamiltonian given in equation \ref{eq:Hamiltonian}. Note that the most complicated part of this expression is the second derivative of the wavefunction. We derive an analytic expression for this is in appendix \textbf{APPENDIX}. The local energy is then given by:
+	The local energy is defined in equation \ref{eq:Local_energy}, with the Hamiltonian given in equation \ref{eq:Hamiltonian}. Note that the most complicated part of this expression is the second derivative of the wavefunction. We derive an analytic expression for this is in appendix \ref{ap:local_energy}. The local energy is then given by:
 	\begin{equation}
 	\begin{split}
 	\frac{1}{\Psi_T}H\Psi_T=-\frac{1}{2}\sum_{k=1}^M\left[\frac{a_k-X_k}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}}{\sigma^2 \left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}\right]^2\\
@@ -153,25 +153,25 @@
 	\subsection{Sampling the position space}
 	To make sense of equation \ref{eq:energy_in_state_space}, we must sample our position space, to get a good estimate for the local energy of the system. We employ three different sampling techniques.	
 	\subsubsection{The Metropolis algorithm}
-	The Metropolis algorithm is described in further detail in \textbf{REFERENCE}. We begin by noting that the wavefunction gives the probability of finding the particle at a point in position space. We will therefore get the most reliable estimates for our local energy if we sample where the wavefunction (and thus the probability distribution) is large, and we avoid wasting CPU cycles. The Metropolis algorithm is one way to achieve this. This is achieved by proposing to move a single particle according to:
+	The Metropolis algorithm is described in further detail in \cite{Hjorth-Jensen2015}. We begin by noting that the wavefunction gives the probability of finding the particle at a point in position space. We will therefore get the most reliable estimates for our local energy if we sample where the wavefunction (and thus the probability distribution) is large, and we avoid wasting CPU cycles. The Metropolis algorithm is one way to achieve this. This is achieved by proposing to move a single particle according to:
 	\begin{equation}\label{eq:metropolis_algorithm_step_size}
 	\boldsymbol{r}_{\mathrm{i,new}}=\boldsymbol{r}_{\mathrm{i}}+\boldsymbol{\xi}dx
 	\end{equation}
-	Where $\boldsymbol{r}_{\mathrm{i}}$ is the position of particle $i$, $dx$ is a chosen step size and $\boldsymbol{\xi}$ is a D-dimensional vector of random numbers, whose distribution we discuss in section \textbf{SECTION}. To find out whether we should sample local energy at this new position, we compute the ratio:
+	Where $\boldsymbol{r}_{\mathrm{i}}$ is the position of particle $i$, $dx$ is a chosen step size and $\boldsymbol{\xi}$ is a D-dimensional vector of random numbers, whose distribution we discuss in section \ref{sec:met_propose_new_position}. To find out whether we should sample local energy at this new position, we compute the ratio:
 	\begin{equation}\label{eq:transition_probability}
 	w=\frac{P(\boldsymbol{X}_{\mathrm{new}})}{P(\boldsymbol{X})}=\frac{|\Psi(\boldsymbol{X}_{\mathrm{new}})|^2}{|\Psi(\boldsymbol{X})|^2}
 	\end{equation}
 	Where $\boldsymbol{X}_{\mathrm{new}}$ is the position of the particles after updating the position of particle $i$ according to \ref{eq:metropolis_algorithm_step_size}. Note that this ratio determines if the particle is more likely to be found at the position $\boldsymbol{X}_{\mathrm{new}}$ than at position $\boldsymbol{X}$. The move is only accepted if $w\geq \theta$, where $\theta\in[0,1]$ is a uniformly distributed random variable. Thus, if the probability of finding the particle at $\mathbf{X}_{\mathrm{new}}$ is larger than the probability of finding the particle at $\mathbf{X}$, then we accept the move. If not, then the larger the energy difference the less probable it is that the move is accepted. As such, we should eventually end up moving fairly close to the most likely position, without getting stuck in it.
 	\subsubsection{The Metropolis-Hasting alogrithm/importance sampling}
-	We compare the Metropolis algorithm to an alternative, known as importance sampling. This is described in further detail in \textbf{REFERENCE}. Note that the Metropolis sampling described in the previous section picks positions at random, and as such does not have a preference for proposing steps that move the system to a region of high probability density (given by $|\Psi|^2$). As such, some CPU cycles will be wasted on positions that have a very small probability of occurring. Importance sampling seeks to alleviate this problem by introducing a quantum force, which "pushes" the system in the direction of high probability. This changes the way a new step is proposed, as discussed in section \textbf{SECTION}. This force is, on particle $i$ given by:
+	We compare the Metropolis algorithm to an alternative, known as importance sampling. This is described in further detail in \cite{Hjorth-Jensen2015}. Note that the Metropolis sampling described in the previous section picks positions at random, and as such does not have a preference for proposing steps that move the system to a region of high probability density (given by $|\Psi|^2$). As such, some CPU cycles will be wasted on positions that have a very small probability of occurring. Importance sampling seeks to alleviate this problem by introducing a quantum force, which "pushes" the system in the direction of high probability. This changes the way a new step is proposed, as discussed in section \ref{sec:met_propose_new_position}. This force is, on particle $i$ given by:
 	\begin{equation}
 	F_i(\boldsymbol{X})=\frac{2}{\Psi_T}\nabla_i \Psi_T=2\nabla_i \log \Psi_T
 	\end{equation}
-	We compute this in appendix \textbf{APPENDIX} and show that this force is given by:
+	We compute this in appendix \ref{ap:local_energy} and show that this force is given by:
 	\begin{equation}\label{eq:quantum_force}
 	F_i(\boldsymbol{X})=2\sum_{k=1}^D \left(\frac{a_k-X_k}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}}{\sigma^2 \left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}\right)
 	\end{equation}
-	The analysis in \textbf{REFERENCE} shows that the correct way to include this in our algorithm is by multiplying the transition probability $w$ defined in equation \ref{eq:transition_probability} by a Green's function given by:
+	The analysis in \cite{Hjorth-Jensen2015} shows that the correct way to include this in our algorithm is by multiplying the transition probability $w$ defined in equation \ref{eq:transition_probability} by a Green's function given by:
 	\begin{equation}
 	G(\mathbf{X}, \mathbf{X}')=\frac{1}{(4\mathcal{D}\Delta t)^{3/2}}\sum_{i=1}^M \exp \left(-\frac{(X_i-X_i'-\mathcal{D}\Delta t F_i(\mathbf{X}'))^2}{4\mathcal{D}\Delta t}\right)
 	\end{equation}
@@ -181,23 +181,24 @@
 	\end{equation}
 	This transition probability is implemented exactly as in the previous section. 
 	\subsubsection{Gibbs Sampling}
+	Derivatives are in section \ref{ap:derivative_gibbs}.
 	\subsection{Optimizing our wavefunction in parameter space}
-	For our neural network to be successful, we must be able to minimize the energy of our wavefunction. This is done by varying the parameters $a_i$, $b_i$ and $w_{ij}$, and computing the local energy. The variational method then guarantees that the lowest energy we find will be larger than the ground state energy. We employ a stochastic gradient method to find the minimum in our parameter space, as described in \textbf{REFERENCE}. Defining a vector of all parameters, $\boldsymbol{\theta}$, we iterate this vector according to:
+	For our neural network to be successful, we must be able to minimize the energy of our wavefunction. This is done by varying the parameters $a_i$, $b_i$ and $w_{ij}$, and computing the local energy. The variational method then guarantees that the lowest energy we find will be larger than the ground state energy. We employ a stochastic gradient method to find the minimum in our parameter space. Defining a vector of all parameters, $\boldsymbol{\theta}$, we iterate this vector according to:
 	\begin{equation}\label{eq:Minimization_theory}
 	\boldsymbol{\theta}^{i+1}=\boldsymbol{\theta}^i + \gamma \frac{\partial \overline{E}_L}{\partial \boldsymbol{\theta}^i}(\boldsymbol{\theta}^i)
 	\end{equation}
-	Where $\overline{E}_L$ is the energy computed by means of the variational Monte Carlo method (given by equation \ref{eq:energy_in_state_space}) and $\gamma$ is the step size, which we vary. The derivative is with respect to all parameters. It is shown in \textbf{REFERENCE} that the derivative of this expectation value of the energy is given by:
+	Where $\overline{E}_L$ is the energy computed by means of the variational Monte Carlo method (given by equation \ref{eq:energy_in_state_space}) and $\gamma$ is the step size, which we vary. The derivative is with respect to all parameters. It is shown in \cite{Heinsen2018} that the derivative of this expectation value of the energy is given by:
 	\begin{equation}
 	\frac{\partial \overline{E}_L}{\partial \boldsymbol{\theta}}(\boldsymbol{\theta})=2\left(\left\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \boldsymbol{\theta}}\overline{E}_L(\boldsymbol{\theta})\right\rangle-\left\langle \frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \boldsymbol{\theta}}\right\rangle\left\langle \overline{E}_L(\boldsymbol{\theta})\right\rangle\right)
 	\end{equation}
 	We must therefore compute the derivative of our trial wavefunction, given in equation \ref{eq:Wavefunction}, with respect to all of our variational parameters.
-	This is done in detail in appendix \textbf{APPENDIX}, both for the case of Metropolis sampling and Gibbs sampling. We iterate this method until the absolute value of our gradient, $\frac{\partial \overline{E}_L}{\partial \boldsymbol{\theta}}$  is small enough \textbf{DANIEL ADD STUFF}.
+	This is done in detail in appendix \ref{ap:derivative_parameters} for Metropolis/importance sampling and in appendix \ref{ap:derivative_gibbs} for Gibbs sampling. We iterate this method until the absolute value of our gradient, $\frac{\partial \overline{E}_L}{\partial \boldsymbol{\theta}}$  is small enough \textbf{DANIEL ADD STUFF}.
 	\subsection{Onebody densities}
 	The onebody density describes the probability of finding a particle at a distance $r$ from the origin of our position space.	We compute this by looking at the histogram of particle positions. This is described in further detail in section \textbf{SECTION}.
 	
 	\section{Methods}\label{Method_section}
 	\subsection{An overview of the structure of our program}
-	Our program may be found on our \textbf{GITHUB}. It is an extension of the program presented in \textbf{REFERENCE}. The program consists of $3$ main classes:
+	Our program may be found on our \href{https://github.com/dulte/FYS4411/tree/master/Project2}{GitHub}\footnote{\url{https://github.com/dulte/FYS4411/tree/master/Project2}}. It is an extension of the program presented in \cite{Heinsen2018}. The program consists of $3$ main classes:
 	\paragraph{\texttt{main.cpp}}
 	The main class first reads in the parameter files. It then sets up the initial guess for the weights of the neural networks and runs the stochastic descent method. Finally, it runs the full simulation with the optimized weights.\\
 	\paragraph{\texttt{simulation.cpp}}
@@ -214,15 +215,15 @@
 	\end{equation}
 	Where $\boldsymbol{\xi}$ is a vector of $D$ number, uniformly distributed in $[0,0.5]$ as we find that this gives a good spread.\\
 	\linebreak
-	When using importance sampling, however, we must distribute our particles slightly differently, as discussed in \textbf{REFERENCE}. In this case, the initial distribution of particles is given by:
+	When using importance sampling, however, we must distribute our particles slightly differently, as discussed in \cite{Hjorth-Jensen2015}. In this case, the initial distribution of particles is given by:
 	\begin{equation}
 	\boldsymbol{r}_i=\boldsymbol{\xi'}\sqrt{dx}
 	\end{equation}
-	Where $\boldsymbol{\xi'}$ is a vector of $D$ number distributed as $\mathcal{N}(0,1)$ and $dx$ is a step size which we tune, as described further in section \textbf{SECTION}.
+	Where $\boldsymbol{\xi'}$ is a vector of $D$ number distributed as $\mathcal{N}(0,1)$ and $dx$ is a step size which we tune, as described further in section \ref{sec:met_tuning_parameters}.
 	\subsubsection{Initializing the parameters}
 	We wish to minimize our wavefunction as a function of the weights $a$, $b$ and $w$. This is done by iterating equation \ref{eq:Minimization_theory}. However, we require an initial guess for the vector of parameters, $\boldsymbol{\theta}^0$. We choose this initial guess to be uniformly distributed in $[-0.01, 0.01]$.
 	\subsubsection{Initializing the simulation}
-	To initialize the simulation, we set the parameters in the parameter file found on our \textbf{GITHUB}. This gives the option to set a number of parameters of the system. Specifically, the parameter file allows the following parameters to be set:
+	To initialize the simulation, we set the parameters in the parameter file found on our \href{https://github.com/dulte/FYS4411/tree/master/Project2}{GitHub}\footnote{\url{https://github.com/dulte/FYS4411/tree/master/Project2}}. This gives the option to set a number of parameters of the system. Specifically, the parameter file allows the following parameters to be set:
 	\begin{itemize}
 	\item The number of Monte Carlo cycles
 	\item The number of particles, $P$
@@ -237,27 +238,27 @@
 	\item Whether the energy should be computed numerically or analytically
 	\item Whether or not to use Gibbs sampling
 	\end{itemize}
-	\subsection{Proposing a new position}
-	As discussed in section \textbf{SECTION}, both the Metropolis algorithm and the Metropolis-Hasting algorithm rely on proposing a new position of the system. The general form for this updating was given in equation \ref{eq:metropolis_algorithm_step_size}. We now discuss how this is concretely implemented in our program.\\
+	\subsection{Proposing a new position}\label{sec:met_propose_new_position}
+	As discussed in section \ref{sec:Theory}, both the Metropolis algorithm and the Metropolis-Hasting algorithm rely on proposing a new position of the system. The general form for this updating was given in equation \ref{eq:metropolis_algorithm_step_size}. We now discuss how this is concretely implemented in our program.\\
 	\linebreak
 	For straighforward Metropolis sampling, there is no bias in selecting this position. We therefore simply define the new position by:
 	\begin{equation}
 	\boldsymbol{r}_{\mathrm{i,new}}=\boldsymbol{r}_i+\boldsymbol{\xi}dx
 	\end{equation}
-	Where $\boldsymbol{\xi}$ consists of $D$ numbers, uniformly distributed in $[-1,1]$ and $dx$ is a step size, which we tune for Metropolis sampling and Gibbs sampling seperately, as discussed in \textbf{SECTION}.\\
+	Where $\boldsymbol{\xi}$ consists of $D$ numbers, uniformly distributed in $[-1,1]$ and $dx$ is a step size, which we tune for Metropolis sampling and Gibbs sampling seperately, as discussed in \ref{sec:met_tuning_parameters}.\\
 	\linebreak
-	For importance sampling, we add a bias in selecting the new position. This bias is introduced by including the quantum force, presented in equation \ref{eq:quantum_force}. The details of how to implement this bias are presented in \textbf{REFERENCE}. This gives that the new step should be selected according to:
+	For importance sampling, we add a bias in selecting the new position. This bias is introduced by including the quantum force, presented in equation \ref{eq:quantum_force}. The details of how to implement this bias are presented in \cite{Hjorth-Jensen2015}. This gives that the new step should be selected according to:
 	\begin{equation}
 	\boldsymbol{r}_{\mathrm{i,new}}=\boldsymbol{r}_i+\boldsymbol{\xi'}\sqrt{dx}+\mathcal{D}\boldsymbol{F}_i dx
 	\end{equation}
-	Where $F_i$ is the quantum force on particle $i$, $\mathcal{D}$ is the diffusion parameter (equal to $1/2$) and $\boldsymbol{\xi'}\sim \mathcal{N}(0,1)$. Note that $dx$ may in general not be the same for the two different methods, and we investigate which $dx$ gives the best values for each case separately, as discussed in section \textbf{SECTION}.
+	Where $F_i$ is the quantum force on particle $i$, $\mathcal{D}$ is the diffusion parameter (equal to $1/2$) and $\boldsymbol{\xi'}\sim \mathcal{N}(0,1)$. Note that $dx$ may in general not be the same for the two different methods, and we investigate which $dx$ gives the best values for each case separately, as discussed in section \ref{sec:met_tuning_parameters}.
 	\subsection{Implementing the optimization of the weights}
 	To find the best trial wavefunction, we run the optimization algorithm given in equation \ref{eq:Minimization_theory} until the absolute value of the gradient is less than $\epsilon=10^{-5}$, or we have surpassed $100$ iterations. We use $100$ times fewer Monte Carlo cycles to compute the local energy in the optimization loop than in the actual simulation used to determine the energy.
 	\subsection{The errors in our energy}
-	We wish to provide error bounds on the energies that we find. Note that the local energies constitute a highly correlated system, as the state of the system in the current Monte Carlo step differs only by the position of a single particle from the state of the system in the previous Monte Carlo step. The variance of the energy is therefore not a good indicator of the error in our system. Instead, we use a technique known as blocking. This is described in further detail in \textbf{REFERENCE}, and we follow the same procedure as outline in \textbf{REFERENCE}.\\
+	We wish to provide error bounds on the energies that we find. Note that the local energies constitute a highly correlated system, as the state of the system in the current Monte Carlo step differs only by the position of a single particle from the state of the system in the previous Monte Carlo step. The variance of the energy is therefore not a good indicator of the error in our system. Instead, we use a technique known as blocking. This is described in further detail in \cite{Jonsson2018} and we follow the same procedure as outline in \cite{Heinsen2018} .\\
 	\linebreak
-	Blocking works by averaging successive observations of the local energy. Such a pairwise operation preserves the variance of the data, but reduces the covariance of the data. We keep doing this until the covariance is small enough, as described in detail in \textbf{REFERENCE}. To ensure that we can this as frequently as possible, we let our number of Monte Carlo cycles be a power of $2$. 
-	\subsection{Tuning the parameters}
+	Blocking works by averaging successive observations of the local energy. Such a pairwise operation preserves the variance of the data, but reduces the covariance of the data. We keep doing this until the covariance is small enough, as described in detail in \cite{Jonsson2018}. To ensure that we can this as frequently as possible, we let our number of Monte Carlo cycles be a power of $2$. 
+	\subsection{Tuning the parameters}\label{sec:met_tuning_parameters}
 	We note that our methods are contingent upon a slew of parameters, in addition to the weights that our minimization algorithm tunes. In particular, we must choose the learning rate, $\gamma$, the step size $dx$, the number of hidden nodes $N$, the spread in the visible nodes, $\sigma$ and the number of Monte Carlo cycles.\\
 	\linebreak
 	We optimize these parameters separately, as they ultimately should only determine if our method converges, and how fast it converges. Note that these parameters are not directly related to the physical parameters of our system, and that only $N$ actually appears in our trial wavefunction.
@@ -271,7 +272,7 @@
 	\subsubsection{Varying the spread in the visible nodes, $\boldsymbol{\sigma}$}
 	Finally, we also investigate how our system depends on the value of $\sigma$. \textbf{FINISH}
 	\subsection{Benchmarking our results}
-	Having chosen the parameters of our system, we can now benchmark our results. We look at the ground state energy for $1$ and $2$ particles, in $1$,$2$ and $3$ dimensions, both with and without interaction. Note that we have analytic results for the noninteracting case, given by equation \ref{eq:Ground-state-energy}, and that we have analytic results in the interacting case with $2$ dimension, given by \textbf{REFERENCE}.\\
+	Having chosen the parameters of our system, we can now benchmark our results. We look at the ground state energy for $1$ and $2$ particles, in $1$,$2$ and $3$ dimensions, both with and without interaction. Note that we have analytic results for the noninteracting case, given by equation \ref{eq:Ground-state-energy}, and that we have analytic results in the interacting case with $2$ dimension.\\
 	\linebreak
 	Note, that the variational principle only guarantees that we attain an upper bound on the ground state energy. As such, we can only check that our result is larger than or equal to the analytic result.
 	\subsection{The onebody density}
@@ -284,14 +285,14 @@
 	\subsection{Outlook}
 	MAGNIFICIENT OUTLOOK
 	\bibliographystyle{apalike}
-	\bibliography{Project1}
+	\bibliography{Project2}
 	\pagebreak
 	\begin{appendices}
 	\section{Finding the derivatives}\label{ap:finding_derivatives}
-	In this section, we derive the expressions for the various derivatives stated in section \textbf{SECTION}. We begin with the local energy.
-	\subsection{The local energy}
+	In this section, we derive the expressions for the various derivatives needed in section \ref{sec:Theory}. We begin with the local energy.
+	\subsection{The local energy}\label{ap:local_energy}
 	The local energy is given by:
-	\begin{equation}
+	\begin{equation}\label{eq:ap_local_energy}
 	E_L=\frac{1}{\Psi}\hat{H}\Psi= \sum_{i=1}^N \left(-\frac{1}{2\Psi}\nabla_i^2 \Psi + \frac{1}{2}\omega^2 r_i^2\right)+\sum_{i<j} \frac{1}{r_{ij}}
 	\end{equation}
 	Thus, we must compute:
@@ -317,30 +318,30 @@
 	\begin{equation}\label{eq:second_derivative_log_psi}
 	\frac{\partial^2 \log \Psi}{\partial X_k^2}=-\frac{1}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}^2 \exp \left(-b_j-\sum_{i=1}^{M}\frac{X_iw_{ij}}{\sigma^2} \right)}{\sigma^4\left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)^2}
 	\end{equation}
-	The local energy can now be found by using equation \ref{eq:log_expression_for_trial_wavefunction}, and inserting equation \ref{eq:first_derivative_log_psi} and equation \ref{eq:second_derivative_log_psi}.
-	\subsection{The derivatives with respect to the parameters}
+	The local energy can now be found by using equation \ref{eq:log_expression_for_trial_wavefunction}, and inserting equation \ref{eq:first_derivative_log_psi} and equation \ref{eq:second_derivative_log_psi}. Inserting this into equation \ref{eq:ap_local_energy} gives the expression for the local energy stated in the main text.
+	\subsection{The derivatives with respect to the parameters}\label{ap:derivative_parameters}
 	For our optimization method, we require:
 	\begin{equation}
 	\frac{1}{\Psi}\frac{\partial \Psi}{\partial \alpha_k}=\frac{\partial }{\partial \alpha_k}\log \Psi
 	\end{equation}
-	Where $\alpha_k$ is any of the variational parameters $a$, $b$ or $w$. These derivatives are given by:
+	Where $\alpha_k$ is any of the weights $a$, $b$ or $w$ of the restricted Boltzmann machine. These derivatives are given by:
 	\begin{equation}
 	\frac{\partial \log \Psi }{\partial a_k}=\frac{X_k-a_k}{\sigma^2}
 	\end{equation}
 	\begin{equation}
 	\frac{\partial \log \Psi}{\partial b_k}=\frac{\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}{1+\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}=\frac{1}{1+\exp \left(-b_k-\sum_{i=1}^M \frac{X_i w_{ik}}{\sigma^2}\right)}
 	\end{equation}
-	Finally, the derivative with respect to the weights, $w_{kl}$ is given by:
+	Finally, the derivative with respect to the coupling weights, $w_{kl}$ is given by:
 	\begin{equation}
 	\frac{\partial \log \Psi}{\partial w_{kl}}=\frac{X_k\exp\left(b_l+\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)}{\sigma^2\left(1+\exp \left( b_l + \sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}=\frac{X_k}{\sigma^2\left(1+\exp \left(-b_l-\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}
 	\end{equation}
-	\subsection{The derivatives with Gibbs sampling}
-	In Gibbs sampling, we represent the wavefunction as $\Psi=\sqrt{F_{rbm}}$, instead of $\Psi=F_{rbm}$. Note, however, that we only ever differentiate the logarithm of the wavefunction. As $\log \sqrt{\Psi}=\frac{1}{2}\log \Psi$, however, this is only a marginal change. Specifically:
+	\subsection{The derivatives with Gibbs sampling}\label{ap:derivative_gibbs}
+	In Gibbs sampling, we represent the wavefunction as $\Psi=\sqrt{F_{rbm}}(\boldsymbol{X})$, instead of $\Psi=F_{rbm}(\boldsymbol{X})$. Note, however, that we only ever differentiate the logarithm of the wavefunction. As $\log \sqrt{\Psi}=\frac{1}{2}\log \Psi$, however, this is only a marginal change. Specifically:
 	\begin{equation}
 	E_L=[\nabla \log \sqrt{\Psi}]^2 + \nabla^2 \log \sqrt{\Psi} =\frac{1}{4}[\nabla \log \Psi]^2 +\frac{1}{2}\nabla^2 \log \Psi
 	\end{equation}
 	\begin{equation}
-	\frac{\partial }{\partial \alpha_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial \alpha_k}\Psi
+	\frac{\partial }{\partial a_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial \alpha_k}\Psi
 	\end{equation}
 	\begin{equation}
 	\frac{\partial }{\partial b_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi 
@@ -349,23 +350,21 @@
 	\frac{\partial}{\partial w_{kl}}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial}{\partial w_{kl}}\log \Psi
 	\end{equation}
 	Where the derivatives on the right-hand side are given in the previous section.
-\section{Deriving the spin of the ground state wavefunction}
+\section{Deriving the spin of the ground state wavefunction}\label{ap:Derivative_spin}
+In this section we derive the spin of the exact two-particle ground state wavefunction in the noninteracting case.\\
+\linebreak
 Consider the unperturbed wavefunction for the ground state of the
 two electron system, given by:
 \begin{align}
 \psi(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) =
 C\exp\left(-\omega\left(r_{1}^{2} + r_{2}^{2}\right)/2\right)
 \end{align}
-Since this unperturbed wavefunction are symmetric under permutation of coordinate.
-Pauli exclusion principle then states that the spin wavefunction must then be
-a antisymmetric function in order to achieve
-total spin $0$ under permutation of coordinate.
-This wave function must then be singlet, and will look like:
+Since this wavefunction is symmetric under permutation of coordinate, the
+Pauli exclusion principle states that the spin wavefunction must be antisymmetric function in to achieve a wavefunction that is totally antisymmetric under permutation of coordinates. This wave function must then be the singlet, and will look like:
 \begin{align}
 \ket{\psi} = \frac{1}{\sqrt{2}}\left(\ket{\uparrow} - \ket{\downarrow}\right)
 \end{align}
-We will now apply the spin operator $\boldsymbol{S}^{2}$ on this spin state to prove that
-total spin is $0$:
+This has spin $0$, as can be seen by applying the spin operator $\boldsymbol{S}^{2}$ to this state:
 \begin{align}
 \boldsymbol{S}^{2}\ket{\psi} = \frac{1}{\sqrt{2}}\left(
 \underbrace{\boldsymbol{S}^{2}\ket{\uparrow}}_{= \frac{3}{4}\hbar^{2}} -
