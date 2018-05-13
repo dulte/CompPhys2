@@ -208,9 +208,6 @@
 	\end{equation}
 	We must therefore compute the derivative of our trial wavefunction, given in equation \ref{eq:Wavefunction}, with respect to all of our variational parameters.
 	This is done in detail in appendix \ref{ap:derivative_parameters} for Metropolis/importance sampling and in appendix \ref{ap:derivative_gibbs} for Gibbs sampling. We iterate this method until the absolute value of our gradient, $\frac{\partial \overline{E}_L}{\partial \boldsymbol{\theta}}$  is small enough \textbf{DANIEL ADD STUFF}.
-	\subsection{Onebody densities}
-	The onebody density describes the probability of finding a particle at a distance $r$ from the origin of our position space.	We compute this by looking at the histogram of particle positions. This is described in further detail in section \textbf{SECTION}.
-	
 	\section{Methods}\label{Method_section}
 	\subsection{An overview of the structure of our program}
 	Our entire program may be found on our \href{https://github.com/dulte/FYS4411/tree/master/Project2}{GitHub}\footnote{\url{https://github.com/dulte/FYS4411/tree/master/Project2}}. It is an extension of the program presented in \cite{Heinsen2018}. The program consists of $3$ main classes:
@@ -228,7 +225,7 @@
 	\begin{equation}
 	\boldsymbol{r}_i=\boldsymbol{\xi}
 	\end{equation}
-	Where $\boldsymbol{\xi}$ is a vector of $D$ number, uniformly distributed in $[0,0.5]$ as we find that this gives a good spread.\\
+	Where $\boldsymbol{\xi}$ is a vector of $D$ number, normally distributed with $\xi \sim 0.5\mathcal{N}(0,1)$ as we find that this gives a good spread.\\
 	\linebreak
 	When using importance sampling, however, we must distribute our particles slightly differently, as discussed in \cite{Hjorth-Jensen2015}. In this case, the initial distribution of particles is given by:
 	\begin{equation}
@@ -256,11 +253,11 @@
 	\subsection{Proposing a new position}\label{sec:met_propose_new_position}
 	As discussed in section \ref{sec:Theory}, both the Metropolis algorithm and the Metropolis-Hasting algorithm rely on proposing a new position of the system. The general form for this updating was given in equation \ref{eq:metropolis_algorithm_step_size}. We now discuss how this is concretely implemented for the different sampling method.\\
 	\linebreak
-	For straightforward Metropolis sampling or Gibbs sampling, there is no bias in selecting this position. We therefore simply define the new position by:
+	For straightforward Metropolis sampling, there is no bias in selecting this position. We therefore simply define the new position by:
 	\begin{equation}
 	\boldsymbol{r}_{\mathrm{i,new}}=\boldsymbol{r}_i+\boldsymbol{\xi}dx
 	\end{equation}
-	Where $\boldsymbol{\xi}$ consists of $D$ numbers, uniformly distributed in $[-1,1]$ and $dx$ is a step size, which we tune for Metropolis sampling and Gibbs sampling seperately, as discussed in \ref{sec:met_tuning_parameters}.\\
+	Where $\boldsymbol{\xi}$ consists of $D$ numbers, uniformly distributed in $[-1,1]$ and $dx$ is a step size.\\
 	\linebreak
 	For importance sampling, we add a bias in selecting the new position. This bias is introduced by including the quantum force, presented in equation \ref{eq:quantum_force}. The details of how to implement this bias are presented in \cite{Hjorth-Jensen2015}. This gives that the new step should be selected according to:
 	\begin{equation}
@@ -284,13 +281,12 @@
 	We choose to tune the learning rate $\gamma$ and number of hidden nodes $N$ simultaneously, as both determine how fast our minimization method converges. We choose representative values for both parameters, and look at the number of iterations required for our minimization method to converge in the simplest case ($1$ particle and $1$ dimension). We then choose the combination of parameters that gives the quickest convergence, always ensuring that we actually reproduce the correct energy. We again do this separately for Metropolis sampling, importance sampling and Gibbs sampling. We then use the values of $\gamma$ and $N$ found for each sampling tyype also for interacting case for both $1$ and $2$ particles.
 	\subsubsection{Choosing the number of Monte Carlo steps}
 	Note that the numbers of Monte Carlo steps required will depend on the method used to sample the space, as e.g. importance sampling will accept more steps and therefore require fewer cycles. As we are limited to $2$ particles, however, we can afford to use a fairly large number of Monte Carlo cycles. We therefore choose to use enough Monte Carlo steps to ensure convergence in the uncertainty in the energy, and use the same number of Monte Carlo cycles independent of the sampling. 
-	\subsubsection{Varying the spread in the visible nodes, $\boldsymbol{\sigma}$}
-	Finally, we also investigate how our system depends on the value of $\sigma$. \textbf{FINISH}
+	\subsubsection{Tuning the spread in the visible nodes, $\boldsymbol{\sigma}$}
+	We vary $\sigma$ only in the cases where we are unable to reach the minimum, as this would indicate that our wavefunction needs to be adjusted. We then plot $\sigma$ as a function of the local energy, and choose the $\sigma$ that minimizes the energy.
 	\subsection{Benchmarking our results}
 	Having chosen the parameters of our system, we can now benchmark our results. We look at the ground state energy for $1$ and $2$ particles, in $1$,$2$ and $3$ dimensions, both with and without interaction. Note that we have analytic results for the noninteracting case, given by equation \ref{eq:Ground-state-energy}, and that we have analytic results in the interacting case with $2$ dimension.\\
 	\linebreak
 	Note, that the variational principle only guarantees that we attain an upper bound on the ground state energy. As such, we can only check that our result is larger than or equal to the analytic result.
-	\subsection{The onebody density}
  	\section{Results}
 	\subsection{Benchmarking our neural network quantum state}
 	 To explore the ability of NQS to reproduce results, we begin by tuning the network in the simplest possible case ($1$ dimension with $1$ particle).
@@ -350,6 +346,9 @@ Finally, the same plot for Gibbs sampling is shown in figure \ref{fig:step_size_
 With the parameters from the previous sections, we are able to reach the minimum of the energy for standard Metropolis sampling and importance sampling. However, we were not quite able to reach a minimum for Gibbs sampling. We therefore vary $\sigma$, to see if we can get a better approximation to the wavefunction, and thus a lower energy.
 \subsubsection{Benchmarking results}
 \subsection{The interacting system}
+As discussed in section \textbf{SECTION}, we also 
+
+
 	\section{Discussion}
 	EXCELLENT DISCUSSION
 	\section{Conclusion}
