@@ -179,18 +179,24 @@
 	\end{equation}
 	This transition probability is implemented exactly as in the previous section. 
 	\subsubsection{Gibbs Sampling}
-	Gibbs sampling is an alternative to Metropolis/Metropolis-Hastings algorithm, which is described in greater detail in \textbf{REFERENCE}. Here we have a more direct connection between the probability distribution of the neural network and the wavefunction. In order to establish a direct physical connection to the probability distribution of the RBM, we now model our wavefunction as:
+	Gibbs sampling is an alternative to Metropolis/Metropolis-Hastings algorithm, which is described in greater detail in \cite{Wang2014}. Here we have a more direct connection between the probability distribution of the neural network and the wavefunction. In order to establish a direct physical connection to the probability distribution of the RBM, we now model our wavefunction as:
 	\begin{equation}\label{eq:wavefunction_Gibbs}
 	\Psi_{T, \mathrm{Gibbs}} =\sqrt{F_{rbm}(\boldsymbol{X})}
 	\end{equation}
 	Where $\Psi_T$ is given in equation \ref{eq:Wavefunction}. Note that, as the wavefunction is real-valued, this implies $|\Psi_{T, \mathrm{Gibbs}}(\boldsymbol{X})|^2 = F_{rbm}(\boldsymbol{X})$, i.e. the marginal distribution directly models the position probability distribution.\\
 	\linebreak
-	We are also interested in the marginal distribution of the hidden nodes. This gives, after a few lines of Algebra given in \cite{Hjorth-Jensen2018}:
-	\begin{equation}
-	P(H_j=1|\boldsymbol{X})=
+	We are also interested in the marginal distribution of the hidden nodes. This gives, after a few lines of Algebra done in \cite{Hjorth-Jensen2018}:
+	\begin{equation}\label{eq:Marginal_distribution_H}
+	\begin{split}
+	P(H_j=1|\boldsymbol{X})=\frac{1}{1+\exp\left(-b_j-\frac{1}{\sigma^2}\sum_{i=1}^M X_i w_{ij}\right)}\\
+	P(H_j=0|\boldsymbol{X})=\frac{1}{1+\exp\left(b_j+\frac{1}{\sigma^2}\sum_{i=1}^M X_i w_{ij}\right)}
+	\end{split}
 	\end{equation}
-	
-	Derivatives are in section \ref{ap:derivative_gibbs}.
+	We now initialize the weights, biases and position $\boldsymbol{X}$, as discussed in section \ref{sec:Initialization}. We can then compute the marginal distributions for $\boldsymbol{X}$ given in equation \ref{eq:Marginal_distribution_H}. We then draw a uniform random number $\theta \in [0,1]$ for each $H_i$, and update $H_i$ according to equation \ref{eq:Marginal_distribution_H}. Then the positions are updated according to:
+	\begin{equation}
+	X_i\sim \mathcal{N}\left(\sum_{j=1}^Nw_{ij}H_j, \sigma^2\right)
+	\end{equation}
+	We then compute the local energy using this $\boldsymbol{X}$. Note that we here cannot use equation \ref{eq:Local_energy}, as this is only valid for $\Psi_T = F_{rbm}(\boldsymbol{X})$. However, the new expression for local energy only differs by some numerical factors to the previous expression, as discussed in appendix \ref{ap:derivative_gibbs}. 
 	\subsection{Optimizing our wavefunction in parameter space}
 	For our neural network to be successful, we must be able to minimize the energy of our wavefunction. This is done by varying the parameters $a_i$, $b_i$ and $w_{ij}$, and computing the local energy. The variational method then guarantees that the lowest energy we find will be larger than the ground state energy. We employ a stochastic gradient method to find the minimum in our parameter space. Defining a vector of all parameters, $\boldsymbol{\theta}$, we iterate this vector according to:
 	\begin{equation}\label{eq:Minimization_theory}
@@ -216,7 +222,7 @@
 	The system class contains all the functions for the wavefunction, the different sampling methods, and the acceptance checks. It also contains the function for computing the local energy and the derivatives of the wavefunction as a function of the various parameters.\\
 	\linebreak
 	In addition, we implement various auxiliary classes, that read in parameters, dump variables to file and do statistical analysis. These are described in greater detail on our repository.
-	\subsection{Initializing our system}
+	\subsection{Initializing our system}\label{sec:Initialization}
 	\subsubsection{Initializing the position}
 	To initialize our system, we must distribute our particles. How we distribute the particles, however, depends on the sampling method employed. When using the Metropolis algorithm or Gibbs sampling, we distribute our particles according to:
 	\begin{equation}
@@ -230,7 +236,7 @@
 	\end{equation}
 	Where $\boldsymbol{\xi'}$ is a vector of $D$ number distributed as $\mathcal{N}(0,1)$ and $dx$ is a step size which we tune, as described further in section \ref{sec:met_tuning_parameters}.
 	\subsubsection{Initializing the parameters}
-	We wish to minimize our wavefunction as a function of the biases $a$, $b$ and  the weights $w$. This is done by iterating equation \ref{eq:Minimization_theory}. However, we require an initial guess for the vector of parameters, $\boldsymbol{\theta}^0$. We choose this initial guess to be uniformly distributed in $[-0.01, 0.01]$.
+	We wish to minimize our wavefunction as a function of the biases $a$, $b$ and  the weights $w$. This is done by iterating equation \ref{eq:Minimization_theory}. However, we require an initial guess for the vector of parameters, $\boldsymbol{\theta}^0$. We choose this initial guess to be uniformly distributed in $[0, 0.01]$.
 	\subsubsection{Initializing the simulation}
 	To initialize the simulation, we set the parameters in the parameter file found on our \href{https://github.com/dulte/FYS4411/tree/master/Project2}{GitHub}$^1$. This gives the option to set a number of parameters of the system. Specifically, the parameter file allows the following parameters to be set at runtime:
 	\begin{itemize}
@@ -286,7 +292,61 @@
 	Note, that the variational principle only guarantees that we attain an upper bound on the ground state energy. As such, we can only check that our result is larger than or equal to the analytic result.
 	\subsection{The onebody density}
  	\section{Results}
-	GROUNDBREAKING RESULTS
+	\subsection{Benchmarking our neural network quantum state}
+	 To explore the ability of NQS to reproduce results, we begin by tuning the network in the simplest possible case ($1$ dimension with $1$ particle).
+	 \subsubsection{Tuning $\boldsymbol{dx}$}
+	 We show the results of running Monte Carlo simulations with various step sizes in figure \ref{fig:results_benchmark_no_importance} below:
+\begin{figure}[ht!]
+\centering
+ \begin{subfigure}[b]{0.8\textwidth}
+ 	\centering
+ 	\includegraphics[width=\textwidth]{../Results/dx_normal_mean.pdf}
+ 	\caption{Evolving mean}
+ \end{subfigure}
+ ~
+ \begin{subfigure}[b]{0.8\textwidth}
+ 	 	\centering
+ 	 	\includegraphics[width=\textwidth]{../Results/dx_normal.pdf}
+ 	 	\caption{Evolving standard deviation}
+\end{subfigure}
+\caption{CHOSE $dx=0.1$}\label{fig:results_benchmark_no_importance}
+\end{figure}
+We show the equivalent plot with importance sampling in figure \ref{fig:results_benchmark_importance}
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}[b]{0.8\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../Results/dx_importance_mean.pdf}
+		\caption{Evolving mean}
+	\end{subfigure}
+	~
+	\begin{subfigure}[b]{0.8\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../Results/dx_importance.pdf}
+		\caption{Evolving standard deviation}
+	\end{subfigure}
+	\caption{CHOSE $dx=0.1$}\label{fig:results_benchmark_importance}
+\end{figure}
+\subsubsection{Tuning $\boldsymbol{N}$ and $\boldsymbol{\gamma}$}
+As discussed in section \textbf{SECTION}, we tune the learning rate, $\gamma$ and the number of hidden nodes, $N$ together. This gives the plot shown in figure \ref{fig:step_size_and_N_standard} for the standard Metropolis algorithm.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{../Results/grad_normal.pdf}
+\caption{CHOSE: $N=5$, $\gamma=0.5$}\label{fig:step_size_and_N_standard}
+\end{figure}
+The equivalent plot for importance sampling is shown in figure \ref{fig:step_size_and_N_importance}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{../Results/grad_importance.pdf}
+	\caption{CHOSE: $N=5$, $\gamma=0.5$}\label{fig:step_size_and_N_importance}
+\end{figure}
+Finally, the same plot for Gibbs sampling is shown in figure \ref{fig:step_size_and_N_gibbs}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{../Results/grad_gibbs.pdf}
+	\caption{CHOSE: $N=5$, $\gamma=0.5$}\label{fig:step_size_and_N_gibbs}
+\end{figure}
+
 	\section{Discussion}
 	EXCELLENT DISCUSSION
 	\section{Conclusion}
@@ -302,61 +362,61 @@
 	\subsection{The local energy}\label{ap:local_energy}
 	The local energy is given by:
 	\begin{equation}\label{eq:ap_local_energy}
-	E_L=\frac{1}{\Psi}\hat{H}\Psi= \sum_{i=1}^N \left(-\frac{1}{2\Psi}\nabla_i^2 \Psi + \frac{1}{2}\omega^2 r_i^2\right)+\sum_{i<j} \frac{1}{r_{ij}}
+	E_L=\frac{1}{\Psi_T}\hat{H}\Psi_T= \sum_{i=1}^N \left(-\frac{1}{2\Psi_T}\nabla_i^2 \Psi_T + \frac{1}{2}\omega^2 r_i^2\right)+\sum_{i<j} \frac{1}{r_{ij}}
 	\end{equation}
 	Thus, we must compute:
 	\begin{equation}
-	\frac{1}{\Psi}\nabla_i^2 \Psi
+	\frac{1}{\Psi_T}\nabla_i^2 \Psi_T
 	\end{equation}
 	This may be rewritten as:
 	\begin{equation}\label{eq:log_expression_for_trial_wavefunction}
-	\frac{1}{\Psi}\nabla \left(\Psi \frac{1}{\Psi} \nabla\Psi\right)=\left(\frac{1}{\Psi}\nabla \Psi\right)^2+\nabla \left(\frac{1}{\Psi}\nabla \Psi \right)=\left[\nabla \log \Psi\right]^2 + \nabla^2 \log \Psi
+	\frac{1}{\Psi_T}\nabla \left(\Psi_T \frac{1}{\Psi_T} \nabla\Psi_T\right)=\left(\frac{1}{\Psi_T}\nabla \Psi_T\right)^2+\nabla \left(\frac{1}{\Psi_T}\nabla \Psi_T \right)=\left[\nabla \log \Psi_T\right]^2 + \nabla^2 \log \Psi_T
 	\end{equation}
 	The logarithm of our trial wavefunction is given by:
 	\begin{equation}\label{eq:logarithm_of_wavefunction}
-	\log \Psi = -\log Z -\sum_{i=1}^M \left(\frac{(X_i-a_i)^2}{2\sigma^2}\right)+\sum_{j=1}^N \log \left(1+\exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)
+	\log \Psi_T = -\log Z -\sum_{i=1}^M \left(\frac{(X_i-a_i)^2}{2\sigma^2}\right)+\sum_{j=1}^N \log \left(1+\exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)
 	\end{equation}
 	The derivative with respect to one coordinate is now given by:
 	\begin{equation}\label{eq:first_derivative_log_psi}
 	\begin{split}
-	\frac{\partial \log \Psi}{\partial X_k}=\frac{(a_k-X_k)}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj} \exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)}{\sigma^2 \left(1+\exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}\\
+	\frac{\partial \log \Psi_T}{\partial X_k}=\frac{(a_k-X_k)}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj} \exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)}{\sigma^2 \left(1+\exp \left(b_j+\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}\\
 	=\frac{a_k-X_k}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}}{\sigma^2 \left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)}
 	\end{split}
 	\end{equation}
 	Whereas the second derivative is:
 	\begin{equation}\label{eq:second_derivative_log_psi}
-	\frac{\partial^2 \log \Psi}{\partial X_k^2}=-\frac{1}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}^2 \exp \left(-b_j-\sum_{i=1}^{M}\frac{X_iw_{ij}}{\sigma^2} \right)}{\sigma^4\left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)^2}
+	\frac{\partial^2 \log \Psi_T}{\partial X_k^2}=-\frac{1}{\sigma^2}+\sum_{j=1}^N \frac{w_{kj}^2 \exp \left(-b_j-\sum_{i=1}^{M}\frac{X_iw_{ij}}{\sigma^2} \right)}{\sigma^4\left(1+ \exp \left(-b_j-\sum_{i=1}^{M} \frac{X_iw_{ij}}{\sigma^2}\right)\right)^2}
 	\end{equation}
 	The local energy can now be found by using equation \ref{eq:log_expression_for_trial_wavefunction}, and inserting equation \ref{eq:first_derivative_log_psi} and equation \ref{eq:second_derivative_log_psi}. Inserting this into equation \ref{eq:ap_local_energy} gives the expression for the local energy stated in the main text.
 	\subsection{The derivatives with respect to the parameters}\label{ap:derivative_parameters}
 	For our optimization method, we require:
 	\begin{equation}
-	\frac{1}{\Psi}\frac{\partial \Psi}{\partial \alpha_k}=\frac{\partial }{\partial \alpha_k}\log \Psi
+	\frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha_k}=\frac{\partial }{\partial \alpha_k}\log \Psi_T
 	\end{equation}
 	Where $\alpha_k$ is any of the weights $a$, $b$ or $w$ of the restricted Boltzmann machine. These derivatives are given by:
 	\begin{equation}
-	\frac{\partial \log \Psi }{\partial a_k}=\frac{X_k-a_k}{\sigma^2}
+	\frac{\partial \log \Psi_T }{\partial a_k}=\frac{X_k-a_k}{\sigma^2}
 	\end{equation}
 	\begin{equation}
-	\frac{\partial \log \Psi}{\partial b_k}=\frac{\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}{1+\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}=\frac{1}{1+\exp \left(-b_k-\sum_{i=1}^M \frac{X_i w_{ik}}{\sigma^2}\right)}
+	\frac{\partial \log \Psi_T}{\partial b_k}=\frac{\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}{1+\exp \left(b_k+\sum_{i=1}^M \frac{X_iw_{ik}}{\sigma^2}\right)}=\frac{1}{1+\exp \left(-b_k-\sum_{i=1}^M \frac{X_i w_{ik}}{\sigma^2}\right)}
 	\end{equation}
 	Finally, the derivative with respect to the coupling weights, $w_{kl}$ is given by:
 	\begin{equation}
-	\frac{\partial \log \Psi}{\partial w_{kl}}=\frac{X_k\exp\left(b_l+\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)}{\sigma^2\left(1+\exp \left( b_l + \sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}=\frac{X_k}{\sigma^2\left(1+\exp \left(-b_l-\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}
+	\frac{\partial \log \Psi_T}{\partial w_{kl}}=\frac{X_k\exp\left(b_l+\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)}{\sigma^2\left(1+\exp \left( b_l + \sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}=\frac{X_k}{\sigma^2\left(1+\exp \left(-b_l-\sum_{i=1}^M \frac{X_iw_{il}}{\sigma^2}\right)\right)}
 	\end{equation}
 	\subsection{The derivatives with Gibbs sampling}\label{ap:derivative_gibbs}
-	In Gibbs sampling, we represent the wavefunction as $\Psi=\sqrt{F_{rbm}}(\boldsymbol{X})$, instead of $\Psi=F_{rbm}(\boldsymbol{X})$. Note, however, that we only ever differentiate the logarithm of the wavefunction. As $\log \sqrt{\Psi}=\frac{1}{2}\log \Psi$, however, this is only a marginal change. Specifically:
+	In Gibbs sampling, we represent the wavefunction as $\Psi_{T, \mathrm{Gibbs}}=\sqrt{F_{rbm}(\boldsymbol{X})}$, instead of $\Psi_T=F_{rbm}(\boldsymbol{X})$. Note, however, that we only ever differentiate the logarithm of the wavefunction. As $\log \sqrt{\Psi_T}=\frac{1}{2}\log \Psi_T$, this gives only a marginal change. Specifically:
 	\begin{equation}
-	E_L=[\nabla \log \sqrt{\Psi}]^2 + \nabla^2 \log \sqrt{\Psi} =\frac{1}{4}[\nabla \log \Psi]^2 +\frac{1}{2}\nabla^2 \log \Psi
+	E_L=[\nabla \log \sqrt{\Psi_T}]^2 + \nabla^2 \log \sqrt{\Psi_T} =\frac{1}{4}[\nabla \log \Psi_T]^2 +\frac{1}{2}\nabla^2 \log \Psi_T
 	\end{equation}
 	\begin{equation}
-	\frac{\partial }{\partial a_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial \alpha_k}\Psi
+	\frac{\partial }{\partial a_k}\log \sqrt{\Psi_T}=\frac{1}{2}\frac{\partial }{\partial \alpha_k}\Psi_T
 	\end{equation}
 	\begin{equation}
-	\frac{\partial }{\partial b_k}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi 
+	\frac{\partial }{\partial b_k}\log \sqrt{\Psi_T}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi_T
 	\end{equation}
 	\begin{equation}
-	\frac{\partial}{\partial w_{kl}}\log \sqrt{\Psi}=\frac{1}{2}\frac{\partial}{\partial w_{kl}}\log \Psi
+	\frac{\partial}{\partial w_{kl}}\log \sqrt{\Psi_T}=\frac{1}{2}\frac{\partial}{\partial w_{kl}}\log \Psi_T
 	\end{equation}
 	Where the derivatives on the right-hand side are given in the previous section.
 \section{Deriving the spin of the ground state wavefunction}\label{ap:Derivative_spin}
