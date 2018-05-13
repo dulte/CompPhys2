@@ -35,7 +35,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
     Eigen::ArrayXd gradient = Eigen::ArrayXd::Zero(x_0.size());
-    double tol = 1e-5;
+    double tol = 1e-4;
 
     std::string gradient_filename = "..//output//gradient_data_";
     gradient_filename.append(std::to_string(Parameters::N));
@@ -63,6 +63,8 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
             std::cout << "Number of iterations: " << i+1 << std::endl;
             break;
         }
+
+        std::cout << "Norm of gradient: " << ((Eigen::VectorXd)gradient).squaredNorm() << std::endl;
         i++;
 
     }
@@ -150,7 +152,7 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     gradient = 2*(E_L_times_derivatives - total_energy*derivatives);
     std::cout << "Gradients: " << std::endl;
     for(int k = 0;k<total_size;k++){
-        if(k<M){
+        /*if(k<M){
             std::cout << "a: " << gradient[k] << std::endl;
 
         }else if(k>=M && k<(Parameters::N+M)){
@@ -167,7 +169,7 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
             exit(1);
         }
 
-
+        */
     }
 
     std::cout << "_________________" << std::endl;

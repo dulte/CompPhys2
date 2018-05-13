@@ -28,12 +28,13 @@ int main(int argc, char *argv[])
 
 
     delete simulation;
-    delete system;*/
+    delete system;
 
 
+    */
+    double Ns[5] = {1,2,3,4,5};
+    double rates[4] = {0.1,0.5,0.01,0.05};
 
-    double Ns[5] = {5,4,3,2,1};
-    double rates[4] = {0.5,0.1,0.05,0.01};
 
     for(int i = 0;i<4;i++){
         for(int j = 0; j<5;j++){
@@ -49,7 +50,6 @@ int main(int argc, char *argv[])
         }
 
     }
-
 
     return 0;
 }
