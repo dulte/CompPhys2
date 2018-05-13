@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+
 def read_parameters(folder):
     """
     Take the folder where the parameter file is found, and returns
@@ -44,20 +46,22 @@ class getVariance:
 
     def plot_variance(self):
         sns.set_style("darkgrid")
+        plt.rcParams.update({'font.size':12})
+        plt.rcParams['mathtext.fontset']='stix'
+        plt.rcParams['font.family']='STIXGeneral'
 
         for i,dx in enumerate(self.list_of_dx):
             length = int(self.data.shape[0]/2**10)
             self.variance = np.zeros(length-1)
             iterations = np.linspace(0,self.data.shape[0],length-1,endpoint=True)
             for j in range(length-1):
-                print(i,j)
                 self.variance[j] = np.std(self.data[0:(j+1)*2**10,i])
             plt.plot(iterations,self.variance,label="dx = %g"%dx)
-        plt.title("Evolving Error",fontsize=15)
-        #plt.title("Evolving Error with Importance Sampling",fontsize=15)
+        plt.title("Evolving Error with Gibbs Sampling",fontsize=20)
         plt.xlabel(r"Iterations",fontsize=20)
         plt.ylabel(r"Error",fontsize=20)
-        plt.legend(loc=4)
+        plt.legend(loc='best')
+        plt.xlim(0,1e6)
         plt.show()
 
 
