@@ -343,7 +343,12 @@ Finally, the same plot for Gibbs sampling is shown in figure \ref{fig:step_size_
 	\caption{CHOSE: $N=5$, $\gamma=0.5$}\label{fig:step_size_and_N_gibbs}
 \end{figure}
 \subsubsection{Tuning $\boldsymbol{\sigma}$}
-With the parameters from the previous sections, we are able to reach the minimum of the energy for standard Metropolis sampling and importance sampling. However, we were not quite able to reach a minimum for Gibbs sampling. We therefore vary $\sigma$, to see if we can get a better approximation to the wavefunction, and thus a lower energy. 
+With the parameters from the previous sections, we are able to reach the minimum of the energy for standard Metropolis sampling and importance sampling. However, we were not quite able to reach a minimum for Gibbs sampling. We therefore vary $\sigma$, to see if we can get a better approximation to the wavefunction, and thus a lower energy. This is shown in figure \ref{fig:sigma_1d}.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{../Results/varying_sigma.pdf}
+	\caption{Error bars are shown }\label{fig:sigma_1d}
+\end{figure}
 \subsubsection{Benchmarking results}
 \subsection{The interacting system}
 We note in table \textbf{TABLE} that are results are not particularly good for a higher number of particles. We therefore retune our parameters for the interacting case, as described in section \ref{sec:met_tuning_parameters}. We choose to perform this tuning for $2$ particles in $2$ dimensions, as we have analytic answers available in this case.
