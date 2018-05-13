@@ -92,7 +92,7 @@
 	\end{equation}
 	Where $C$ is a normalization constant. Furthermore, the ground-state energy (in natural units) of such a system is given by:
 	\begin{equation}\label{eq:Ground-state-energy}
-	E=P\frac{D}{2}
+	\frac{E}{\omega}=P\frac{D}{2}
 	\end{equation}
 	Note, however, that all of the above expressions are only valid up to $P=2$, as we are dealing with spin-1/2 fermions, to which the Pauli exclusion principle applies. Therefore, we can only have two particles in the ground-state, and these particles must have opposite spin. More precisely, they must be in the singlet state (total spin $0$) in the noninteracting case, as discussed in appendix \ref{ap:Derivative_spin}. In what follows, we therefore restrict ourselves to $P\in \{1,2\}$.\\
 	\linebreak
@@ -106,17 +106,17 @@
 	\subsection{Neural-network quantum states and Restricted Boltzmann Machines}
 	To actually determine our class of trial wavefunction, we follow the approach outlined by \cite{Carleo602}. They choose to interpret the problem of solving equation \ref{eq:time_depenedent_schrodinger} as a multi-dimensional minimization and feature extraction problem. As neural networks were designed to tackle exactly this class of problem, we choose to employ a neural network to find our trial wavefunction.\\
 	\linebreak
-	We follow the approach advocated by \cite{Carleo602} and choose a restricted Boltzmann machine (RBM) as the basis for our neural network. Restricted Boltzmann Machines (RBM) are described in great detail in the literature, see e.g. \cite{Hinton2010}. We therefore provide only a rough outline on how to apply them. We begin by setting up a vector of $M$ visible nodes, $\mathbf{X}$, which corresponds to the position states of our system (with one state per particle, $P$ and dimension, $D$, i.e. $M=PD$), and a vector of $N$ hidden nodes, $\mathbf{H}$ which correspond to some feature of our system that we wish to use to predict our wavefunction. \textbf{DANIEL CHECK THIS PLEASE}. Each of these nodes have a bias associated with them, which determine their relative importance. Additionally, there are also weights coupling the hidden nodes to the visible nodes, but there are no connections between nodes in the same layer (hence \textit{restricted} Boltzmann machine). We then model the probability distribution for our particles, given a position $\mathbf{X}$ and a set of hidden nodes $\mathbf{H}$. by a Boltzmann distribution function of the form:
+	We follow the approach advocated by \cite{Carleo602} and choose a restricted Boltzmann machine (RBM) as the basis for our neural network. Restricted Boltzmann Machines (RBM) are described in great detail in the literature, see e.g. \cite{Hinton2010}. We therefore provide only a rough outline on how to apply them. We begin by setting up a vector of $M$ visible nodes, $\mathbf{X}$, which corresponds to the position states of our system (with one state per particle, $P$ and dimension, $D$, i.e. $M=PD$), and a vector of $N$ hidden nodes, $\mathbf{H}$ which correspond to some feature of our system that we wish to use to predict our wavefunction. Each of these nodes have a bias associated with them, which determine their relative importance. Additionally, there are also weights associated with connections between the hidden nodes and the visible nodes, but there are no connections between nodes in the same layer (hence \textit{restricted} Boltzmann machine). The RBM method then consists of modelling the probability distribution for our system, given some visible nodes $\mathbf{X}$ and some hidden nodes $\mathbf{H}$, by a Boltzmann distribution function of the form:
 	\begin{equation}
 	F_{rbm}(\mathbf{X}, \mathbf{H})=\frac{1}{Z}\exp \left(-\frac{1}{T_0}E(\mathbf{X},\mathbf{H})\right)
 	\end{equation}
-	Where $Z$ is a normalization constant and $T_0$ is some reference temperature (set to $1$ in what follows). The energy, $E(\boldsymbol{X}, \boldsymbol{H})$ relates the weights of each node to the probability distribution. As $\mathbf{X}$ is a continuous variable, \textbf{FIX THIS} we choose the form of the energy to be a Gaussian-binary, given by:
+	Where $Z$ is a normalization constant and $T_0$ is some reference temperature (set to $1$ in what follows). The energy, $E(\boldsymbol{X}, \boldsymbol{H})$ relates the weights and biases to the probability distribution. In the standard RBM formulation, both $\boldsymbol{X}$ and $\boldsymbol{H}$ are binary variables. We choose the hidden nodes $\boldsymbol{H}$ to be binary, $h_i \in \{0,1\}$. The visible nodes, $\boldsymbol{X}$, however, represent the position of the electrons in our system, and must therefore be modelled as a continuous function. We therefore use an extension of standard RBM known as Gaussian-Bernoulli Deep Boltzmann Machine's (GDBM), as described by \cite{Wang2014}. They implement the energy as:
 	\begin{equation}
 	E(\mathbf{X}, \mathbf{H})=\sum_{i=1}^{M}\frac{\left(X_i-a_i\right)^2}{2\sigma^2}-\sum_{j=1}^N b_j H_j -\sum_{i=1}^{N}\sum_{j=1}^{M}\frac{X_iw_{ij}H_j}{\sigma^2}
 	\end{equation}
-	Where $a_i$ is the bias associated with the visible node $X_i$, $b_i$ is the bias associated with the hidden node $H_i$ and $w_{ij}$ is the weight associated with the coupling between $X_i$ and $H_j$. The $\sigma$ models the spread of the energy, and determines how the bias play into the energy \textbf{DANIEL PLEASE}.\\
+	Where $a_i$ is the bias associated with the visible node $X_i$, $b_i$ is the bias associated with the hidden node $H_i$ and $w_{ij}$ is the weight associated with the coupling between $X_i$ and $H_j$. As discussed in \cite{Wang2014}, this makes the marginal distribution of the $h_i$ Bernoulli distribution, whereas the marginal distribution of $X_i$ form a normal distribution with variance $\sigma^2$.\\
 	\linebreak
-	As our wavefunction is a function of the position coordinates only, we interpret the marginal distribution of the visible nodes as our wavefunction. This marginal distribution is given by:
+	As our wavefunction is a function of the position coordinates only, we choose to interpret the marginal distribution of the visible nodes as our wavefunction. This marginal distribution is given by:
 	\begin{equation}
 	F_{rbm}(\mathbf{X})=\sum_{h_i \in \mathbf{H}}F_{rbm}(\mathbf{X}, \mathbf{H})
 	\end{equation}
@@ -179,6 +179,17 @@
 	\end{equation}
 	This transition probability is implemented exactly as in the previous section. 
 	\subsubsection{Gibbs Sampling}
+	Gibbs sampling is an alternative to Metropolis/Metropolis-Hastings algorithm, which is described in greater detail in \textbf{REFERENCE}. Here we have a more direct connection between the probability distribution of the neural network and the wavefunction. In order to establish a direct physical connection to the probability distribution of the RBM, we now model our wavefunction as:
+	\begin{equation}\label{eq:wavefunction_Gibbs}
+	\Psi_{T, \mathrm{Gibbs}} =\sqrt{F_{rbm}(\boldsymbol{X})}
+	\end{equation}
+	Where $\Psi_T$ is given in equation \ref{eq:Wavefunction}. Note that, as the wavefunction is real-valued, this implies $|\Psi_{T, \mathrm{Gibbs}}(\boldsymbol{X})|^2 = F_{rbm}(\boldsymbol{X})$, i.e. the marginal distribution directly models the position probability distribution.\\
+	\linebreak
+	We are also interested in the marginal distribution of the hidden nodes. This gives, after a few lines of Algebra given in \cite{Hjorth-Jensen2018}:
+	\begin{equation}
+	P(H_j=1|\boldsymbol{X})=
+	\end{equation}
+	
 	Derivatives are in section \ref{ap:derivative_gibbs}.
 	\subsection{Optimizing our wavefunction in parameter space}
 	For our neural network to be successful, we must be able to minimize the energy of our wavefunction. This is done by varying the parameters $a_i$, $b_i$ and $w_{ij}$, and computing the local energy. The variational method then guarantees that the lowest energy we find will be larger than the ground state energy. We employ a stochastic gradient method to find the minimum in our parameter space. Defining a vector of all parameters, $\boldsymbol{\theta}$, we iterate this vector according to:
