@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 import seaborn as sns
-
+from time import time
 
 
 def read_parameters(folder):
@@ -22,6 +24,53 @@ def read_parameters(folder):
 
     return parameters
 
+def block(x):
+    """
+    The blocking function made by Marius. It is made so to give an error if
+    the number if MC cycles times the number of processes are not on the form
+    2^n.
+    """
+    # preliminaries
+    n = len(x);
+    if abs(np.log2(n) - int(np.log2(n))) > 1e-5:
+        print("Number of MC_cycles are not on the form 2^n. Change that " \
+                            +"and come back an other time")
+
+        print(np.log2(n))
+        exit()
+    d = int(np.log2(n)); s, gamma = np.zeros(d), np.zeros(d);
+    mu = np.mean(x); t0 = time()
+
+    # estimate the auto-covariance and variances
+    # for each blocking transformation
+    for i in np.arange(0,d):
+        n = len(x)
+        # estimate autocovariance of x
+        gamma[i] = (n)**(-1)*np.sum( (x[0:(n-1)]-mu)*(x[1:n]-mu) )
+        # estimate variance of x
+        s[i] = np.var(x)
+        # perform blocking transformation
+        x = 0.5*(x[0::2] + x[1::2])
+
+    # generate the test observator M_k from the theorem
+    M = (np.cumsum( ((gamma/s)**2*2**np.arange(1,d+1)[::-1])[::-1] )  )[::-1]
+
+    # we need a list of magic numbers
+    q =np.array([6.634897,9.210340, 11.344867, 13.276704, 15.086272, 16.811894, 18.475307, 20.090235, 21.665994, 23.209251, 24.724970, 26.216967, 27.688250, 29.141238, 30.577914, 31.999927, 33.408664, 34.805306, 36.190869, 37.566235, 38.932173, 40.289360, 41.638398, 42.979820, 44.314105, 45.641683, 46.962942, 48.278236, 49.587884, 50.892181])
+
+    # use magic to determine when we should have stopped blocking
+    for k in np.arange(0,d):
+        if(M[k] < q[k]):
+            break
+    if (k >= d-1):
+        print("Warning: Use more data")
+    ans = s[k]/2**(d-k)
+    # print("Runtime: %g sec" % (time()-t0)); print("Blocking Statistics :")
+    # print("average            iterations      std. error")
+    # print("%8g %20g %15g" % (mu, k, ans**.5))
+    return ans
+
+
 class getVariance:
     """
     Is is an ad hoc made class to get the Evolving variance of different data,
@@ -31,17 +80,71 @@ class getVariance:
     def __init__(self,folder):
         self.folder = folder
         self.parameters = read_parameters(folder)
-        self.list_of_dx = [1,0.5,0.1,0.05,0.01]
+        self.list_of_dx = [1.5,1.25,1,0.75,0.5,0.25,0.1]
+        self.list_of_dx = [1,0.5,0.1,0.05,0.01,0.005,0.001]
+        
         self.file_names = []
+        self.accept_file_names = []
         for dx in self.list_of_dx:
-            self.file_names.append("data_%.6f.bin" %(dx))
+            self.file_names.append("data_%1.6f.bin" %(dx))
+            self.accept_file_names.append("accept_data_%1.6f.bin" %(dx))
         self.data = np.zeros((self.parameters["MC_cycle"],len(self.list_of_dx)))
+        self.accept_data = np.zeros(len(self.list_of_dx))
         self.read_data()
-        self.plot_variance()
+        self.plot_blocking()
+        #self.plot_variance()
 
     def read_data(self):
         for index,f in enumerate(self.file_names):
             self.data[:,index] = np.fromfile(self.folder + f,sep=" ")
+        for index,f in enumerate(self.accept_file_names):
+            self.accept_data[index] = np.mean(np.fromfile(self.folder + f,sep=" "))
+
+
+    def plot_blocking(self):
+        sns.set_style("darkgrid")
+        plt.rcParams.update({'font.size':12})
+        plt.rcParams['mathtext.fontset']='stix'
+        plt.rcParams['font.family']='STIXGeneral'
+
+        fig = plt.figure()
+        ax = plt.subplot(111)
+
+        mean_data = np.zeros_like(self.accept_data)
+        error_data = np.zeros_like(self.accept_data)
+
+        for i,dx in enumerate(self.list_of_dx):
+            mean_data[i] = np.mean(self.data[:,i])
+
+            error_data[i] = block(self.data[:,i])
+
+        #plt.plot(self.list_of_dx,self.accept_data,"b.-",markersize=10)
+        plt.semilogx(self.list_of_dx,self.accept_data,"b.-",markersize=10)
+        #plt.title("Acceptance Rate for Different dx",fontsize=20)
+        plt.title("Acceptance Rate for Different dx with Importance Sampling",fontsize=20)
+        plt.xlabel("dx",fontsize=20)
+        plt.ylabel("Acceptance Rate",fontsize=20)
+        plt.xlim(self.list_of_dx[0],self.list_of_dx[-1])
+        plt.show() 
+
+
+        ax2 = plt.subplot(111)
+        
+        ax2.errorbar(self.list_of_dx,mean_data,yerr=error_data,fmt='b.-',markersize=10)
+        
+        ax2.get_yaxis().get_major_formatter().set_useOffset(False)
+        ax2.get_xaxis().get_major_formatter().set_useOffset(False)
+        ax2.set_xlabel("dx",fontsize=20)
+        ax2.set_ylabel(r"$\langle E \rangle$",fontsize=20)
+        ax2.set_xlim(self.list_of_dx[0],self.list_of_dx[-1])
+        #plt.title(r"$\langle E \rangle$ for Different dx",fontsize=20)
+        plt.title(r"$\langle E \rangle$ for Different dx with Importance Sampling",fontsize=20)
+        plt.tight_layout()
+        plt.autoscale()
+        plt.show()
+
+
+
 
 
     def plot_variance(self):
@@ -50,18 +153,25 @@ class getVariance:
         plt.rcParams['mathtext.fontset']='stix'
         plt.rcParams['font.family']='STIXGeneral'
 
+        fig = plt.figure()
+        ax = plt.subplot(111)
         for i,dx in enumerate(self.list_of_dx):
             length = int(self.data.shape[0]/2**10)
             self.variance = np.zeros(length-1)
             iterations = np.linspace(0,self.data.shape[0],length-1,endpoint=True)
             for j in range(length-1):
                 self.variance[j] = np.std(self.data[0:(j+1)*2**10,i])
-            plt.plot(iterations,self.variance,label="dx = %g"%dx)
-        plt.title("Evolving Error with Gibbs Sampling",fontsize=20)
-        plt.xlabel(r"Iterations",fontsize=20)
-        plt.ylabel(r"Error",fontsize=20)
-        plt.legend(loc='best')
-        plt.xlim(0,1e6)
+            ax.plot(iterations,self.variance,label="dx = %g \n Rate = %.2f"%(dx,self.accept_data[i]))
+        
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+        plt.title("Evolving Error",fontsize=20)
+        ax.set_xlabel(r"Iterations",fontsize=20)
+        ax.set_ylabel(r"Error",fontsize=20)
+        #ax.legend(loc='best')
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        ax.set_xlim(0,1e6)
         plt.show()
 
 

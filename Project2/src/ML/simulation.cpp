@@ -35,7 +35,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
     Eigen::ArrayXd gradient = Eigen::ArrayXd::Zero(x_0.size());
-    double tol = 1e-4;
+    double tol = 1e-3;
 
     std::string gradient_filename = "..//output//gradient_data_";
     gradient_filename.append(std::to_string(Parameters::N));
@@ -53,7 +53,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
         x = x_prev - Parameters::learning_rate*gradient;//step_length(x_prev,A,t)*gradient;
         x_prev = x;
 
-        gradient_dump.push_back(((Eigen::VectorXd)gradient).squaredNorm());
+        //gradient_dump.push_back(((Eigen::VectorXd)gradient).squaredNorm());
 
 
         if(((Eigen::VectorXd)gradient).squaredNorm() < tol){
@@ -69,7 +69,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
 
     }
 
-    gradient_dump.dump_all();
+    //gradient_dump.dump_all();
     return x;
 }
 
@@ -250,6 +250,14 @@ void Simulation::run(int rank,Eigen::ArrayXd &x){
     DataDump<double> dump(filename);
 
 
+    std::string accept_filename = "..//output//accept_data_";
+    //filename.append(std::to_string(rank));
+    accept_filename.append(std::to_string(Parameters::dx));
+    accept_filename.append(".bin");
+
+    DataDump<double> accept_dump(accept_filename);
+
+
     if(rank == 0){
          dump.dump_metadata("..//output//metadata.txt");
 
@@ -259,6 +267,8 @@ void Simulation::run(int rank,Eigen::ArrayXd &x){
     //Makes a new system with the given alpha
     system->make_grid(x);
 
+    std::cout<<MC_cycles << std::endl;
+    int count = 0;
 
     //The main MC loop
     for(int i = 0;i<MC_cycles;i++){
@@ -275,15 +285,21 @@ void Simulation::run(int rank,Eigen::ArrayXd &x){
             energy += system->gibbs_sample_and_return_energy();
         }
         dump.push_back(energy);
+        accept_dump.push_back(system->number_accept/double(i+1));
         total_energy += energy;
 
+        count++;
+
     }
+
+    std::cout << "When done: " << count << std::endl;
 
     std::cout << "Energy " << total_energy/(MC_cycles) << std::endl;
     std::cout << "Acceptance rate: " << (double)system->number_accept/double(MC_cycles) << std::endl;
     total_energy = 0;
 
     dump.dump_all();
+    accept_dump.dump_all();
 
 }
 

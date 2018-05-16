@@ -46,10 +46,10 @@ System::System()
     }
 
     if(gibbs){
-        System::gibbs_factor=0.5;
+        gibbs_factor=0.5;
     }
     else{
-        System::gibbs_factor=1.;
+        gibbs_factor=1.;
     }
 
     if(D!=0){
@@ -145,7 +145,7 @@ void System::distribute_particles_noninteracting(){
 
     for(int i = 0;i<P*dimension;i++){
             if(D!=0){
-                X(i) = distribution(gen)*sqrt(dx);
+                X(i) = 0.5*distribution(gen)*sqrt(dx);
             }else{
                 X(i) = 0.5*distribution(gen);//(static_cast<double>(rand())/RAND_MAX - 0.5);
         }
@@ -158,6 +158,7 @@ void System::update_X_next(int move){
     if(D!=0){
         quantum_force(move);
     }
+
 
     for(int i = 0; i<dimension; i++){
         if(D!=0){
@@ -289,12 +290,18 @@ double System::check_acceptance_and_return_energy(int move){
 }
 
 double System::gibbs_sample_and_return_energy(){
-    sample_x();
     sample_h();
+    sample_x();
     if(is_interacting){
         update();
     }
-    return get_local_energy_noninteracting();
+    if(is_numerical){
+        return calculate_energy_numerically();
+    }
+    else{
+        return get_local_energy_noninteracting();
+    }
+
 }
 
 
@@ -662,7 +669,7 @@ double System::calculate_energy_numerically(){
 
 
 void System::sample_h(){
-    std::uniform_real_distribution<double> sampling_distribution;
+    std::uniform_real_distribution<double> sampling_distribution(0,1);
 
     Eigen::VectorXd backwards_H = -b_bias - (X.transpose()*weights).transpose()/sigma_squared;
 
@@ -685,7 +692,7 @@ void System::sample_x(){
     Eigen::VectorXd backwards_X = a_bias + weights*H;
 
     for(int i = 0;i<M;i++){
-        sampling_distribution = std::normal_distribution<double>(backwards_X(i),sigma_squared);
+        sampling_distribution = std::normal_distribution<double>(backwards_X(i),sigma);
         X(i) = sampling_distribution(gen);
     }
 }

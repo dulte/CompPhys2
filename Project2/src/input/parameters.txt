@@ -1,12 +1,12 @@
-MC_cycles 2000000
-P 1 #Number of particles
+MC_cycles 2097152 #1048576
+P 2 #Number of particles
 N 2 #Number of hidden nodes
-dimensions 1 #Dimensions
+dimensions 2 #Dimensions
 omega 1
 sigma 1
-D 0 #Importance sampling
 dx 0.5 #Step size
-learning_rate 0.5 #Learning Rate
-interacting 0 #bool
+D 0.5 #Importance sampling
+learning_rate 0.01 #Learning Rate
+interacting 1 #bool
 numerical 0 #bool
-gibbs 1 #Gibbs
+gibbs 0 #Gibbs

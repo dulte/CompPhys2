@@ -57,7 +57,7 @@ def block(x):
 
 
 
-sigmas = np.linspace(0.5,1,51)
+sigmas = np.linspace(0.5,1.48,50)
 print(sigmas)
 
 E_Ls = np.zeros_like(sigmas)
@@ -72,9 +72,9 @@ for index,s in enumerate(sigmas):
 
 
 plt.errorbar(sigmas,E_Ls,fmt='b.',yerr=errors)
-plt.title(r"$E_L$ for Varying $\sigma$ with Gibbs Sampling",fontsize=20)
+plt.title(r"$\langle E \rangle$ for Varying $\sigma$ with Gibbs Sampling",fontsize=20)
 plt.xlabel(r"$\sigma$",fontsize=20)
-plt.ylabel(r"$E_L$",fontsize=20)
+plt.ylabel(r"$\langle E \rangle$",fontsize=20)
 plt.show()
 	
 index_min = np.argmin(E_Ls)

@@ -7,6 +7,8 @@
 
 using namespace std;
 
+void distribute_weights_and_biases(Eigen::ArrayXd &);
+
 int main(int argc, char *argv[])
 {
     //Enables Eigen to do matrix operations in parallel
@@ -51,13 +53,14 @@ int main(int argc, char *argv[])
         }
 
     }*/
-
+    /*
     double sigma = 0.5;
     for(int i = 0;i<50;i++){
         Parameters::sigma = sigma;
         System * system = new System();
         Simulation * simulation = new Simulation(system);
-        Eigen::ArrayXd test_parameters = 0.01*Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
+        Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Zero(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
+        distribute_weights_and_biases(test_parameters);
         std::cout << "ehi " << Parameters::N << std::endl;
         Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
         simulation->run(0,done);
@@ -65,8 +68,37 @@ int main(int argc, char *argv[])
         delete simulation;
         delete system;
 
-        sigma += 0.01;
+        sigma += 0.02;
+    }
+    */
+
+    //double dx[7] = {1.5,1.25,1,0.75,0.5,0.25,0.1};
+    double dx[7] = {1,0.5,0.1,0.05,0.01,0.005,0.001};
+    Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Zero(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
+    distribute_weights_and_biases(test_parameters);
+    //Eigen::ArrayXd test_parameters = 0.01*Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
+    for(int i = 0;i<7;i++){
+        Parameters::dx = dx[i];
+        System * system = new System();
+        Simulation * simulation = new Simulation(system);
+        Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
+        simulation->run(0,done);
+        delete simulation;
+        delete system;
     }
 
     return 0;
+}
+
+
+void distribute_weights_and_biases(Eigen::ArrayXd & array){
+    int size = array.size();
+
+
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::normal_distribution<double> distribution(0,0.01);
+    for(int i = 0;i<size;i++){
+        array[i] = distribution(gen);
+    }
 }
