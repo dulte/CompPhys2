@@ -157,9 +157,9 @@
 	\end{equation}
 	Where $\boldsymbol{r}_{\mathrm{i}}$ is the position of particle $i$, $dx$ is a chosen step size and $\boldsymbol{\xi}$ is a D-dimensional vector of random numbers, whose distribution we discuss in section \ref{sec:met_propose_new_position}. To find out whether we should sample local energy at this new position, we compute the ratio:
 	\begin{equation}\label{eq:transition_probability}
-	w=\frac{P(\boldsymbol{X}_{\mathrm{new}})}{P(\boldsymbol{X})}=\frac{|\Psi(\boldsymbol{X}_{\mathrm{new}})|^2}{|\Psi(\boldsymbol{X})|^2}
+	\Theta=\frac{P(\boldsymbol{X}_{\mathrm{new}})}{P(\boldsymbol{X})}=\frac{|\Psi(\boldsymbol{X}_{\mathrm{new}})|^2}{|\Psi(\boldsymbol{X})|^2}
 	\end{equation}
-	Where $\boldsymbol{X}_{\mathrm{new}}$ is the position of the particles after updating the position of particle $i$ according to \ref{eq:metropolis_algorithm_step_size}. Note that this ratio determines if the particle is more likely to be found at the position $\boldsymbol{X}_{\mathrm{new}}$ than at position $\boldsymbol{X}$. The move is only accepted if $w\geq \theta$, where $\theta\in[0,1]$ is a uniformly distributed random variable. Thus, if the probability of finding the particle at $\mathbf{X}_{\mathrm{new}}$ is larger than the probability of finding the particle at $\mathbf{X}$, then we accept the move. If not, then the larger the energy difference the less probable it is that the move is accepted. As such, we should eventually end up moving fairly close to the most likely position, without getting stuck in it.
+	Where $\boldsymbol{X}_{\mathrm{new}}$ is the position of the particles after updating the position of particle $i$ according to \ref{eq:metropolis_algorithm_step_size}. Note that this ratio determines if the particle is more likely to be found at the position $\boldsymbol{X}_{\mathrm{new}}$ than at position $\boldsymbol{X}$. The move is only accepted if $\Theta \geq \theta$, where $\theta\in[0,1]$ is a uniformly distributed random variable. Thus, if the probability of finding the particle at $\mathbf{X}_{\mathrm{new}}$ is larger than the probability of finding the particle at $\mathbf{X}$, then we accept the move. If not, then the larger the energy difference the less probable it is that the move is accepted. As such, we should eventually end up moving fairly close to the most likely position, without getting stuck in it.
 	\subsubsection{The Metropolis-Hasting alogrithm/importance sampling}
 	We compare the Metropolis algorithm to an alternative, known as importance sampling. This is described in further detail in \cite{Hjorth-Jensen2015}. Note that the Metropolis sampling described in the previous section picks positions at random, and as such does not have a preference for proposing steps that move the system to a region of high probability density (given by $|\Psi|^2$). As such, some CPU cycles will be wasted on positions that have a very small probability of occurring. Importance sampling seeks to alleviate this problem by introducing a quantum force, which "pushes" the system in the direction of high probability. This changes the way a new step is proposed, as discussed in section \ref{sec:met_propose_new_position}. This force is, on particle $i$ given by:
 	\begin{equation}
@@ -265,7 +265,7 @@
 	\end{equation}
 	Where $\boldsymbol{F}_i$ is the quantum force on particle $i$, $\mathcal{D}$ is the diffusion parameter (equal to $1/2$) and $\boldsymbol{\xi'}\sim \mathcal{N}(0,1)$. Note that $dx$ may in general not be the same as above, and we investigate which $dx$ gives the best values for each case separately, as discussed in section \ref{sec:met_tuning_parameters}.
 	\subsection{Implementing the optimization of the biases and the weights}
-	To find the best trial wavefunction, we run the optimization algorithm given in equation \ref{eq:Minimization_theory} until the absolute value of the gradient is less than $\epsilon=10^{-5}$, or we have surpassed $100$ iterations. We use $100$ times fewer Monte Carlo cycles to compute the local energy in the optimization loop than in the actual simulation used to determine the energy.
+	To find the best trial wavefunction, we run the optimization algorithm given in equation \ref{eq:Minimization_theory} until the absolute value of the gradient is less than some $\epsilon$, or we have surpassed $100$ iterations. We use $100$ times fewer Monte Carlo cycles to compute the local energy in the optimization loop than in the actual simulation used to determine the energy.
 	\subsection{The errors in our energy}
 	We wish to provide error bounds on the energies that we find. Note that the local energies constitute a highly correlated system, as the state of the system in the current Monte Carlo step differs only by the position of a single particle from the state in the previous Monte Carlo step. The variance of the energy is therefore not a good indicator of the error in our system. Instead, we use a technique known as blocking. This is described in further detail in \cite{Jonsson2018} and we follow the same procedure as outline in \cite{Heinsen2018}.\\
 	\linebreak
@@ -343,10 +343,15 @@ Finally, the same plot for Gibbs sampling is shown in figure \ref{fig:step_size_
 	\caption{CHOSE: $N=5$, $\gamma=0.5$}\label{fig:step_size_and_N_gibbs}
 \end{figure}
 \subsubsection{Tuning $\boldsymbol{\sigma}$}
-With the parameters from the previous sections, we are able to reach the minimum of the energy for standard Metropolis sampling and importance sampling. However, we were not quite able to reach a minimum for Gibbs sampling. We therefore vary $\sigma$, to see if we can get a better approximation to the wavefunction, and thus a lower energy.
+With the parameters from the previous sections, we are able to reach the minimum of the energy for standard Metropolis sampling and importance sampling. However, we were not quite able to reach a minimum for Gibbs sampling. We therefore vary $\sigma$, to see if we can get a better approximation to the wavefunction, and thus a lower energy. This is shown in figure \ref{fig:sigma_1d}.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{../Results/varying_sigma.pdf}
+	\caption{Error bars are shown }\label{fig:sigma_1d}
+\end{figure}
 \subsubsection{Benchmarking results}
 \subsection{The interacting system}
-As discussed in section \textbf{SECTION}, we also 
+We note in table \textbf{TABLE} that are results are not particularly good for a higher number of particles. We therefore retune our parameters for the interacting case, as described in section \ref{sec:met_tuning_parameters}. We choose to perform this tuning for $2$ particles in $2$ dimensions, as we have analytic answers available in this case.
 
 
 	\section{Discussion}
@@ -395,7 +400,7 @@ As discussed in section \textbf{SECTION}, we also
 	\begin{equation}
 	\frac{1}{\Psi_T}\frac{\partial \Psi_T}{\partial \alpha_k}=\frac{\partial }{\partial \alpha_k}\log \Psi_T
 	\end{equation}
-	Where $\alpha_k$ is any of the weights $a$, $b$ or $w$ of the restricted Boltzmann machine. These derivatives are given by:
+	Where $\alpha_k$ is any of the biases $a$, $b$ or the weights $w$ of the restricted Boltzmann machine. These derivatives are given by:
 	\begin{equation}
 	\frac{\partial \log \Psi_T }{\partial a_k}=\frac{X_k-a_k}{\sigma^2}
 	\end{equation}
@@ -412,7 +417,7 @@ As discussed in section \textbf{SECTION}, we also
 	E_L=[\nabla \log \sqrt{\Psi_T}]^2 + \nabla^2 \log \sqrt{\Psi_T} =\frac{1}{4}[\nabla \log \Psi_T]^2 +\frac{1}{2}\nabla^2 \log \Psi_T
 	\end{equation}
 	\begin{equation}
-	\frac{\partial }{\partial a_k}\log \sqrt{\Psi_T}=\frac{1}{2}\frac{\partial }{\partial \alpha_k}\Psi_T
+	\frac{\partial }{\partial a_k}\log \sqrt{\Psi_T}=\frac{1}{2}\frac{\partial }{\partial a_k}\log \Psi_T
 	\end{equation}
 	\begin{equation}
 	\frac{\partial }{\partial b_k}\log \sqrt{\Psi_T}=\frac{1}{2}\frac{\partial }{\partial b_k}\log \Psi_T
