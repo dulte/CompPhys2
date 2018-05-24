@@ -35,7 +35,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
     Eigen::ArrayXd gradient = Eigen::ArrayXd::Zero(x_0.size());
-    double tol = 1e-5;
+    double tol = 1e-3;
 
     std::string gradient_filename = "..//output//gradient_data_";
     gradient_filename.append(std::to_string(Parameters::N));
@@ -63,7 +63,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
             std::cout << "Number of iterations: " << i+1 << std::endl;
             break;
         }
-
+        //std::cout << gradient << std::endl;
         std::cout << "Norm of gradient: " << ((Eigen::VectorXd)gradient).squaredNorm() << std::endl;
         i++;
 
@@ -92,7 +92,7 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
 
     //This lowers the number of MC step by a factor 100.
     //This is done because we dont need as many steps, and to make this go faster.
-    int fast_MC_cycles = static_cast<int>(MC_cycles/100.);
+    int fast_MC_cycles = static_cast<int>(MC_cycles/10.);
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
