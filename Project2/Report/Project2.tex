@@ -185,14 +185,14 @@
 	\end{equation}
 	Where $\Psi_T$ is given in equation \ref{eq:Wavefunction}. Note that, as the wavefunction is real-valued, this implies $|\Psi_{T, \mathrm{Gibbs}}(\boldsymbol{X})|^2 = F_{rbm}(\boldsymbol{X})$, i.e. the marginal distribution directly models the position probability distribution.\\
 	\linebreak
-	We are also interested in the marginal distribution of the hidden nodes. This gives, after a few lines of Algebra done in \cite{Hjorth-Jensen2018}:
+	We are also interested in the conditional distribution of the hidden nodes. This gives, after a few lines of Algebra done in \cite{Hjorth-Jensen2018}:
 	\begin{equation}\label{eq:Marginal_distribution_H}
 	\begin{split}
 	P(H_j=1|\boldsymbol{X})=\frac{1}{1+\exp\left(-b_j-\frac{1}{\sigma^2}\sum_{i=1}^M X_i w_{ij}\right)}\\
 	P(H_j=0|\boldsymbol{X})=\frac{1}{1+\exp\left(b_j+\frac{1}{\sigma^2}\sum_{i=1}^M X_i w_{ij}\right)}
 	\end{split}
 	\end{equation}
-	We now initialize the weights, biases and position $\boldsymbol{X}$, as discussed in section \ref{sec:Initialization}. We can then compute the marginal distributions for $\boldsymbol{X}$ given in equation \ref{eq:Marginal_distribution_H}. We then draw a uniform random number $\theta \in [0,1]$ for each $H_i$, and update $H_i$ according to equation \ref{eq:Marginal_distribution_H}. Then the positions are updated according to:
+	We now initialize the weights, biases and position $\boldsymbol{X}$, as discussed in section \ref{sec:Initialization}. We can then compute the marginal distributions for $\boldsymbol{X}$ given in equation \ref{eq:Marginal_distribution_H}. We then draw a uniform random number $\theta \in [0,1]$ for each $H_i$, and update $H_i$ according to equation \ref{eq:Marginal_distribution_H}. Then the positions are updated according to their conditional distribution, which is, as shown in \cite{Hjorth-Jensen2018} \textbf{WRITE MORE HERE}
 	\begin{equation}
 	X_i\sim \mathcal{N}\left(\sum_{j=1}^Nw_{ij}H_j, \sigma^2\right)
 	\end{equation}
@@ -273,87 +273,133 @@
 	\subsection{Tuning the parameters}\label{sec:met_tuning_parameters}
 	We note that our results are contingent upon a number of parameters, in addition to the biases and weights that our minimization algorithm tunes. Specifically, we must choose the learning rate, $\gamma$, the step size $dx$, the number of hidden nodes $N$, the spread in the visible nodes, $\sigma$ and the number of Monte Carlo cycles.\\
 	\linebreak
-	We optimize these parameters separately, as they ultimately should only determine if our method converges, and how fast it converges. Note that these parameters are not directly related to the physical parameters of our system, and that only $N$ and $\sigma$ actually appear in our trial wavefunction.
+	We tune each of these parameters in turn, hoping to get close to a global optimum in parameter space without having to do a complete stochastic descent. Note that the step size $\gamma$ and the number of hidden nodes $N$ are intimately related, as $\gamma$ determines the rate of convergence whereas $N$ determines the dimensionality of the convergence problem. We therefore choose to tune these parameters simultaneously, as they strongly influence one another.
 	\subsubsection{Tuning the step size, $\boldsymbol{dx}$}
-	The step size $dx$ determines how well we are able to find the local energy, by describing how far our proposed next position should be from the previous position.
-	To find the best possible step size $dx$, we investigate how fast the energy in our system stabilizes, by looking at the evolving variance as a function of the number of Monte Carlo cycles. We check this for the simplest possibles system ($1$ particle in $1$ dimension), and always check that the energy actually converges to the analytic value predicted by equation \ref{eq:Ground-state-energy}. We then choose the step size where the variance is quickest to stabilize. We do this separately for Metropolis sampling, importance sampling and Gibbs sampling. We then use the $dx$ found for each sampling technique in both the noninteracting case and in the interacting case.
-	\subsubsection{Tuning the learning rate, $\boldsymbol{\gamma}$ and the number of hidden nodes, $\boldsymbol{N}$}
-	We choose to tune the learning rate $\gamma$ and number of hidden nodes $N$ simultaneously, as both determine how fast our minimization method converges. We choose representative values for both parameters, and look at the number of iterations required for our minimization method to converge in the simplest case ($1$ particle and $1$ dimension). We then choose the combination of parameters that gives the quickest convergence, always ensuring that we actually reproduce the correct energy. We again do this separately for Metropolis sampling, importance sampling and Gibbs sampling. We then use the values of $\gamma$ and $N$ found for each sampling tyype also for interacting case for both $1$ and $2$ particles.
-	\subsubsection{Choosing the number of Monte Carlo steps}
-	Note that the numbers of Monte Carlo steps required will depend on the method used to sample the space, as e.g. importance sampling will accept more steps and therefore require fewer cycles. As we are limited to $2$ particles, however, we can afford to use a fairly large number of Monte Carlo cycles. We therefore choose to use enough Monte Carlo steps to ensure convergence in the uncertainty in the energy, and use the same number of Monte Carlo cycles independent of the sampling. 
+	The step size $dx$ determines how well we are able to sample the position space, as it describes how far our proposed next position should be from the previous position. To find the best possible step size $dx$, we investigate the behavior of the energy for different $dx$, and look at the acceptance rate. For this analysis, we fix some values of $\sigma,\gamma$ and $N$ that give acceptable values. We then choose a $dx$ that gives a good estimate of the energy, whilst having neither an extremely high nor an extremely high acceptance rate.\\
+	\linebreak
+	We first do this for the simplest possibles system ($1$ particle in $1$ dimension), checking both the brute-force Metropolis sampling and importance sampling (note that Gibbs sampling does not use a $dx$). For brute-force sampling, we accept a lower acceptance rate than for importance sampling, as importance sampling should lead to a higher acceptance rate.\\
+	\linebreak
+	We also do the same analysis for $2$ particles in $2$ dimensions, including interaction, as we have analytic answers for this system available in \cite{0305-4470-27-3-040}.
 	\subsubsection{Tuning the spread in the visible nodes, $\boldsymbol{\sigma}$}
-	We vary $\sigma$ only in the cases where we are unable to reach the minimum, as this would indicate that our wavefunction needs to be adjusted. We then plot $\sigma$ as a function of the local energy, and choose the $\sigma$ that minimizes the energy.
+	We vary $\sigma$, using the $dx$ found above and acceptable values of $\gamma$ and $N$ and look at what energy we are able to attain. We do this only with Gibbs sampling, as this is where $\sigma$ is most relevant. We then use this $\sigma$ in the other cases as well. We do this separately for the simplest system ($1$ dimension, $1$ particle) and for the interacting system ($2$ dimensions, $2$ particles and interaction). We then use this $\sigma$ in all subsequent runs. 
+	\subsubsection{Tuning the learning rate, $\boldsymbol{\gamma}$ and the number of hidden nodes, $\boldsymbol{N}$}
+	We choose to tune the learning rate $\gamma$ and number of hidden nodes $N$ simultaneously, as explained above. We choose the values for $dx$ and $\sigma$ found previously, and look at the absolute value of the gradient as a function of the iterations of the minimization iterations. ($1$ particle and $1$ dimension). We then choose the combination of parameters that gives the lowest gradient over multiple iterations. We again do this separately for Metropolis sampling, importance sampling and Gibbs sampling, and separately for the simplest system ($1$ particle $1$ dimension) and the interacting system ($2$ particles, $2$ dimensions with interaction).
+	\subsubsection{Choosing the number of Monte Carlo steps}
+	Note that the numbers of Monte Carlo steps required will depend on the method used to sample the space, as e.g. importance sampling will accept more steps and therefore require fewer cycles. As we are limited to $2$ particles, however, we can afford to use a fairly large number of Monte Carlo cycles. We therefore choose to use enough Monte Carlo steps to ensure convergence in the uncertainty in the energy, and use the same number of Monte Carlo cycles independent of the sampling method. 
 	\subsection{Benchmarking our results}
 	Having chosen the parameters of our system, we can now benchmark our results. We look at the ground state energy for $1$ and $2$ particles, in $1$,$2$ and $3$ dimensions, both with and without interaction. Note that we have analytic results for the noninteracting case, given by equation \ref{eq:Ground-state-energy}, and that we have analytic results in the interacting case with $2$ dimension.\\
 	\linebreak
 	Note, that the variational principle only guarantees that we attain an upper bound on the ground state energy. As such, we can only check that our result is larger than or equal to the analytic result.
  	\section{Results}
-	\subsection{Benchmarking our neural network quantum state}
-	 To explore the ability of NQS to reproduce results, we begin by tuning the network in the simplest possible case ($1$ dimension with $1$ particle).
+	\subsection{Tuning our neural network quantum state in the simplest system}
+	We begin by tuning the parameters of our NQS in the simplest possible case ($1$ dimension with $1$ particle).
 	 \subsubsection{Tuning $\boldsymbol{dx}$}
-	 We show the results of running Monte Carlo simulations with various step sizes in figure \ref{fig:results_benchmark_no_importance} below:
+	 We show the energy and acceptance rate using brute-force Metropolis sampling for various step sizes in figure \ref{fig:results_benchmark_no_importance} below:
 \begin{figure}[ht!]
 \centering
  \begin{subfigure}[b]{0.8\textwidth}
  	\centering
- 	\includegraphics[width=\textwidth]{../Results/dx_normal_mean.pdf}
- 	\caption{Evolving mean}
+ 	\includegraphics[width=\textwidth]{../Results/E_v_dx_normal.pdf}
+ 	\caption{Mean energy}
  \end{subfigure}
  ~
  \begin{subfigure}[b]{0.8\textwidth}
  	 	\centering
- 	 	\includegraphics[width=\textwidth]{../Results/dx_normal.pdf}
- 	 	\caption{Evolving standard deviation}
+ 	 	\includegraphics[width=\textwidth]{../Results/AC_normal.pdf}
+ 	 	\caption{Acceptance rate}
 \end{subfigure}
-\caption{CHOSE $dx=0.1$}\label{fig:results_benchmark_no_importance}
+\caption{Plot of the mean energy and corresponding acceptance rate for various values of $dx$, using $1$ particle in $1$ dimension and $2^{20}$ Monte Carlo steps \textbf{CHECK THIS}. This was produced using brute-force Metropolis sampling with $N=2$, $\gamma=0.3$ and $\sigma=1$.}\label{fig:results_benchmark_no_importance}
 \end{figure}
-We show the equivalent plot with importance sampling in figure \ref{fig:results_benchmark_importance}
+As explained in section \textbf{SECTION}, we end up choosing $dx=1$. We show the equivalent plot with importance sampling in figure \ref{fig:results_benchmark_importance}
 \begin{figure}[ht!]
 	\centering
 	\begin{subfigure}[b]{0.8\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{../Results/dx_importance_mean.pdf}
-		\caption{Evolving mean}
+		\includegraphics[width=\textwidth]{../Results/E_v_dx_importance.pdf}
+		\caption{Mean energy}
 	\end{subfigure}
 	~
 	\begin{subfigure}[b]{0.8\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{../Results/dx_importance.pdf}
-		\caption{Evolving standard deviation}
+		\includegraphics[width=\textwidth]{../Results/AC_importance.pdf}
+		\caption{Acceptance rate}
 	\end{subfigure}
-	\caption{CHOSE $dx=0.1$}\label{fig:results_benchmark_importance}
+	\caption{Same as figure \ref{fig:results_benchmark_no_importance}, but using importance sampling}\label{fig:results_benchmark_importance}
 \end{figure}
+In the case of importance sampling, we choose $dx=0.1$ as explained in \textbf{SECTION}.
+\subsubsection{Tuning $\boldsymbol{\sigma}$}
+We vary $\sigma$, using Gibbs sampling. This is shown in figure \ref{fig:sigma_1d}.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{../Results/varying_sigma_gibbs.pdf}
+	\caption{Mean energy for various values of $\sigma$ for a system of $1$ particle in $1$ dimension, using Gibbs sampling and $2^{10}$ Monte Carlo steps. This is with $N=2$ and $\gamma=0.3$}\label{fig:sigma_1d}
+\end{figure}
+As explained in section \textbf{SECTION}, we choose $\sigma=0.7$ in this case.
 \subsubsection{Tuning $\boldsymbol{N}$ and $\boldsymbol{\gamma}$}
 As discussed in section \textbf{SECTION}, we tune the learning rate, $\gamma$ and the number of hidden nodes, $N$ together. This gives the plot shown in figure \ref{fig:step_size_and_N_standard} for the standard Metropolis algorithm.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{../Results/grad_normal.pdf}
-\caption{CHOSE: $N=5$, $\gamma=0.5$}\label{fig:step_size_and_N_standard}
+\caption{Plot of the absolute value of the gradient as a function of iterations for various values of $N$ and $\gamma$. This was performed using brute-force Metropolis sampling, using $1$ particle in $1$ dimension and $2^{20}$ Monte Carlo cycles. We used $dx=1$, $\sigma=0.7$.}\label{fig:step_size_and_N_standard}
 \end{figure}
+As explained in section \textbf{SECTION}, we here choose \textbf{FINISH}.
 The equivalent plot for importance sampling is shown in figure \ref{fig:step_size_and_N_importance}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{../Results/grad_importance.pdf}
-	\caption{CHOSE: $N=5$, $\gamma=0.5$}\label{fig:step_size_and_N_importance}
+	\caption{Same as figure \ref{fig:step_size_and_N_standard}, but using importance sampling, and therefore $dx=0.1$}\label{fig:step_size_and_N_importance}
 \end{figure}
+Here, we chose \textbf{FINISH}.
 Finally, the same plot for Gibbs sampling is shown in figure \ref{fig:step_size_and_N_gibbs}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{../Results/grad_gibbs.pdf}
-	\caption{CHOSE: $N=5$, $\gamma=0.5$}\label{fig:step_size_and_N_gibbs}
+	\caption{Same as figure \ref{fig:step_size_and_N_standard} but using Gibbs sampling}\label{fig:step_size_and_N_gibbs}
 \end{figure}
-\subsubsection{Tuning $\boldsymbol{\sigma}$}
-With the parameters from the previous sections, we are able to reach the minimum of the energy for standard Metropolis sampling and importance sampling. However, we were not quite able to reach a minimum for Gibbs sampling. We therefore vary $\sigma$, to see if we can get a better approximation to the wavefunction, and thus a lower energy. This is shown in figure \ref{fig:sigma_1d}.
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{../Results/varying_sigma.pdf}
-	\caption{Error bars are shown }\label{fig:sigma_1d}
-\end{figure}
-\subsubsection{Benchmarking results}
-\subsection{The interacting system}
-We note in table \textbf{TABLE} that are results are not particularly good for a higher number of particles. We therefore retune our parameters for the interacting case, as described in section \ref{sec:met_tuning_parameters}. We choose to perform this tuning for $2$ particles in $2$ dimensions, as we have analytic answers available in this case.
-
-
+\subsection{Tuning our neural network quantum state in the interacting system}
+We perform the same analysis as in the previous section also in the interacting system with $2$ particles in $2$ dimension. 
+	 \subsubsection{Tuning $\boldsymbol{dx}$}
+	 We show the results of tuning the step size in the interacting case in figure \ref{fig:results_benchmark_no_importance_interacting} below:
+	 \begin{figure}[ht!]
+	 	\centering
+	 	\begin{subfigure}[b]{0.8\textwidth}
+	 		\centering
+	 		\includegraphics[width=\textwidth]{../Results/E_v_dx_normal_interacting.pdf}
+	 		\caption{Mean of the energy}
+	 	\end{subfigure}
+	 	~
+	 	\begin{subfigure}[b]{0.8\textwidth}
+	 		\centering
+	 		\includegraphics[width=\textwidth]{../Results/AC_normal_interacting.pdf}
+	 		\caption{Acceptance ratio}
+	 	\end{subfigure}
+	 	\caption{Plot of the mean energy and corresponding acceptance rate for various values of $dx$ using $2$ particles in $2$ dimensions and $2^{20}$ Monte Carlo steps. This was produced using brute-force Metropolis sampling with $N=2, \gamma=0.3$ and $\sigma=1$}\label{fig:results_benchmark_no_importance_interacting}
+	 \end{figure}
+	 As explained in section \textbf{SECTION}, we choose $dx=1$ in this case. We show the equivalent plot with importance sampling in figure \ref{fig:results_benchmark_importance_interacting}
+	 \begin{figure}[ht!]
+	 	\centering
+	 	\begin{subfigure}[b]{0.8\textwidth}
+	 		\centering
+	 		\includegraphics[width=\textwidth]{../Results/E_v_dx_importance_interacting.pdf}
+	 		\caption{Mean of the energy}
+	 	\end{subfigure}
+	 	~
+	 	\begin{subfigure}[b]{0.8\textwidth}
+	 		\centering
+	 		\includegraphics[width=\textwidth]{../Results/AC_importance_interacting.pdf}
+	 		\caption{Acceptance ratio}
+	 	\end{subfigure}
+	 	\caption{Same as figure \ref{fig:results_benchmark_no_importance_interacting} but with importance sampling}\label{fig:results_benchmark_importance_interacting}
+	 \end{figure}
+	 As explained in section \textbf{SECTION}, we choose $dx=0.1$ in this case.
+	 \subsubsection{Tuning $\boldsymbol{\sigma}$}
+	As in the previous section, we also vary $\sigma$ in the interacting system, using Gibbs sampling. This is shown in figure \ref{fig:sigma_interacting}.
+	 \begin{figure}
+	 	\centering
+	 	\includegraphics[width=\textwidth]{../Results/varying_sigma_gibbs_interacting.pdf}
+	 	\caption{Mean energy as a function of $\sigma$ for an interacting system with $2$ electrons in $2$ dimensions, using $2^{20}$ Monte Carlo steps. This is with $N=2$ and $\gamma=0.05$ \textbf{CHECK THIS}}\label{fig:sigma_interacting}
+	 \end{figure}
+As explained in section \textbf{SECTION}, we choose $\sigma=0.82$ in this case.
 	\section{Discussion}
 	EXCELLENT DISCUSSION
 	\section{Conclusion}
