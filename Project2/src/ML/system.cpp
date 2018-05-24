@@ -194,7 +194,7 @@ void System::update(){
         temp_value=0;
     }
 
-    next_distance = distance;
+
     if(D!=0){
         quantum_force(0); //Re-initialize quantum force
     }
@@ -208,6 +208,7 @@ void System::make_move_and_update(const int move){
     */
 
     update_X_next(move);
+
 }
 
 void System::update_next_distance(int move){
@@ -258,20 +259,12 @@ double System::check_acceptance_and_return_energy(int move){
         wavefunction_value = get_wavefunction();
         X = X_next;
 
-        distance.col(move) = next_distance.col(move);
-        distance.row(move) = next_distance.row(move);
-
         number_accept++;
-
-
 
     }
     else{
 
         X_next = X;
-        next_distance.col(move) = distance.col(move);
-        next_distance.row(move) = distance.row(move);
-
 
     }
     if(is_interacting){
@@ -501,21 +494,24 @@ double System::get_local_energy_noninteracting(){
     double repulsive_interaction=0;
     double potential_factor=0.5*omega*omega;
     Eigen::VectorXd x_weight_product(N);
+    double derivative_loc=0;
 
 
 
     for(int k=0;k<M;k++){
-           derivative_of_log_psi+=(a_bias(k)-X(k))/(sigma_squared);
+           derivative_loc=(a_bias(k)-X(k))/(sigma_squared);
            second_derivative_of_log_psi+=-1.0/(sigma_squared);
 
            x_weight_product=(1.0/sigma_squared)*(weights.transpose()*X);
 
            for(int j=0;j<N;j++){
                 exp_factor=exp(-b_bias(j)-x_weight_product(j));
-                derivative_of_log_psi+=weights(k,j)/(sigma_squared*(1+exp_factor));
+                derivative_loc+=weights(k,j)/(sigma_squared*(1+exp_factor));
                 denominator_factor = sigma_squared*sigma_squared*(1+exp_factor)*(1+exp_factor);
                 second_derivative_of_log_psi+=(weights(k,j)*weights(k,j))*exp_factor/denominator_factor;
            }
+           derivative_of_log_psi+=derivative_loc*derivative_loc*gibbs_factor*gibbs_factor;
+
         }
 
     if(is_interacting){
@@ -533,7 +529,7 @@ double System::get_local_energy_noninteracting(){
             potential_energy+=X(k+dim)*X(k+dim);
     }
 
-   return -0.5*(derivative_of_log_psi*derivative_of_log_psi*gibbs_factor*gibbs_factor+second_derivative_of_log_psi*gibbs_factor)+potential_factor*potential_energy+repulsive_interaction;
+   return -0.5*(derivative_of_log_psi+second_derivative_of_log_psi*gibbs_factor)+potential_factor*potential_energy+repulsive_interaction;
 }
 
 double System::d_psi_da(int k){

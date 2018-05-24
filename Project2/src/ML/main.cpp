@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
     //Reads the parameter file
     Parameters::read_parameters("../input/parameters.txt");
 
-    /*Eigen::ArrayXd test_parameters = 0.01*Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
-
+    /*Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
+    //distribute_weights_and_biases(test_parameters);
     std::cout << "---------------" << std::endl;
 
     System * system = new System();
@@ -26,14 +26,14 @@ int main(int argc, char *argv[])
 
     Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
 
-    std::cout <<  test_parameters - done << std::endl;
-
+    simulation->run(0,done);
+    //simulation->run(0,done);
 
     delete simulation;
     delete system;
 
-
     */
+    /*
 
     double Ns[5] = {1,2,3,4,5};
     double rates[5] = {1,0.5,0.1,0.01,0.05};
@@ -54,7 +54,8 @@ int main(int argc, char *argv[])
             delete system;
         }
 
-    }
+    }*/
+
     /*
     double sigma = 0.5;
     for(int i = 0;i<50;i++){
@@ -74,9 +75,9 @@ int main(int argc, char *argv[])
     }
     */
 
-    /*
-    //double dx[7] = {1.5,1.25,1,0.75,0.5,0.25,0.1};
-    double dx[7] = {1,0.5,0.1,0.05,0.01,0.005,0.001};
+
+    double dx[7] = {1.5,1.25,1,0.75,0.5,0.25,0.1};
+    //double dx[7] = {1,0.5,0.1,0.05,0.01,0.005,0.001};
     Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Zero(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
     distribute_weights_and_biases(test_parameters);
     //Eigen::ArrayXd test_parameters = 0.01*Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
         delete simulation;
         delete system;
     }
-    */
+
     return 0;
 }
 

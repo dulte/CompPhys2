@@ -81,8 +81,8 @@ class getVariance:
         self.folder = folder
         self.parameters = read_parameters(folder)
         self.list_of_dx = [1.5,1.25,1,0.75,0.5,0.25,0.1]
-        self.list_of_dx = [1,0.5,0.1,0.05,0.01,0.005,0.001]
-        
+        #self.list_of_dx = [1,0.5,0.1,0.05,0.01,0.005,0.001]
+
         self.file_names = []
         self.accept_file_names = []
         for dx in self.list_of_dx:
@@ -119,28 +119,32 @@ class getVariance:
             error_data[i] = block(self.data[:,i])
 
         #plt.plot(self.list_of_dx,self.accept_data,"b.-",markersize=10)
-        plt.semilogx(self.list_of_dx,self.accept_data,"b.-",markersize=10)
-        #plt.title("Acceptance Rate for Different dx",fontsize=20)
-        plt.title("Acceptance Rate for Different dx with Importance Sampling",fontsize=20)
+        #plt.semilogx(self.list_of_dx,self.accept_data,"b.-",markersize=10)
+        plt.title("Acceptance Rate for Different dx",fontsize=20)
+        plt.title("Acceptance Rate for Different dx",fontsize=20)
         plt.xlabel("dx",fontsize=20)
         plt.ylabel("Acceptance Rate",fontsize=20)
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=15)
         plt.xlim(self.list_of_dx[0],self.list_of_dx[-1])
-        plt.show() 
+        plt.show()
 
 
         ax2 = plt.subplot(111)
-        
+
         ax2.errorbar(self.list_of_dx,mean_data,yerr=error_data,fmt='b.-',markersize=10)
-        
+
         ax2.get_yaxis().get_major_formatter().set_useOffset(False)
         ax2.get_xaxis().get_major_formatter().set_useOffset(False)
         ax2.set_xlabel("dx",fontsize=20)
         ax2.set_ylabel(r"$\langle E \rangle$",fontsize=20)
         ax2.set_xlim(self.list_of_dx[0],self.list_of_dx[-1])
-        #plt.title(r"$\langle E \rangle$ for Different dx",fontsize=20)
-        plt.title(r"$\langle E \rangle$ for Different dx with Importance Sampling",fontsize=20)
+        plt.title(r"$\langle E \rangle$ for Different dx",fontsize=20)
+        #plt.title(r"$\langle E \rangle$ for Different dx with Importance Sampling",fontsize=20)
         plt.tight_layout()
         plt.autoscale()
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=15)
         plt.show()
 
 
@@ -162,7 +166,7 @@ class getVariance:
             for j in range(length-1):
                 self.variance[j] = np.std(self.data[0:(j+1)*2**10,i])
             ax.plot(iterations,self.variance,label="dx = %g \n Rate = %.2f"%(dx,self.accept_data[i]))
-        
+
         box = ax.get_position()
         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
