@@ -24,7 +24,8 @@ for rate in range(len(rates)):
         plt.plot(iterations,grad,color=colors[rate],marker=ticks[N],label="N=%s;Rate=%s" %(Ns[N],rates[rate]))
 
 plt.legend()
-plt.title("Convergence for Different Ns and Learning Rates with Gibbs Sampling",fontsize=20)
-plt.xlabel("Iterations",fontsize=20)
-plt.ylabel(r"$|\nabla E_L|$",fontsize=20)
+plt.title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
+plt.xlabel("Iterations",fontsize=40)
+plt.ylabel(r"$|\nabla E_L|$",fontsize=40)
+plt.ylim(0,10)
 plt.show()
