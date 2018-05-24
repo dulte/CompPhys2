@@ -35,7 +35,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
     Eigen::ArrayXd gradient = Eigen::ArrayXd::Zero(x_0.size());
-    double tol = 1e-3;
+    double tol = 1e-5;
 
     std::string gradient_filename = "..//output//gradient_data_";
     gradient_filename.append(std::to_string(Parameters::N));
@@ -53,7 +53,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
         x = x_prev - Parameters::learning_rate*gradient;//step_length(x_prev,A,t)*gradient;
         x_prev = x;
 
-        //gradient_dump.push_back(((Eigen::VectorXd)gradient).squaredNorm());
+        gradient_dump.push_back(((Eigen::VectorXd)gradient).squaredNorm());
 
 
         if(((Eigen::VectorXd)gradient).squaredNorm() < tol){
@@ -69,7 +69,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
 
     }
 
-    //gradient_dump.dump_all();
+    gradient_dump.dump_all();
     return x;
 }
 
