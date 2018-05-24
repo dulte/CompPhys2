@@ -81,7 +81,7 @@ class getVariance:
         self.folder = folder
         self.parameters = read_parameters(folder)
         self.list_of_dx = [1.5,1.25,1,0.75,0.5,0.25,0.1]
-        #self.list_of_dx = [1,0.5,0.1,0.05,0.01,0.005,0.001]
+        self.list_of_dx = [1,0.5,0.1,0.05,0.01,0.005,0.001]
 
         self.file_names = []
         self.accept_file_names = []
@@ -119,9 +119,9 @@ class getVariance:
             error_data[i] = block(self.data[:,i])
 
         #plt.plot(self.list_of_dx,self.accept_data,"b.-",markersize=10)
-        #plt.semilogx(self.list_of_dx,self.accept_data,"b.-",markersize=10)
-        plt.title("Acceptance Rate for Different dx",fontsize=20)
-        plt.title("Acceptance Rate for Different dx",fontsize=20)
+        plt.semilogx(self.list_of_dx,self.accept_data,"b.-",markersize=10)
+        #plt.title("Acceptance Rate for Different dx",fontsize=20)
+        plt.title("Acceptance Rate for Different dx with Importance Sampling",fontsize=20)
         plt.xlabel("dx",fontsize=20)
         plt.ylabel("Acceptance Rate",fontsize=20)
         plt.xticks(fontsize=15)
@@ -139,8 +139,8 @@ class getVariance:
         ax2.set_xlabel("dx",fontsize=20)
         ax2.set_ylabel(r"$\langle E \rangle$",fontsize=20)
         ax2.set_xlim(self.list_of_dx[0],self.list_of_dx[-1])
-        plt.title(r"$\langle E \rangle$ for Different dx",fontsize=20)
-        #plt.title(r"$\langle E \rangle$ for Different dx with Importance Sampling",fontsize=20)
+        #plt.title(r"$\langle E \rangle$ for Different dx",fontsize=20)
+        plt.title(r"$\langle E \rangle$ for Different dx with Importance Sampling",fontsize=20)
         plt.tight_layout()
         plt.autoscale()
         plt.xticks(fontsize=15)
