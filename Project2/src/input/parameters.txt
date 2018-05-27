@@ -5,7 +5,7 @@ dimensions 2 #Dimensions
 omega 1
 sigma 1
 dx 1 #Step size
-D 0 #Importance sampling
+D 0.5 #Importance sampling
 learning_rate 0.3 #Learning Rate
 interacting 1 #bool
 numerical 0 #bool
