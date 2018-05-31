@@ -38,6 +38,9 @@ Thumbs.db
 #Folder with build
 build-*/
 
+
+output/
+
 # qtcreator generated files
 *.pro.user*
 
