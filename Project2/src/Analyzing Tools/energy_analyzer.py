@@ -49,4 +49,6 @@ def block(x):
 
 
 if __name__ == '__main__':
-    main()
+    data =  np.fromfile("../output/data.bin",sep=" ")
+    print("Mean Energy: ",np.mean(data))
+    print("Error: ",block(data))

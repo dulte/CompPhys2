@@ -32,19 +32,6 @@ System::System()
     h=1e-6; //Step size for numerical derivative
     number_accept = 0;
 
-    if(is_interacting){
-	   //We use some function pointers to avoid some if statements in the functions
-           System::wavefunction_function_pointer=&System::update_wavefunction_interacting;
-           //System::compute_local_energy=&System::get_local_energy_interacting;
-
-       }
-     else{
-
-           System::wavefunction_function_pointer=&System::update_wavefunction_noninteracting;
-           System::compute_local_energy=&System::get_local_energy_noninteracting;
-
-    }
-
     if(gibbs){
         gibbs_factor=0.5;
     }
@@ -109,33 +96,6 @@ void System::make_grid(Eigen::ArrayXd &parameters)
 
 }
 
-void System::distribute_particles_interacting(){
-    /*
-    This function distributes the particles
-    in the interacting case, ensuring that none
-    of them start out closer than a from one another.
-    */
-    /*bool safe_distance = false;
-    for(int i = 0;i<N;i++){
-        safe_distance = false;
-        while(!safe_distance){
-            for(int j = 0;j<dimension;j++){
-                if(D!=0){
-                    r(j,i) = distribution(gen)*sqrt(dx);
-                }else{
-                    r(j,i) = 2*(static_cast<double>(rand())/RAND_MAX - 0.5);
-                }
-            }
-            safe_distance = true;
-            for(int n = 0;n<i;n++){
-                if((r.col(n) - r.col(i)).norm() <= a){
-                    safe_distance = false;
-                    break;
-                }
-            }
-        }
-    }*/
-}
 void System::distribute_particles_noninteracting(){
    /*
    This distribution is easier than the one above,
@@ -298,36 +258,7 @@ double System::gibbs_sample_and_return_energy(){
 }
 
 
-double System::phi_exponant(const Eigen::VectorXd &r){
-    /*
-    Smart way to update wavefunction
-    */
-    temp_value = 0;
 
-    for(int i = 0;i<dimension;i++){
-
-        temp_value += r(i)*r(i);
-
-    }
-    return -alpha*temp_value;
-}
-
-
-
-double System::f(double dist){
-    /*
-    Computes Jastrow factor
-    */
-    /*double function;
-    if(dist <= a){
-        function = 0;
-    }
-    else{
-        function = 1 - a/dist;
-    }*/
-
-    return 1;//function;
-}
 
 double System::get_probability_ratio(int move){
     /*
@@ -340,31 +271,6 @@ double System::get_probability_ratio(int move){
     double wavefunction_new=get_wavefunction_next();
 
     return (wavefunction_new*wavefunction_new)/(wavefunction_old*wavefunction_old)*greens_factor(move);
-
-    /*
-    double first_part_ratio = 0;
-    double wave_function_second_part = 1;
-    double wave_function_second_part_new = 1;
-    double exp_factor = 0;
-    double exp_factor_new = 0;
-
-    first_part_ratio = -((X_next(move) - a_bias(move))*(X_next(move) - a_bias(move)) - (X(move) - a_bias(move))*(X(move) - a_bias(move)));
-    first_part_ratio = exp(first_part_ratio/(2*sigma_squared));
-
-    for(int j = 0;j<N;j++){
-        exp_factor = 0;
-        exp_factor_new = 0;
-        for(int i=0;i<M;i++){
-            exp_factor += X[i]*weights(i,j);
-            exp_factor_new += X_next[i]*weights(i,j);
-
-        }
-        wave_function_second_part *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor));
-        wave_function_second_part_new *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor_new));
-    }
-
-    return first_part_ratio*(wave_function_second_part_new/wave_function_second_part)*first_part_ratio*(wave_function_second_part_new/wave_function_second_part)*greens_factor(move);
-    */
 
 }
 
@@ -393,8 +299,6 @@ double System::get_wavefunction(){
         }
         wave_function_second_part *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor));
     }
-
-    //std::cout << wave_function_first_part*wave_function_second_part << std::endl;
 
     if(gibbs){
         return sqrt(wave_function_first_part*wave_function_second_part);
@@ -427,8 +331,6 @@ double System::get_wavefunction_next(){
         wave_function_second_part *= (1+exp(b_bias(j)+(1.0/sigma_squared)*exp_factor));
     }
 
-    //std::cout << wave_function_first_part*wave_function_second_part << std::endl;
-
     if(gibbs){
         return sqrt(wave_function_first_part*wave_function_second_part);
     }
@@ -444,35 +346,6 @@ void System::update_wavefunction(const int move){
     return (this->*wavefunction_function_pointer)(move);
 }
 
-void System::update_wavefunction_noninteracting(const int move){
-    /*
-    Smart way to update wavefunction given move
-    */
-    wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)));
-
-}
-
-void System::update_wavefunction_interacting(const int move){
-    /*
-    Smart way to update wavefunction given move
-    */
-    wavefunction_value*=exp(phi_exponant(next_r.col(move))-phi_exponant(r.col(move)))*update_wavefunction_interacting_f(move);
-
-}
-
-
-double System::update_wavefunction_interacting_f(const int move){
-    /*
-    Returns the ratio of the jastrow Factor
-    */
-    double second_factor_of_psi=1;
-    for(int i = 0; i < N; i++){
-            if(i != move){
-                 second_factor_of_psi*= f(next_distance(i,move))/f(distance(i,move));
-        }
-    }
-    return second_factor_of_psi;
-}
 
 double System::get_probability(){
     double temp_value = get_wavefunction();
