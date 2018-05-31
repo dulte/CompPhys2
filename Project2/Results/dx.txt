@@ -9,15 +9,15 @@ N
 	   Non || Interacting
 ----------------------------
 Brute	| 2    || 2
-Imp.	| 2    || 4
-Gibbs.  | 2    || 
+Imp.	| 2    || 2
+Gibbs.  | 2    || 2
 
 gamma
 	   Non || Interacting
 ----------------------------
 Brute	| 0.3 || 0.3
 Imp.	| 0.1 || 0.3
-Gibbs.  | 0.3 || 		
+Gibbs.  | 0.3 || 0.35		
 
 
 
