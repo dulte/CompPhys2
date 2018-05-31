@@ -42,7 +42,14 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     gradient_filename.append("_");
     gradient_filename.append(std::to_string(Parameters::learning_rate));
 
+    std::string energy_filename = "..//output//energy_data_";
+    energy_filename.append(std::to_string(Parameters::N));
+    energy_filename.append("_");
+    energy_filename.append(std::to_string(Parameters::learning_rate));
+
     DataDump<double> gradient_dump(gradient_filename);
+    DataDump<double> energy_dump(energy_filename);
+
 
 
 
@@ -54,6 +61,8 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
         x_prev = x;
 
         gradient_dump.push_back(((Eigen::VectorXd)gradient).squaredNorm());
+        energy_dump.push_back(total_energy);
+
 
 
         if(((Eigen::VectorXd)gradient).squaredNorm() < tol){
@@ -70,6 +79,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     }
 
     gradient_dump.dump_all();
+    energy_dump.dump_all();
     return x;
 }
 
