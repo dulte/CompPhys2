@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     /*
 
     double Ns[5] = {1,2,3,4,5};
-    double rates[5] = {0.5,0.1,0.05,0.01,0.005};
+    double rates[5] = {0.2,0.1,0.05,0.01,0.005};
 
 
     for(int i = 0;i<5;i++){
