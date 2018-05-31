@@ -4,9 +4,9 @@ N 2 #Number of hidden nodes
 dimensions 2 #Dimensions
 omega 1
 sigma 1
-dx 1 #Step size
+dx 0.1 #Step size
 D 0.5 #Importance sampling
 learning_rate 0.3 #Learning Rate
-interacting 1 #bool
+interacting 1 #bxool
 numerical 0 #bool
 gibbs 0 #Gibbs

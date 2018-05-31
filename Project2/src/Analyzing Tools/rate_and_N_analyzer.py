@@ -7,27 +7,52 @@ sns.set_style("darkgrid")
 plt.rcParams.update({'font.size':12})
 plt.rcParams['mathtext.fontset']='stix'
 plt.rcParams['font.family']='STIXGeneral'
+plt.rcParams['xtick.labelsize'] = 20
+plt.rcParams['ytick.labelsize'] = 20
+plt.rcParams['legend.fontsize'] = 17
 
 
 
-rates = [0.500000,0.100000,0.050000,0.010000]
+rates = [0.100000,0.050000,0.010000,0.005000]
 Ns = [1,2,3,4,5]
 
-colors = ["r","g","b","y"]
+colors = ["r","g","b","y", "c"]
 ticks = ["*","s",".","8","D"]
+
+fig1=plt.figure()
+ax1=fig1.add_subplot(111)
+fig2=plt.figure()
+ax2=fig2.add_subplot(111)
 
 for rate in range(len(rates)):
     for N in range(len(Ns)):
         filename = "../output/gradient_data_%s_%.6f" %(Ns[N],rates[rate])
         grad = np.fromfile(filename,sep=" ")
+        filename_energy = "../output/energy_data_%s_%.6f" %(Ns[N],rates[rate])
+        energy = np.fromfile(filename_energy,sep=" ")
         iterations = np.arange(1,len(grad)+1)
-        plt.plot(iterations,grad,color=colors[rate],marker=ticks[N],label="N=%s;Rate=%s" %(Ns[N],rates[rate]))
+        ax1.plot(iterations,grad,color=colors[rate],marker=ticks[N],label="N=%s;Rate=%s" %(Ns[N],rates[rate]))
+        ax2.plot(iterations,energy,color=colors[rate],marker=ticks[N],label="N=%s;Rate=%s" %(Ns[N],rates[rate]))
 
-plt.legend(prop={'size':20})
-plt.title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
-plt.xlabel("Iterations",fontsize=40)
-plt.ylabel(r"$|\nabla E_L|^2$",fontsize=40)
-plt.xticks(fontsize=20)
-plt.yticks(fontsize=20)
-plt.ylim(0,10)
+ax1.legend(prop={'size':30})
+ax2.legend(prop={'size':30})
+ax1.set_title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
+ax1.set_xlabel("Iterations",fontsize=40)
+ax2.set_title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
+ax2.set_xlabel("Iterations",fontsize=40)
+ax1.set_ylabel(r"$|\nabla E_L|^2$",fontsize=40)
+ax2.set_ylabel(r"$\langle E \rangle$",fontsize=40)
+#plt.ylim(0,10)
+
+box = ax1.get_position()
+ax1.set_position([box.x0, box.y0, box.width * 0.92, box.height])
+
+# Put a legend to the right of the current axis
+ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+box = ax2.get_position()
+ax2.set_position([box.x0, box.y0, box.width * 0.92, box.height])
+
+# Put a legend to the right of the current axis
+ax2.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 plt.show()

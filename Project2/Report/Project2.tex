@@ -308,7 +308,7 @@
  	 	\includegraphics[width=\textwidth]{../Results/AC_normal.pdf}
  	 	\caption{Acceptance rate}
 \end{subfigure}
-\caption{Plot of the mean energy and corresponding acceptance rate for various values of $dx$, using $1$ particle in $1$ dimension and $2^{20}$ Monte Carlo steps \textbf{CHECK THIS}. This was produced using brute-force Metropolis sampling with $N=2$, $\gamma=0.3$ and $\sigma=1$.}\label{fig:results_benchmark_no_importance}
+\caption{Plot of the mean energy and corresponding acceptance rate for various values of $dx$, using $1$ particle in $1$ dimension and $2^{21}/10$ Monte Carlo steps \textbf{CHECK THIS}. This was produced using brute-force Metropolis sampling with $N=2$, $\gamma=0.3$ and $\sigma=1$.}\label{fig:results_benchmark_no_importance}
 \end{figure}
 As explained in section \textbf{SECTION}, we end up choosing $dx=1$. We show the equivalent plot with importance sampling in figure \ref{fig:results_benchmark_importance}
 \begin{figure}[ht!]
@@ -373,7 +373,7 @@ We perform the same analysis as in the previous section also in the interacting 
 	 		\includegraphics[width=\textwidth]{../Results/AC_normal_interacting.pdf}
 	 		\caption{Acceptance ratio}
 	 	\end{subfigure}
-	 	\caption{Plot of the mean energy and corresponding acceptance rate for various values of $dx$ using $2$ particles in $2$ dimensions and $2^{20}$ Monte Carlo steps. This was produced using brute-force Metropolis sampling with $N=2, \gamma=0.3$ and $\sigma=1$}\label{fig:results_benchmark_no_importance_interacting}
+	 	\caption{Plot of the mean energy and corresponding acceptance rate for various values of $dx$ using $2$ particles in $2$ dimensions and $2^{21}/10$ Monte Carlo steps. This was produced using brute-force Metropolis sampling with $N=2, \gamma=0.3$ and $\sigma=1$}\label{fig:results_benchmark_no_importance_interacting}
 	 \end{figure}
 	 As explained in section \textbf{SECTION}, we choose $dx=1$ in this case. We show the equivalent plot with importance sampling in figure \ref{fig:results_benchmark_importance_interacting}
 	 \begin{figure}[ht!]
@@ -400,7 +400,56 @@ We perform the same analysis as in the previous section also in the interacting 
 	 	\caption{Mean energy as a function of $\sigma$ for an interacting system with $2$ electrons in $2$ dimensions, using $2^{20}$ Monte Carlo steps. This is with $N=2$ and $\gamma=0.05$ \textbf{CHECK THIS}}\label{fig:sigma_interacting}
 	 \end{figure}
 As explained in section \textbf{SECTION}, we choose $\sigma=0.82$ in this case.
-	\section{Discussion}
+\subsubsection{Tuning $\boldsymbol{N}$ and $\boldsymbol{\gamma}$}
+As discussed in section \textbf{SECTION}, we tune the learning rate, $\gamma$ and the number of hidden nodes, $N$ together. This gives the plot shown in figure \ref{fig:step_size_and_N_interacting} for the standard Metropolis algorithm.
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}[b]{0.8\textwidth}
+	\centering
+	\includegraphics[width=\textwidth]{../Results/grad_normal_interacting.pdf}
+	\caption{Main plot}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.8\textwidth}
+	\centering
+	\includegraphics[width=\textwidth]{../Results/grad_normal_interacting_zoom.pdf}
+	\caption{Zoomed in}
+	\end{subfigure}
+	\caption{FIX.}\label{fig:step_size_and_N_interacting}
+\end{figure}
+As explained in section \textbf{SECTION}, we here choose $N=2$ and $\gamma=0.1$.
+The equivalent plot for importance sampling is shown in figure \ref{fig:step_size_and_N_importance_interacting}
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}[b]{0.8\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../Results/grad_importance_interacting.pdf}
+		\caption{Main plot}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.8\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../Results/grad_importance_interacting_zoom.pdf}
+		\caption{Zoomed in}
+	\end{subfigure}
+	\caption{FIX.}\label{fig:step_size_and_N_importance_interacting}
+\end{figure}
+Here, we chose $N=2$ and $\gamma=0.1$, as explained in section \textbf{SECTION}.
+Finally, the same plot for Gibbs sampling is shown in figure \ref{fig:step_size_and_N_gibbs_interacting}
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}[b]{0.8\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../Results/grad_gibbs_interacting.pdf}
+		\caption{Main plot}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.8\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../Results/grad_gibbs_interacting_zoom.pdf}
+		\caption{Zoomed in}
+	\end{subfigure}
+	\caption{FIX.}\label{fig:step_size_and_N_gibbs_interacting}
+As explained in section \textbf{SECTION}, we here choose $N=2$ and $\gamma=0.05$.
+\end{figure}
+\section{Discussion}
 	EXCELLENT DISCUSSION
 	\section{Conclusion}
 	BRILLIANT CONCLUSION
