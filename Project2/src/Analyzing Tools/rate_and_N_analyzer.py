@@ -9,11 +9,11 @@ plt.rcParams['mathtext.fontset']='stix'
 plt.rcParams['font.family']='STIXGeneral'
 plt.rcParams['xtick.labelsize'] = 20
 plt.rcParams['ytick.labelsize'] = 20
-plt.rcParams['legend.fontsize'] = 17
+plt.rcParams['legend.fontsize'] = 16
 
 
 
-rates = [0.100000,0.050000,0.010000,0.005000]
+rates = [0.200000,0.100000,0.050000,0.010000,0.005000]
 Ns = [1,2,3,4,5]
 
 colors = ["r","g","b","y", "c"]
@@ -36,9 +36,9 @@ for rate in range(len(rates)):
 
 ax1.legend(prop={'size':30})
 ax2.legend(prop={'size':30})
-ax1.set_title("Convergence for Different Ns and Learning Rates with Importance sampling",fontsize=40)
+ax1.set_title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
 ax1.set_xlabel("Iterations",fontsize=40)
-ax2.set_title("Convergence for Different Ns and Learning Rates with Importance sampling",fontsize=40)
+ax2.set_title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
 ax2.set_xlabel("Iterations",fontsize=40)
 ax1.set_ylabel(r"$|\nabla E_L|^2$",fontsize=40)
 ax2.set_ylabel(r"$\langle E \rangle$",fontsize=40)
