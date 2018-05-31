@@ -35,7 +35,7 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
     Eigen::ArrayXd gradient = Eigen::ArrayXd::Zero(x_0.size());
-    double tol = 1e-3;
+    double tol = 1e-6;
 
     std::string gradient_filename = "..//output//gradient_data_";
     gradient_filename.append(std::to_string(Parameters::N));

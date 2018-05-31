@@ -36,9 +36,9 @@ for rate in range(len(rates)):
 
 ax1.legend(prop={'size':30})
 ax2.legend(prop={'size':30})
-ax1.set_title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
+ax1.set_title("Convergence for Different Ns and Learning Rates with Importance sampling",fontsize=40)
 ax1.set_xlabel("Iterations",fontsize=40)
-ax2.set_title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
+ax2.set_title("Convergence for Different Ns and Learning Rates with Importance sampling",fontsize=40)
 ax2.set_xlabel("Iterations",fontsize=40)
 ax1.set_ylabel(r"$|\nabla E_L|^2$",fontsize=40)
 ax2.set_ylabel(r"$\langle E \rangle$",fontsize=40)
