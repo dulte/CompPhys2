@@ -1,4 +1,26 @@
+dx
 	   Non || Interacting
 ----------------------------
 Brute	| 0.5  || 1
 Imp.	| 0.5  || 0.1	
+
+
+N
+	   Non || Interacting
+----------------------------
+Brute	| 2    || 
+Imp.	| 2   || 
+
+gamma
+	   Non || Interacting
+----------------------------
+Brute	| 0.3 || 
+Imp.	| 0.1 || 		
+
+
+
+
+
+
+
+
