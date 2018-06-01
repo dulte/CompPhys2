@@ -13,7 +13,7 @@ plt.rcParams['legend.fontsize'] = 16
 
 
 
-rates = [0.200000,0.100000,0.050000,0.010000,0.005000]
+rates = [0.320000,0.310000,0.300000,0.200000,0.100000]
 Ns = [1,2,3,4,5]
 
 colors = ["r","g","b","y", "c"]
@@ -31,18 +31,18 @@ for rate in range(len(rates)):
         filename_energy = "../output/energy_data_%s_%.6f" %(Ns[N],rates[rate])
         energy = np.fromfile(filename_energy,sep=" ")
         iterations = np.arange(1,len(grad)+1)
-        ax1.plot(iterations,grad,color=colors[rate],marker=ticks[N],label="N=%s;Rate=%s" %(Ns[N],rates[rate]))
+        ax1.plot(iterations,np.log(grad),color=colors[rate],marker=ticks[N],label="N=%s;Rate=%s" %(Ns[N],rates[rate]))
         ax2.plot(iterations,energy,color=colors[rate],marker=ticks[N],label="N=%s;Rate=%s" %(Ns[N],rates[rate]))
 
 ax1.legend(prop={'size':30})
 ax2.legend(prop={'size':30})
-ax1.set_title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
+ax1.set_title("Convergence for Different Ns and Learning Rates",fontsize=40)
 ax1.set_xlabel("Iterations",fontsize=40)
-ax2.set_title("Convergence for Different Ns and Learning Rates with Importance Sampling",fontsize=40)
+ax2.set_title("Convergence for Different Ns and Learning Rates",fontsize=40)
 ax2.set_xlabel("Iterations",fontsize=40)
-ax1.set_ylabel(r"$|\nabla E_L|^2$",fontsize=40)
+ax1.set_ylabel(r"$\log\ |\nabla E_L|^2$",fontsize=40)
 ax2.set_ylabel(r"$\langle E \rangle$",fontsize=40)
-#plt.ylim(0,10)
+#ax1.set_ylim(0,10)
 
 box = ax1.get_position()
 ax1.set_position([box.x0, box.y0, box.width * 0.92, box.height])
