@@ -102,17 +102,17 @@ public:
 
 
     //Updates energy and wavefunctions
-    double phi_exponant(const Eigen::VectorXd &r);
+    //double phi_exponant(const Eigen::VectorXd &r);
     void update_wavefunction(const int move);
     void update_probability_ratio();
     double udiv(int,int);
     double udivdiv(int,int);
-    double update_wavefunction_interacting_f(const int);
-    void update_wavefunction_interacting(const int);
-    void update_wavefunction_noninteracting(const int move);
+    //double update_wavefunction_interacting_f(const int);
+    //void update_wavefunction_interacting(const int);
+    //void update_wavefunction_noninteracting(const int move);
     void quantum_force(int move);
     double greens_function_ratio(int move);
-    double f(double);
+    //double f(double);
     double calculate_energy_numerically();
     void sample_h();
     void sample_x();

@@ -4,6 +4,7 @@
 #include "system.h"
 #include "Parameters/parameters.h"
 #include "simulation.h"
+#include <ctime>
 
 using namespace std;
 
@@ -13,12 +14,18 @@ int main(int argc, char *argv[])
 {
     //Enables Eigen to do matrix operations in parallel
     Eigen::initParallel();
+    std::clock_t begin = clock();
+
+
+
+
 
     //Reads the parameter file
     Parameters::read_parameters("../input/parameters.txt");
 
-    /*Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
-    //distribute_weights_and_biases(test_parameters);
+
+    Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
+    distribute_weights_and_biases(test_parameters);
     std::cout << "---------------" << std::endl;
 
     System * system = new System();
@@ -27,12 +34,19 @@ int main(int argc, char *argv[])
     Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
 
     simulation->run(0,done);
-    //simulation->run(0,done);
+    simulation->run(0,done);
+
+    std::clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    std::cout << "The Simulation took " << elapsed_secs << " sec." << std::endl;
 
     delete simulation;
     delete system;
 
-    */
+
+
+    /*
 
     double Ns[5] = {1,2,3,4,5};
     double rates[5] = {0.32,0.31,0.3,0.2,0.1};
@@ -47,14 +61,13 @@ int main(int argc, char *argv[])
             Simulation * simulation = new Simulation(system);
             Eigen::ArrayXd test_parameters = 0.01*Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
             distribute_weights_and_biases(test_parameters);
-            std::cout << "ehi " << Parameters::N << std::endl;
             Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
             delete simulation;
             delete system;
         }
 
     }
-
+    */
     /*
     double sigma = 0.5;
     for(int i = 0;i<50;i++){
@@ -63,7 +76,6 @@ int main(int argc, char *argv[])
         Simulation * simulation = new Simulation(system);
         Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Zero(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
         distribute_weights_and_biases(test_parameters);
-        std::cout << "ehi " << Parameters::N << std::endl;
         Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
         simulation->run(0,done);
         simulation->run(0,done);
