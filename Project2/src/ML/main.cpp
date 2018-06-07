@@ -1,5 +1,4 @@
 #include <iostream>
-#include "boltzmannmachine.h"
 #include "Eigen/Dense"
 #include "system.h"
 #include "Parameters/parameters.h"
@@ -14,6 +13,8 @@ int main(int argc, char *argv[])
 {
     //Enables Eigen to do matrix operations in parallel
     Eigen::initParallel();
+
+    //Starts the clock
     std::clock_t begin = clock();
 
 
@@ -24,18 +25,28 @@ int main(int argc, char *argv[])
     Parameters::read_parameters("../input/parameters.txt");
 
 
+
+    //Makes a random initial vector holding the parameters (biases and weights)
     Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
+
+    //Distributes the parameters with normal distribution.
     distribute_weights_and_biases(test_parameters);
-    std::cout << "---------------" << std::endl;
+
 
     System * system = new System();
     Simulation * simulation = new Simulation(system);
 
+
+    //Optimize the parameters with stochastic descent.
     Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
 
-    simulation->run(0,done);
-    simulation->run(0,done);
 
+    //Due some strange bug, the first time run() is run it may return an extremly large answer
+    //But is run() is run one more time, this will not happen. We have yet to find the cause...
+    simulation->run(done);
+    simulation->run(done);
+
+    //Takes the time and deletes pointers.
     std::clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
@@ -77,8 +88,8 @@ int main(int argc, char *argv[])
         Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Zero(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
         distribute_weights_and_biases(test_parameters);
         Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
-        simulation->run(0,done);
-        simulation->run(0,done);
+        simulation->run(done);
+        simulation->run(done);
         delete simulation;
         delete system;
 
@@ -97,7 +108,8 @@ int main(int argc, char *argv[])
         System * system = new System();
         Simulation * simulation = new Simulation(system);
         Eigen::ArrayXd done = simulation->stochastic_descent(test_parameters);
-        simulation->run(0,done);
+        simulation->run(done);
+        simulation->run(done);
         delete simulation;
         delete system;
     }

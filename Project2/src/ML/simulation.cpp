@@ -11,15 +11,24 @@ Simulation::Simulation(System *m_system)
 
 
 Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
+    /*
+     This function takes an initial guess of parameters(biases and weights in a vector)
+     for the system and optimizes them using stochastic descent.
+     The optimized parameters are then returned.
+    */
+
+
+
+    //Inital values needed for the stochastic descent.
     int max_iter = 100;
     int i = 0;
-    double A = 20;
-    Eigen::ArrayXd t = Eigen::ArrayXd::Ones(x_0.size())*A;
     Eigen::ArrayXd x = x_0;
     Eigen::ArrayXd x_prev = x_0;
     Eigen::ArrayXd gradient = Eigen::ArrayXd::Zero(x_0.size());
     double tol = 1e-5;
 
+
+    //Initializes the dump files
     std::string gradient_filename = "..//output//gradient_data_";
     gradient_filename.append(std::to_string(Parameters::N));
     gradient_filename.append("_");
@@ -36,10 +45,9 @@ Eigen::ArrayXd Simulation::stochastic_descent(Eigen::ArrayXd x_0){
 
 
 
-
+    //Stochastic descent loop
     while(i < max_iter){
         calculate_gradient(x,gradient);
-        //std::cout << "Gradient: " << (gradient) << std::endl;
         x = x_prev - Parameters::learning_rate*gradient;
         x_prev = x;
 
@@ -84,14 +92,14 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
     Eigen::ArrayXd E_L_times_derivatives = Eigen::ArrayXd::Zero(total_size);
     Eigen::ArrayXd derivatives = Eigen::ArrayXd::Zero(total_size);
 
-    //This lowers the number of MC step by a factor 100.
+    //This lowers the number of MC step by a factor 10.
     //This is done because we dont need as many steps, and to make this go faster.
     int fast_MC_cycles = static_cast<int>(MC_cycles/10.);
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
     std::uniform_real_distribution<double> distribution(0,Parameters::P);
-    //A simple simulation for the given alpha
+    //A simple simulation for the given parameters
     system->make_grid(x);
 
     for(int i = 0;i<fast_MC_cycles;i++){
@@ -139,32 +147,9 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
 
     std::cout << "total energy: " << total_energy << std::endl;
     std::cout << system->number_accept/((double)fast_MC_cycles) << std::endl;
-    /*std::cout << "#######" << std::endl;
-    std::cout << total_energy*derivatives << std::endl;*/
     std::cout << "-----------------" << std::endl;
 
     gradient = 2*(E_L_times_derivatives - total_energy*derivatives);
-    std::cout << "Gradients: " << std::endl;
-    for(int k = 0;k<total_size;k++){
-        /*if(k<M){
-            std::cout << "a: " << gradient[k] << std::endl;
-
-        }else if(k>=M && k<(Parameters::N+M)){
-            std::cout << "b: " << gradient[k-M] << std::endl;
-        }else{
-
-            std::cout << "w: " << gradient[k - (M+N)] << std::endl;
-        }
-
-        E_L_times_derivatives(k) += variable_derivative*local_energy;
-        derivatives(k) += variable_derivative;
-
-        if(variable_derivative != variable_derivative){
-            exit(1);
-        }
-
-        */
-    }
 
     std::cout << "_________________" << std::endl;
 
@@ -174,8 +159,8 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
 
 
 
-//Does the main Metropolise Simulation over the alpha interval given in the parameter file.
-void Simulation::run(int rank,Eigen::ArrayXd &x){
+//Does the main Metropolise Simulation for a given vector of biases and weights.
+void Simulation::run(Eigen::ArrayXd &x){
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -185,10 +170,9 @@ void Simulation::run(int rank,Eigen::ArrayXd &x){
     double total_energy;
     int move = 0;
 
-    //Makes filenames containing the rank of the process
+    //Makes dump files
     std::string filename = "..//output//data";
-    //filename.append(std::to_string(rank));
-    //filename.append(std::to_string(Parameters::dx));
+    //filename.append(std::to_string(Parameters::dx)); //Uncomment if one wants to analyze dx
     filename.append(".bin");
 
 
@@ -197,24 +181,21 @@ void Simulation::run(int rank,Eigen::ArrayXd &x){
 
 
     std::string accept_filename = "..//output//accept_data";
-    //filename.append(std::to_string(rank));
-    //accept_filename.append(std::to_string(Parameters::dx));
+    //accept_filename.append(std::to_string(Parameters::dx)); //Uncomment if one wants to analyze dx
     accept_filename.append(".bin");
 
     DataDump<double> accept_dump(accept_filename);
 
 
-    if(rank == 0){
-         dump.dump_metadata("..//output//metadata.txt");
-
-    }
+    //Dumps metadata
+    dump.dump_metadata("..//output//metadata.txt");
 
 
-    //Makes a new system with the given alpha
-    system->make_grid(x);
 
-    std::cout<<MC_cycles << std::endl;
-    int count = 0;
+
+    //Makes a new system with the given parameters
+    system->make_grid(x);    
+
 
     //The main MC loop
     for(int i = 0;i<MC_cycles;i++){
@@ -228,17 +209,19 @@ void Simulation::run(int rank,Eigen::ArrayXd &x){
             //Checks if the move is accepted, and returns the local energy.
             energy += system->check_acceptance_and_return_energy(move);
         }else{
+            //Gibbs samples and gets energy
             energy += system->gibbs_sample_and_return_energy();
         }
         dump.push_back(energy);
         accept_dump.push_back(system->number_accept/double(i+1));
         total_energy += energy;
 
-        count++;
+
+
 
     }
 
-    std::cout << "When done: " << count << std::endl;
+    std::cout << "When done: "  << std::endl;
 
     std::cout << "Energy " << total_energy/(MC_cycles) << std::endl;
     std::cout << "Acceptance rate: " << (double)system->number_accept/double(MC_cycles) << std::endl;

@@ -32,6 +32,9 @@ System::System()
     h=1e-6; //Step size for numerical derivative
     number_accept = 0;
 
+
+
+    //Most of the difference in the energy between gibbs and MC is due to this factor
     if(gibbs){
         gibbs_factor=0.5;
     }
@@ -50,26 +53,14 @@ System::System()
     srand(time(NULL));
 }
 
-void System::make_grid(double m_alpha){
-    /*
-    This function initializes everything
-    to prepare for a simulation with variational
-    parameter m_alpha.
-    */
-    alpha = m_alpha;
-    number_accept = 0;
-    //Sets all positions to a random position [-1,1]
-
-    distribute_particles_noninteracting();
-
-
-    X_next = X;
-    update();
-    wavefunction_value=get_wavefunction();
-}
 
 void System::make_grid(Eigen::ArrayXd &parameters)
 {
+    /*
+    This function initializes everything
+    to prepare for a simulation using the biases and
+    weights given in the array given as an argument.
+    */
 
     Eigen::VectorXd par = (Eigen::VectorXd) parameters;
     Eigen::VectorXd w_flatten(M*N);
@@ -89,31 +80,31 @@ void System::make_grid(Eigen::ArrayXd &parameters)
 
 
     number_accept = 0;
-    distribute_particles_noninteracting();
+    distribute_particles();
     X_next = X;
     update();
     wavefunction_value=get_wavefunction();
 
 }
 
-void System::distribute_particles_noninteracting(){
+void System::distribute_particles(){
    /*
-   This distribution is easier than the one above,
-   as we do not need to take a minimum distance
-   into account.
+   Distributes particles
    */
 
     for(int i = 0;i<P*dimension;i++){
             if(D!=0){
                 X(i) = 0.5*distribution(gen)*sqrt(dx);
             }else{
-                X(i) = 0.5*distribution(gen);//(static_cast<double>(rand())/RAND_MAX - 0.5);
+                X(i) = 0.5*distribution(gen);
         }
     }
 
 }
 
 void System::update_X_next(int move){
+    //Moves one particles
+
     double random_nr = 0;
     if(D!=0){
         quantum_force(move);
@@ -136,7 +127,7 @@ void System::update_X_next(int move){
 void System::update(){
     /*
     Updates the distance
-    maxtrix after a new move
+    maxtrix.
     */
 
     double dist = 0;
@@ -171,23 +162,6 @@ void System::make_move_and_update(const int move){
 
 }
 
-void System::update_next_distance(int move){
-    /*
-    Updates the next_distance matrix for
-    to use in importance samplinf.
-    */
-    double dist = 0;
-    for(int i = 0;i<P;i++){
-        for(int dim=0;dim<dimension;dim++){
-            dist+=(X_next(i*dimension+dim)-X_next(move*dimension+dim))*(X_next(i*dimension+dim)-X_next(move*dimension+dim));
-        }
-        dist=sqrt(dist);
-        next_distance(i,move) = dist;
-        next_distance(move,i) = dist;
-        dist=0;
-    }
-
-}
 
 void System::update_expectation(){
     /*
@@ -214,8 +188,6 @@ double System::check_acceptance_and_return_energy(int move){
     //If r is less than the acceptance prob, r is updated to the new r
 
     if(temp_value <= get_probability_ratio(move)){
-
-        //update_wavefunction(move);
         wavefunction_value = get_wavefunction();
         X = X_next;
 
@@ -235,13 +207,14 @@ double System::check_acceptance_and_return_energy(int move){
         return calculate_energy_numerically();
     }
     else{
-        //std::cout<<"Numerical energy: "<< calculate_energy_numerically()<<std::endl;
-        return get_local_energy_noninteracting();
+        return get_local_energy();
     }
 
 
 }
 
+
+//Function for gibbs sampling
 double System::gibbs_sample_and_return_energy(){
     sample_h();
     sample_x();
@@ -252,7 +225,7 @@ double System::gibbs_sample_and_return_energy(){
         return calculate_energy_numerically();
     }
     else{
-        return get_local_energy_noninteracting();
+        return get_local_energy();
     }
 
 }
@@ -262,8 +235,7 @@ double System::gibbs_sample_and_return_energy(){
 
 double System::get_probability_ratio(int move){
     /*
-    Smart way to compute probability ratio, 
-    which accounts for interacting and importance sampling
+    Returns probability ratio
     */
 
     double wavefunction_old=get_wavefunction();
@@ -311,7 +283,7 @@ double System::get_wavefunction(){
 
 double System::get_wavefunction_next(){
     /*
-    Computes the wavefunction (complete)
+    Computes the next wavefunction (complete)
     */
     double wave_function_first_part = 0;
     double wave_function_second_part = 1;
@@ -341,24 +313,16 @@ double System::get_wavefunction_next(){
 
 
 
-
-void System::update_wavefunction(const int move){
-    return (this->*wavefunction_function_pointer)(move);
-}
-
-
 double System::get_probability(){
     double temp_value = get_wavefunction();
     return temp_value*temp_value;
 }
 
 
-double System::get_local_energy(){
-    return (this->*compute_local_energy)();
-}
+
 
 //Returns the local energy. Does also compute the derivative of E_L used in the gradien descent.
-double System::get_local_energy_noninteracting(){
+double System::get_local_energy(){
     double derivative_of_log_psi=0;
     double second_derivative_of_log_psi=0;
     double exp_factor=0;
@@ -405,6 +369,9 @@ double System::get_local_energy_noninteracting(){
    return -0.5*(derivative_of_log_psi+second_derivative_of_log_psi*gibbs_factor)+potential_factor*potential_energy+repulsive_interaction;
 }
 
+
+
+//Function for derivatives of biases and weights
 double System::d_psi_da(int k){
     return (X[k]-a_bias[k])/sigma_squared;
 }
@@ -444,6 +411,8 @@ double System::d_psi_dw_log(int k, int l){
     }
     return gibbs_factor*X(k)/(2.0*sigma_squared*(1+exp(-b_bias(l)-(1.0/sigma_squared)*exp_factor)));
 }
+
+
 
 
 //Computes the quantum force
@@ -537,6 +506,8 @@ double System::calculate_energy_numerically(){
 
 
 
+
+//Sampling of Hidden Nodes
 void System::sample_h(){
     std::uniform_real_distribution<double> sampling_distribution(0,1);
 
@@ -556,6 +527,8 @@ void System::sample_h(){
     }
 }
 
+
+//Sampling of Visible Nodes
 void System::sample_x(){
     std::normal_distribution<double> sampling_distribution;
     Eigen::VectorXd backwards_X = a_bias + weights*H;
