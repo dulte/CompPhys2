@@ -2,4 +2,4 @@
 
 This folder contains our report.
 
-We also include the .tex file and the bibliography.
+We also include the .tex file and the bibliography, for anyone interested.
