@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     delete system;
 
 
-
+    //For testing different learning rates and Ns
     /*
 
     double Ns[5] = {1,2,3,4,5};
@@ -79,6 +79,9 @@ int main(int argc, char *argv[])
 
     }
     */
+
+
+    //For testing different sigmas. Not used in raport
     /*
     double sigma = 0.5;
     for(int i = 0;i<50;i++){
@@ -97,9 +100,11 @@ int main(int argc, char *argv[])
     }
     */
 
+
+    //For testing different dx
     /*
-    //double dx[7] = {1.5,1.25,1,0.75,0.5,0.25,0.1};
-    double dx[7] = {1,0.5,0.1,0.05,0.01,0.005,0.001};
+    //double dx[7] = {1.5,1.25,1,0.75,0.5,0.25,0.1}; //For brute force
+    double dx[7] = {1,0.5,0.1,0.05,0.01,0.005,0.001}; //For importance
     Eigen::ArrayXd test_parameters = Eigen::ArrayXd::Zero(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);
     distribute_weights_and_biases(test_parameters);
     //Eigen::ArrayXd test_parameters = 0.01*Eigen::ArrayXd::Random(Parameters::P*Parameters::dimension + Parameters::N + Parameters::P*Parameters::dimension*Parameters::N);

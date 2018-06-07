@@ -2,6 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+"""
+Reads the gradient files and plots the gradient squared of the energy against
+iterations for different learning rates and hidden nodes.
+"""
+
+
 
 sns.set_style("darkgrid")
 plt.rcParams.update({'font.size':12})

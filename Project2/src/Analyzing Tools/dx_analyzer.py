@@ -80,8 +80,8 @@ class getVariance:
     def __init__(self,folder):
         self.folder = folder
         self.parameters = read_parameters(folder)
-        self.list_of_dx = [1.5,1.25,1,0.75,0.5,0.25,0.1]
-        #self.list_of_dx = [1,0.5,0.1,0.05,0.01,0.005,0.001]
+        self.list_of_dx = [1.5,1.25,1,0.75,0.5,0.25,0.1] #For brute force
+        #self.list_of_dx = [1,0.5,0.1,0.05,0.01,0.005,0.001] #For importance
 
         self.file_names = []
         self.accept_file_names = []
@@ -92,7 +92,6 @@ class getVariance:
         self.accept_data = np.zeros(len(self.list_of_dx))
         self.read_data()
         self.plot_blocking()
-        #self.plot_variance()
 
     def read_data(self):
         for index,f in enumerate(self.file_names):
@@ -102,6 +101,10 @@ class getVariance:
 
 
     def plot_blocking(self):
+        """
+        Plots the gradient of the energy against dx, and average energy
+        against dx. The energy uses blocking to get the error.
+        """
         sns.set_style("darkgrid")
         plt.rcParams.update({'font.size':12})
         plt.rcParams['mathtext.fontset']='stix'
@@ -118,10 +121,12 @@ class getVariance:
 
             error_data[i] = block(self.data[:,i])
 
-        plt.plot(self.list_of_dx,self.accept_data,"b.-",markersize=10)
-        #plt.semilogx(self.list_of_dx,self.accept_data,"b.-",markersize=10)
-        plt.title("Acceptance Rate for Different dx",fontsize=20)
-        #plt.title("Acceptance Rate for Different dx with Importance Sampling",fontsize=20)
+        plt.plot(self.list_of_dx,self.accept_data,"b.-",markersize=10) #For brute force
+        #plt.semilogx(self.list_of_dx,self.accept_data,"b.-",markersize=10) #For importance
+
+        plt.title("Acceptance Rate for Different dx",fontsize=20) #For brute force
+        #plt.title("Acceptance Rate for Different dx with Importance Sampling",fontsize=20) #For importance
+
         plt.xlabel("dx",fontsize=20)
         plt.ylabel("Acceptance Rate",fontsize=20)
         plt.xticks(fontsize=15)
@@ -139,8 +144,8 @@ class getVariance:
         ax2.set_xlabel("dx",fontsize=20)
         ax2.set_ylabel(r"$\langle E \rangle$",fontsize=20)
         ax2.set_xlim(self.list_of_dx[0],self.list_of_dx[-1])
-        plt.title(r"$\langle E \rangle$ for Different dx",fontsize=20)
-        #plt.title(r"$\langle E \rangle$ for Different dx with Importance Sampling",fontsize=20)
+        plt.title(r"$\langle E \rangle$ for Different dx",fontsize=20) #For brute force
+        #plt.title(r"$\langle E \rangle$ for Different dx with Importance Sampling",fontsize=20) #For importance
         plt.tight_layout()
         plt.autoscale()
         plt.xticks(fontsize=15)
@@ -150,33 +155,6 @@ class getVariance:
 
 
 
-
-    def plot_variance(self):
-        sns.set_style("darkgrid")
-        plt.rcParams.update({'font.size':12})
-        plt.rcParams['mathtext.fontset']='stix'
-        plt.rcParams['font.family']='STIXGeneral'
-
-        fig = plt.figure()
-        ax = plt.subplot(111)
-        for i,dx in enumerate(self.list_of_dx):
-            length = int(self.data.shape[0]/2**10)
-            self.variance = np.zeros(length-1)
-            iterations = np.linspace(0,self.data.shape[0],length-1,endpoint=True)
-            for j in range(length-1):
-                self.variance[j] = np.std(self.data[0:(j+1)*2**10,i])
-            ax.plot(iterations,self.variance,label="dx = %g \n Rate = %.2f"%(dx,self.accept_data[i]))
-
-        box = ax.get_position()
-        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-
-        plt.title("Evolving Error",fontsize=20)
-        ax.set_xlabel(r"Iterations",fontsize=20)
-        ax.set_ylabel(r"Error",fontsize=20)
-        #ax.legend(loc='best')
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-        ax.set_xlim(0,1e6)
-        plt.show()
 
 
 if __name__ == '__main__':

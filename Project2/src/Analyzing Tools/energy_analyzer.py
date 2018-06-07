@@ -1,6 +1,11 @@
 import numpy as np
 from time import time
 
+"""
+Uses blocking to get mean and error of the energy for one simulation.
+
+"""
+
 def block(x):
     """
     The blocking function made by Marius. It is made so to give an error if
