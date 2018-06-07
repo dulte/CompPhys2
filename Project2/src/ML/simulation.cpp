@@ -114,7 +114,7 @@ void Simulation::calculate_gradient(Eigen::ArrayXd &x,Eigen::ArrayXd &gradient){
         }
 
         total_energy += local_energy;
-
+        //This finds the indecies for the different biases and weights.
         for(int k = 0;k<total_size;k++){
             if(k<M){
                 variable_derivative = system->d_psi_da(k);
