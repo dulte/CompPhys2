@@ -62,6 +62,9 @@ void System::make_grid(Eigen::ArrayXd &parameters)
     weights given in the array given as an argument.
     */
 
+
+    //The biases and weight as held in one 1d vector/array, so this will make a vector for the biases for visible/hidden nodes
+    //and a matrix for weights
     Eigen::VectorXd par = (Eigen::VectorXd) parameters;
     Eigen::VectorXd w_flatten(M*N);
     for(int i = 0;i<par.size();i++){
