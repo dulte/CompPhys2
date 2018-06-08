@@ -56,7 +56,7 @@
 \lstset{showtabs=false}
 \lstset{breaklines}
 \title{FYS4411 - Project 2\\
-	The restricted Boltzmannn machine applied to the quantum many body problem}
+	The Restricted Boltzmannn Machine applied to the Quantum Many Body Problem}
 \author{Daniel Heinesen$^1$, Gunnar Lange$^2$ \& Aram Salihi$^2$\\
 	\small $^1$Department of Theoretical Astrophysics, University of Oslo, N-0316 Oslo, Norway\\
 	\small $^2$Department of Physics, University of Oslo, N-0316 Oslo, Norway}
@@ -64,7 +64,8 @@
 	\maketitle
 	\begin{abstract}
 	\begin{center}
-	 NICE ABSTRACT! Also check out our \href{https://github.com/dulte/FYS4411/tree/master/Project2}{GitHub}\footnote{\url{https://github.com/dulte/FYS4411/tree/master/Project2}}
+	We present an investigation into machine learning and Variational Monte Carlo (VMC) methods applied to interacting fermions in an isotropic harmonic oscillator trap. We consider the use of Neural-network Quantum States (NQS), as presented by \cite{Carleo602}, using a restricted Boltzmann machine (RBM) to represent the wavefunction. We consider three different VMC methods to estimate the ground state energy of our system; brute-force Monte-Carlo sampling, importance sampling and Gibbs sampling. The NQS is tuned by using a stochastic gradient descent method, tweaking some parameters of the method by hand. We then compare our results to the analytic results of one particle in $1$, $2$ and $3$ dimensions and of $2$ particles in $2$ dimensions, including an analysis of the statistical errors using the blocking method. Using brute-force or importance sampling, we find agreements up to about $3\%$ in the two-fermion case, and even better agreement in the single fermion case. With Gibbs sampling, we never get an error below $20\%$ in either case. The statistical error is always much smaller than either of these figures.
+	 All code used, and the plots produced, can be found on our \href{https://github.com/dulte/FYS4411/tree/master/Project2}{GitHub}\footnote{\url{https://github.com/dulte/FYS4411/tree/master/Project2}}
 \end{center}
 	\end{abstract}
 	\newpage
@@ -473,7 +474,7 @@ Finally, the same plot for Gibbs sampling is shown in figure \ref{fig:step_size_
 For the noninteracting system, we find the energy for $1$, $2$ and $3$ dimensions. The result is shown in table \ref{tab:noninteracting_results}.
 \begin{table}[ht!]
 	\centering
-	\caption{Results for the noninteracting system with $1$ particle, using the tuned parameters described in section \ref{sec:res_tuning_parameters_noninteracting}. We use $2^{21}$ Monte Carlo cycles, and a convergence tolerance $\epsilon$ of $10^{-3}$ with a maximum of $100$ iterations. The error is estimated using the blocking method.}
+	\caption{Results for the noninteracting system with $1$ particle, using the tuned parameters described in section \ref{sec:res_tuning_parameters_noninteracting}. We use $2^{21}$ Monte Carlo cycles, and a convergence tolerance $\epsilon$ of $10^{-3}$ with a maximum of $100$ iterations. The error is the statistical error, estimated using the blocking method.}
 	\label{tab:noninteracting_results}
 	\begin{tabular}{c|l|l|l|l|}
 		\multicolumn{1}{l}{Dimension} & Type        & Mean $[\hbar \omega]$ & Error $[\hbar \omega]$ & Time{[}s{]} \\
@@ -498,7 +499,7 @@ For the noninteracting system, we find the energy for $1$, $2$ and $3$ dimension
 The results for the interacting system with two particles is shown in table \ref{tab:interacting_results}. We only do this in 2 dimensions, as discussed in section \ref{sec:disc_result_interacting}.
 \begin{table}[ht!]
 	\centering
-	\caption{Results for the interacting system in two dimensions, using the parameter tunings from section \ref{sec:res_tuning_parameters_interacting}. We used $2^{21}$ Monte Carlo cycles, and a convergence tolerance $\epsilon$ of $10^{-3}$ with a maximum of $100$ iterations. The error was estimated using the blocking method.}
+	\caption{Results for the interacting system in two dimensions, using the parameter tunings from section \ref{sec:res_tuning_parameters_interacting}. We used $2^{21}$ Monte Carlo cycles, and a convergence tolerance $\epsilon$ of $10^{-3}$ with a maximum of $100$ iterations. The error is the statistical error, estimated using the blocking method.}
 	\label{tab:interacting_results}
 	\begin{tabular}{l|l|l|l|}
 		& Mean [$\hbar \omega$] & Error [$\hbar \omega$]                         & Time [s] \\
